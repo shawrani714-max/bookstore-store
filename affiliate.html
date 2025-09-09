@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Affiliate Dashboard</title>
+  <link rel="stylesheet" href="css/affiliate.css">
+</head>
+<body>
+  <div id="affiliate-container">
+    <h1>Affiliate Dashboard</h1>
+    <div id="affiliate-registration">
+      <button id="register-affiliate-btn">Register as Affiliate</button>
+      <div id="affiliate-registration-status" style="color:green;margin-top:10px;"></div>
+    </div>
+    <div id="affiliate-info" style="display:none;">
+      <h2>Your Referral Link</h2>
+      <input type="text" id="referral-link" readonly style="width:100%;" />
+      <h2>Your Earnings</h2>
+      <div id="affiliate-earnings"></div>
+      <h2>Referred Orders</h2>
+      <ul id="affiliate-orders"></ul>
+    </div>
+  </div>
+  <script src="js/affiliate.js"></script>
+</body>
+</html>

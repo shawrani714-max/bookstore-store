@@ -1,0 +1,7 @@
+body { font-family: Arial, sans-serif; background: #f4f6f8; margin: 0; }
+.admin-nav { background: #222; color: #fff; padding: 1em; }
+.admin-nav ul { list-style: none; padding: 0; display: flex; gap: 2em; }
+.admin-nav a { color: #fff; text-decoration: none; font-weight: bold; }
+#admin-main { padding: 2em; }
+section { background: #fff; margin-bottom: 2em; padding: 1em; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+h2 { color: #222; }

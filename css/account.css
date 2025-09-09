@@ -1,0 +1,145 @@
+/* Account Page Specific Styles */
+
+.account-sidebar {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    position: sticky;
+    top: 100px;
+}
+
+.profile-img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--primary-color);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.profile-img:hover {
+    transform: scale(1.05);
+}
+
+.account-sidebar .list-group-item {
+    border: none;
+    border-radius: 8px;
+    margin-bottom: 5px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.account-sidebar .list-group-item.active {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    color: white;
+    box-shadow: 0 4px 8px rgba(233, 78, 119, 0.4);
+}
+
+.account-sidebar .list-group-item:not(.active):hover {
+    background-color: #f8f9fa;
+    color: var(--primary-color);
+    transform: translateX(5px);
+}
+
+.account-content .content-section {
+    display: none;
+    animation: fadeIn 0.5s;
+}
+
+.account-content .content-section.active {
+    display: block;
+}
+
+.profile-card {
+    background-image: url('/images/hero-banner.jpg');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    border-radius: 12px;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.profile-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 1;
+}
+
+.profile-card .card-body {
+    position: relative;
+    z-index: 2;
+}
+
+.profile-card .card-title {
+    color: white;
+    font-weight: 700;
+}
+
+.text-gradient {
+    background: -webkit-linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color)); /* Added */
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.settings .nav-pills .nav-link {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.settings .nav-pills .nav-link.active, .settings .nav-pills .show > .nav-link {
+    background-color: var(--primary-color) !important;
+    color: #fff !important;
+    box-shadow: none !important;
+    outline: none !important;
+    border: none !important;
+}
+
+/* Remove all background and transitions from nav-pills buttons in settings */
+#settings .nav-pills .nav-link,
+#settings .nav-pills .nav-link:focus,
+#settings .nav-pills .nav-link:active,
+#settings .nav-pills .nav-link:focus-visible,
+#settings .nav-pills .nav-link.show,
+#settings .nav-pills .nav-link:target {
+    background: transparent !important;
+    color: var(--primary-color) !important;
+    outline: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    transition: none !important;
+    -webkit-transition: none !important;
+}
+
+/* Remove native button focus for all nav-link buttons in settings */
+#settings .nav-pills .nav-link::-moz-focus-inner {
+    border: 0 !important;
+}
+
+.settings .tab-content {
+    animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 991.98px) {
+    .account-sidebar {
+        position: static;
+        margin-bottom: 2rem;
+    }
+} 
