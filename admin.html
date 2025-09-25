@@ -51,24 +51,24 @@
         <h2>Dashboard</h2>
         <div class="dashboard-cards">
           <div class="dashboard-card" id="stat-users">
-            <div class="dashboard-card-icon">👤</div>
             <div class="dashboard-card-label">Users</div>
             <div class="dashboard-card-value">0</div>
+            <div class="dashboard-progress"><div class="dashboard-progress-bar" style="width:30%"></div></div>
           </div>
           <div class="dashboard-card" id="stat-books">
-            <div class="dashboard-card-icon">📚</div>
             <div class="dashboard-card-label">Books</div>
             <div class="dashboard-card-value">0</div>
+            <div class="dashboard-progress"><div class="dashboard-progress-bar" style="width:80%"></div></div>
           </div>
           <div class="dashboard-card" id="stat-orders">
-            <div class="dashboard-card-icon">🛒</div>
             <div class="dashboard-card-label">Orders</div>
             <div class="dashboard-card-value">0</div>
+            <div class="dashboard-progress"><div class="dashboard-progress-bar" style="width:20%"></div></div>
           </div>
           <div class="dashboard-card" id="stat-revenue">
-            <div class="dashboard-card-icon">💰</div>
             <div class="dashboard-card-label">Revenue</div>
             <div class="dashboard-card-value">0</div>
+            <div class="dashboard-progress"><div class="dashboard-progress-bar" style="width:0%"></div></div>
           </div>
         </div>
         <div id="audit-log-section" style="margin-top:32px;">
@@ -142,9 +142,22 @@
             <canvas id="geoDistributionChart" height="120"></canvas>
           </div>
         </div>
-        <div class="analytics-top-books" style="margin-top:32px;">
-          <h3>Top-Selling Books</h3>
-          <ul id="analytics-top-books-list"></ul>
+        <div class="trending-list" style="margin-top:32px;">
+          <h3>Trending Items</h3>
+          <div class="trending-item">
+            <img src="images/book1.jpg" class="trending-avatar" alt="Book">
+            <div class="trending-info">
+              <span class="trending-title">Book Title 1</span>
+            </div>
+            <span class="trending-sales positive">Sales +12%</span>
+          </div>
+          <div class="trending-item">
+            <img src="images/book2.jpg" class="trending-avatar" alt="Book">
+            <div class="trending-info">
+              <span class="trending-title">Book Title 2</span>
+            </div>
+            <span class="trending-sales negative">Sales -9%</span>
+          </div>
         </div>
       </section>
   <section id="settings" class="admin-section-hidden" style="display:none;">
