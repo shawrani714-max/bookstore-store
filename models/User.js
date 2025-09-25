@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 
 // Affiliate marketing fields
 const affiliateSchema = new mongoose.Schema({
@@ -10,451 +12,326 @@ const affiliateSchema = new mongoose.Schema({
   isActive: { type: Boolean, default: true }
 }, { _id: false });
 
-// Add to user schema
-// Define user schema (add your existing user fields here)
 const userSchema = new mongoose.Schema({
-  // ...existing user fields...
-  affiliate: affiliateSchema
-});
-
-module.exports = mongoose.model('User', userSchema);
-
-const orderItemSchema = new mongoose.Schema({
-  book: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Book',
-    required: [true, 'Book reference is required']
-  },
-  title: {
+  // Basic information
+  firstName: {
     type: String,
-    required: [true, 'Book title is required']
+    required: [true, 'First name is required'],
+    trim: true,
+    maxlength: [50, 'First name cannot exceed 50 characters']
   },
-  author: {
+  lastName: {
     type: String,
-    required: [true, 'Author name is required']
+    required: [true, 'Last name is required'],
+    trim: true,
+    maxlength: [50, 'Last name cannot exceed 50 characters']
   },
-  coverImage: {
+  email: {
     type: String,
-    required: [true, 'Cover image is required']
+    required: [true, 'Email is required'],
+    unique: true,
+    trim: true,
+    lowercase: true,
+    match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email']
   },
-  quantity: {
-    type: Number,
-    required: [true, 'Quantity is required'],
-    min: [1, 'Quantity must be at least 1']
-  },
-  price: {
-    type: Number,
-    required: [true, 'Price is required'],
-    min: [0, 'Price cannot be negative']
-  },
-  originalPrice: {
-    type: Number,
-    min: [0, 'Original price cannot be negative']
-  },
-  discount: {
-    type: Number,
-    min: [0, 'Discount cannot be negative'],
-    max: [100, 'Discount cannot exceed 100%'],
-    default: 0
-  }
-}, {
-  timestamps: false,
-  toJSON: { virtuals: true },
-  toObject: { virtuals: true }
-});
-
-// Virtual for item total
-orderItemSchema.virtual('itemTotal').get(function() {
-  const discountedPrice = this.price - (this.price * this.discount / 100);
-  return discountedPrice * this.quantity;
-});
-
-// Virtual for item savings
-orderItemSchema.virtual('itemSavings').get(function() {
-  if (this.originalPrice && this.originalPrice > this.price) {
-    const savingsPerItem = this.originalPrice - this.price;
-    return savingsPerItem * this.quantity;
-  }
-  return 0;
-});
-
-const orderSchema = new mongoose.Schema({
-  // Order identification
-  orderNumber: {
-    type: String,
-    required: true,
-    unique: true
-  },
-  
-  // User information
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: [true, 'User reference is required']
-  },
-  
-  // Order items
-  items: [orderItemSchema],
-  
-  // Order totals
-  subtotal: {
-    type: Number,
-    required: [true, 'Subtotal is required'],
-    min: [0, 'Subtotal cannot be negative']
-  },
-  discount: {
-    type: Number,
-    min: [0, 'Discount cannot be negative'],
-    default: 0
-  },
-  shippingCost: {
-    type: Number,
-    min: [0, 'Shipping cost cannot be negative'],
-    default: 0
-  },
-  tax: {
-    type: Number,
-    min: [0, 'Tax cannot be negative'],
-    default: 0
-  },
-  total: {
-    type: Number,
-    required: [true, 'Total is required'],
-    min: [0, 'Total cannot be negative']
-  },
-  
-  // Coupon information
-  couponCode: {
+  phone: {
     type: String,
     trim: true,
-    uppercase: true
-  },
-  couponDiscount: {
-    type: Number,
-    min: [0, 'Coupon discount cannot be negative'],
-    default: 0
+    maxlength: [15, 'Phone number cannot exceed 15 characters']
   },
   
-  // Shipping information
-  shippingAddress: {
+  // Authentication
+  password: {
+    type: String,
+    required: [true, 'Password is required'],
+    minlength: [6, 'Password must be at least 6 characters']
+  },
+  passwordChangedAt: Date,
+  passwordResetToken: String,
+  passwordResetExpires: Date,
+  
+  // Profile information
+  avatar: {
+    type: String,
+    default: null
+  },
+  dateOfBirth: Date,
+  gender: {
+    type: String,
+    enum: ['male', 'female', 'other', 'prefer_not_to_say']
+  },
+  
+  // Address information
+  addresses: [{
+    type: {
+      type: String,
+      enum: ['home', 'work', 'other'],
+      default: 'home'
+    },
     fullName: {
       type: String,
-      required: [true, 'Full name is required'],
-      trim: true,
-      maxlength: [100, 'Full name cannot exceed 100 characters']
+      required: true,
+      trim: true
     },
     phone: {
       type: String,
-      required: [true, 'Phone is required'],
+      required: true,
       trim: true
     },
     street: {
       type: String,
-      required: [true, 'Street address is required'],
-      trim: true,
-      maxlength: [100, 'Street address cannot exceed 100 characters']
+      required: true,
+      trim: true
     },
     city: {
       type: String,
-      required: [true, 'City is required'],
-      trim: true,
-      maxlength: [50, 'City cannot exceed 50 characters']
+      required: true,
+      trim: true
     },
     state: {
       type: String,
-      required: [true, 'State is required'],
-      trim: true,
-      maxlength: [50, 'State cannot exceed 50 characters']
+      required: true,
+      trim: true
     },
     zipCode: {
       type: String,
-      required: [true, 'ZIP code is required'],
-      trim: true,
-      maxlength: [10, 'ZIP code cannot exceed 10 characters']
+      required: true,
+      trim: true
     },
     country: {
       type: String,
-      required: [true, 'Country is required'],
-      trim: true,
       default: 'India',
-      maxlength: [50, 'Country cannot exceed 50 characters']
+      trim: true
+    },
+    isDefault: {
+      type: Boolean,
+      default: false
+    }
+  }],
+  
+  // Preferences
+  preferences: {
+    newsletter: {
+      type: Boolean,
+      default: true
+    },
+    smsNotifications: {
+      type: Boolean,
+      default: true
+    },
+    emailNotifications: {
+      type: Boolean,
+      default: true
+    },
+    language: {
+      type: String,
+      default: 'en'
+    },
+    currency: {
+      type: String,
+      default: 'INR'
     }
   },
   
-  // Shipping method
-  shippingMethod: {
-    type: String,
-    enum: ['standard', 'express', 'overnight'],
-    default: 'standard'
+  // Status and activity
+  isActive: {
+    type: Boolean,
+    default: true
   },
-  
-  // Payment information
-  paymentMethod: {
-    type: String,
-    enum: ['cod', 'online', 'card', 'upi', 'netbanking'],
-    required: [true, 'Payment method is required']
+  isEmailVerified: {
+    type: Boolean,
+    default: false
   },
-  paymentStatus: {
-    type: String,
-    enum: ['pending', 'processing', 'completed', 'failed', 'refunded'],
-    default: 'pending'
-  },
-  paymentId: {
-    type: String,
-    trim: true
-  },
-  paymentDate: Date,
-  
-  // Order status
-  status: {
-    type: String,
-    enum: ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'returned'],
-    default: 'pending'
-  },
-  
-  // Tracking information
-  trackingNumber: {
-    type: String,
-    trim: true
-  },
-  trackingUrl: {
-    type: String,
-    trim: true
-  },
-  estimatedDelivery: Date,
-  deliveredAt: Date,
-  
-  // Order notes
-  notes: {
-    type: String,
-    trim: true,
-    maxlength: [500, 'Notes cannot exceed 500 characters']
-  },
-  
-  // Cancellation/return information
-  cancelledAt: Date,
-  cancelledBy: {
-    type: String,
-    enum: ['customer', 'admin', 'system']
-  },
-  cancellationReason: {
-    type: String,
-    trim: true,
-    maxlength: [200, 'Cancellation reason cannot exceed 200 characters']
-  },
-  
-  // Return information
-  returnedAt: Date,
-  returnReason: {
-    type: String,
-    trim: true,
-    maxlength: [200, 'Return reason cannot exceed 200 characters']
-  },
-  refundAmount: {
+  emailVerificationToken: String,
+  emailVerificationExpires: Date,
+  lastLogin: Date,
+  loginCount: {
     type: Number,
-    min: [0, 'Refund amount cannot be negative'],
     default: 0
   },
-  refundDate: Date
+  
+  // Role and permissions
+  role: {
+    type: String,
+    enum: ['user', 'admin'],
+    default: 'user'
+  },
+  isAdmin: {
+    type: Boolean,
+    default: false
+  },
+  
+  // Affiliate marketing
+  affiliate: affiliateSchema,
+  
+  // Two-factor authentication
+  twoFactorEnabled: {
+    type: Boolean,
+    default: false
+  },
+  twoFactorSecret: String,
+  
+  // Session management
+  activeSessions: [{
+    token: String,
+    device: String,
+    ipAddress: String,
+    lastActivity: {
+      type: Date,
+      default: Date.now
+    }
+  }]
 }, {
   timestamps: true,
   toJSON: { virtuals: true },
   toObject: { virtuals: true }
 });
 
-// Virtual for order status display
-orderSchema.virtual('statusDisplay').get(function() {
-  const statusMap = {
-    'pending': 'Pending',
-    'confirmed': 'Confirmed',
-    'processing': 'Processing',
-    'shipped': 'Shipped',
-    'delivered': 'Delivered',
-    'cancelled': 'Cancelled',
-    'returned': 'Returned'
-  };
-  return statusMap[this.status] || this.status;
+// Virtual for full name
+userSchema.virtual('fullName').get(function() {
+  return `${this.firstName} ${this.lastName}`;
 });
 
-// Virtual for payment status display
-orderSchema.virtual('paymentStatusDisplay').get(function() {
-  const statusMap = {
-    'pending': 'Pending',
-    'processing': 'Processing',
-    'completed': 'Completed',
-    'failed': 'Failed',
-    'refunded': 'Refunded'
-  };
-  return statusMap[this.paymentStatus] || this.paymentStatus;
-});
-
-// Virtual for shipping address display
-orderSchema.virtual('shippingAddressDisplay').get(function() {
-  const addr = this.shippingAddress;
-  return `${addr.street}, ${addr.city}, ${addr.state} ${addr.zipCode}, ${addr.country}`;
-});
-
-// Virtual for customer name
-orderSchema.virtual('customerName').get(function() {
-  return this.shippingAddress.fullName;
-});
-
-// Virtual for item count
-orderSchema.virtual('itemCount').get(function() {
-  return this.items.reduce((count, item) => {
-    return count + item.quantity;
-  }, 0);
-});
-
-// Virtual for unique book count
-orderSchema.virtual('uniqueItemCount').get(function() {
-  return this.items.length;
-});
-
-// Virtual for total savings
-orderSchema.virtual('totalSavings').get(function() {
-  const itemSavings = this.items.reduce((total, item) => {
-    return total + item.itemSavings;
-  }, 0);
-  
-  return itemSavings + this.couponDiscount;
+// Virtual for display name
+userSchema.virtual('displayName').get(function() {
+  return this.fullName;
 });
 
 // Indexes for better query performance
-orderSchema.index({ user: 1 });
-orderSchema.index({ orderNumber: 1 });
-orderSchema.index({ status: 1 });
-orderSchema.index({ paymentStatus: 1 });
-orderSchema.index({ createdAt: -1 });
-orderSchema.index({ 'shippingAddress.email': 1 });
+userSchema.index({ email: 1 });
+userSchema.index({ phone: 1 });
+userSchema.index({ isActive: 1 });
+userSchema.index({ role: 1 });
 
-// Pre-save middleware to generate order number
-orderSchema.pre('save', function(next) {
-  if (this.isNew) {
-    const timestamp = Date.now().toString();
-    const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-    this.orderNumber = `ORD${timestamp}${random}`;
+// Pre-save middleware to hash password
+userSchema.pre('save', async function(next) {
+  if (!this.isModified('password')) return next();
+  
+  try {
+    const salt = await bcrypt.genSalt(12);
+    this.password = await bcrypt.hash(this.password, salt);
+    this.passwordChangedAt = Date.now() - 1000; // Subtract 1 second to ensure token is created after password change
+    next();
+  } catch (error) {
+    next(error);
   }
-  next();
 });
 
-// Instance method to update order status
-orderSchema.methods.updateStatus = function(status, notes = '') {
-  this.status = status;
-  if (notes) this.notes = notes;
-  
-  // Set timestamps for specific status changes
-  if (status === 'delivered') {
-    this.deliveredAt = new Date();
-  } else if (status === 'cancelled') {
-    this.cancelledAt = new Date();
-  } else if (status === 'returned') {
-    this.returnedAt = new Date();
+// Instance method to check password
+userSchema.methods.correctPassword = async function(candidatePassword, userPassword) {
+  return await bcrypt.compare(candidatePassword, userPassword);
+};
+
+// Instance method to check if password was changed after token was issued
+userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
+  if (this.passwordChangedAt) {
+    const changedTimestamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
+    return JWTTimestamp < changedTimestamp;
   }
+  return false;
+};
+
+// Instance method to create password reset token
+userSchema.methods.createPasswordResetToken = function() {
+  const resetToken = crypto.randomBytes(32).toString('hex');
   
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+  
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+  
+  return resetToken;
+};
+
+// Instance method to create email verification token
+userSchema.methods.createEmailVerificationToken = function() {
+  const verificationToken = crypto.randomBytes(32).toString('hex');
+  
+  this.emailVerificationToken = crypto
+    .createHash('sha256')
+    .update(verificationToken)
+    .digest('hex');
+  
+  this.emailVerificationExpires = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+  
+  return verificationToken;
+};
+
+// Instance method to update last login
+userSchema.methods.updateLastLogin = function() {
+  this.lastLogin = new Date();
+  this.loginCount += 1;
   return this.save();
 };
 
-// Instance method to update payment status
-orderSchema.methods.updatePaymentStatus = function(status, paymentId = null) {
-  this.paymentStatus = status;
-  if (paymentId) this.paymentId = paymentId;
-  
-  if (status === 'completed') {
-    this.paymentDate = new Date();
-  }
-  
+// Instance method to add session
+userSchema.methods.addSession = function(token, device, ipAddress) {
+  this.activeSessions.push({
+    token,
+    device,
+    ipAddress,
+    lastActivity: new Date()
+  });
   return this.save();
 };
 
-// Instance method to add tracking information
-orderSchema.methods.addTracking = function(trackingNumber, trackingUrl = null, estimatedDelivery = null) {
-  this.trackingNumber = trackingNumber;
-  if (trackingUrl) this.trackingUrl = trackingUrl;
-  if (estimatedDelivery) this.estimatedDelivery = estimatedDelivery;
-  
+// Instance method to remove session
+userSchema.methods.removeSession = function(token) {
+  this.activeSessions = this.activeSessions.filter(
+    session => session.token !== token
+  );
   return this.save();
 };
 
-// Instance method to cancel order
-orderSchema.methods.cancelOrder = function(reason, cancelledBy = 'customer') {
-  this.status = 'cancelled';
-  this.cancelledAt = new Date();
-  this.cancelledBy = cancelledBy;
-  this.cancellationReason = reason;
+// Instance method to clean old sessions
+userSchema.methods.cleanOldSessions = function() {
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
   
+  this.activeSessions = this.activeSessions.filter(
+    session => session.lastActivity > thirtyDaysAgo
+  );
   return this.save();
 };
 
-// Instance method to return order
-orderSchema.methods.returnOrder = function(reason, refundAmount = 0) {
-  this.status = 'returned';
-  this.returnedAt = new Date();
-  this.returnReason = reason;
-  this.refundAmount = refundAmount;
-  
-  if (refundAmount > 0) {
-    this.paymentStatus = 'refunded';
-    this.refundDate = new Date();
-  }
-  
-  return this.save();
+// Static method to find by email
+userSchema.statics.findByEmail = function(email) {
+  return this.findOne({ email: email.toLowerCase() });
 };
 
-// Static method to find orders by user
-orderSchema.statics.findByUser = function(userId) {
-  return this.find({ user: userId })
-    .populate('items.book')
-    .sort({ createdAt: -1 });
+// Static method to find active users
+userSchema.statics.findActive = function() {
+  return this.find({ isActive: true }).sort({ createdAt: -1 });
 };
 
-// Static method to find order by order number
-orderSchema.statics.findByOrderNumber = function(orderNumber) {
-  return this.findOne({ orderNumber }).populate('items.book');
-};
-
-// Static method to find orders by status
-orderSchema.statics.findByStatus = function(status) {
-  return this.find({ status })
-    .populate('user', 'firstName lastName email')
-    .populate('items.book')
-    .sort({ createdAt: -1 });
-};
-
-// Static method to find orders by payment status
-orderSchema.statics.findByPaymentStatus = function(paymentStatus) {
-  return this.find({ paymentStatus })
-    .populate('user', 'firstName lastName email')
-    .populate('items.book')
-    .sort({ createdAt: -1 });
-};
-
-// Static method to get order statistics
-orderSchema.statics.getStats = async function() {
+// Static method to get user statistics
+userSchema.statics.getStats = async function() {
   const stats = await this.aggregate([
     {
       $group: {
         _id: null,
-        totalOrders: { $sum: 1 },
-        totalRevenue: { $sum: '$total' },
-        averageOrderValue: { $avg: '$total' },
-        pendingOrders: {
-          $sum: { $cond: [{ $eq: ['$status', 'pending'] }, 1, 0] }
+        totalUsers: { $sum: 1 },
+        activeUsers: {
+          $sum: { $cond: [{ $eq: ['$isActive', true] }, 1, 0] }
         },
-        completedOrders: {
-          $sum: { $cond: [{ $eq: ['$status', 'delivered'] }, 1, 0] }
+        verifiedUsers: {
+          $sum: { $cond: [{ $eq: ['$isEmailVerified', true] }, 1, 0] }
+        },
+        adminUsers: {
+          $sum: { $cond: [{ $eq: ['$isAdmin', true] }, 1, 0] }
         }
       }
     }
   ]);
   
   return stats[0] || {
-    totalOrders: 0,
-    totalRevenue: 0,
-    averageOrderValue: 0,
-    pendingOrders: 0,
-    completedOrders: 0
+    totalUsers: 0,
+    activeUsers: 0,
+    verifiedUsers: 0,
+    adminUsers: 0
   };
 };
 
-module.exports = mongoose.model('Order', orderSchema); 
+module.exports = mongoose.model('User', userSchema);
