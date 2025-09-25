@@ -1,3 +1,44 @@
+/* Login/auth box styles (theme variable support) */
+.auth-card, .login-card, .login-box {
+    background: var(--card-color);
+    box-shadow: var(--shadow);
+    border-radius: 16px;
+    padding: 2.5rem 2.5rem 2rem 2.5rem;
+    max-width: 400px;
+    margin: 40px auto;
+    color: var(--text-color);
+}
+.auth-card h2, .login-card h2, .login-box h2 {
+    color: var(--primary-color);
+}
+.auth-card .btn, .login-card .btn, .login-box .btn {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    box-shadow: var(--shadow);
+}
+.auth-card .btn:hover, .login-card .btn:hover, .login-box .btn:hover {
+    background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+    color: #fff;
+}
+.auth-card input, .login-card input, .login-box input {
+    background: var(--card-color);
+    border: 1px solid var(--primary-color);
+    color: var(--text-color);
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 12px;
+    width: 100%;
+    font-size: 1em;
+}
+.auth-card .forgot-link, .login-card .forgot-link, .login-box .forgot-link {
+    color: var(--accent-color);
+}
+.auth-card .forgot-link:hover, .login-card .forgot-link:hover, .login-box .forgot-link:hover {
+    color: var(--primary-color);
+}
 /* 
 -----------------------------
     Table of Contents
@@ -16,23 +57,23 @@
 -----------------------------
 */
 
-/* 1. Base & Typography */
+/* Theme variables */
 :root {
-    --primary-color: #e94e77;
-    --secondary-color: #111;
-    --light-color: #f1f1f1;
-    --dark-color: #111;
-    --accent-color: #ff6b9d;
-    --text-color: #333;
-    --text-light: #666;
-    --bg-color: #ffffff;
-    --bg-light: #f8f9fa;
-    --font-family: 'Poppins', sans-serif;
-    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    --shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.15);
-    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --primary-color: #e94e77;
+  --accent-color: #ff6b9d;
+  --bg-color: #ffffff;
+  --card-color: #fff;
+  --secondary-color: #111;
+  --light-color: #f1f1f1;
+  --dark-color: #111;
+  --text-color: #333;
+  --text-light: #666;
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.15);
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* 1. Base & Typography */
 * {
     margin: 0;
     padding: 0;
@@ -1888,4 +1929,4 @@ a:hover {
 .review-item:nth-child(2) { animation-delay: 0.2s; }
 .review-item:nth-child(3) { animation-delay: 0.3s; }
 .review-item:nth-child(4) { animation-delay: 0.4s; }
-.review-item:nth-child(5) { animation-delay: 0.5s; } 
+.review-item:nth-child(5) { animation-delay: 0.5s; }
