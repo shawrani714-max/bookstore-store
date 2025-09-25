@@ -27,7 +27,7 @@ const createTransporter = () => {
   // For production, use services like SendGrid, Mailgun, etc.
   
   // Option 1: Gmail (for testing)
-  return nodemailer.createTransporter({
+  return nodemailer.createTransport({
     service: 'gmail',
     auth: {
       user: process.env.EMAIL_USER,
@@ -36,7 +36,7 @@ const createTransporter = () => {
   });
 
   // Option 2: SendGrid (recommended for production)
-  // return nodemailer.createTransporter({
+  // return nodemailer.createTransport({
   //   host: 'smtp.sendgrid.net',
   //   port: 587,
   //   secure: false,
@@ -47,7 +47,7 @@ const createTransporter = () => {
   // });
 
   // Option 3: Mailgun (alternative for production)
-  // return nodemailer.createTransporter({
+  // return nodemailer.createTransport({
   //   host: 'smtp.mailgun.org',
   //   port: 587,
   //   secure: false,
@@ -56,6 +56,20 @@ const createTransporter = () => {
   //     pass: process.env.MAILGUN_PASS
   //   }
   // });
+};
+
+// Low-level send mail utility
+const sendMail = async (options) => {
+  const transporter = createTransporter();
+  const mailOptions = {
+    from: options.from || `"Bookworld India" <${process.env.EMAIL_USER || 'noreply@bookworldindia.com'}>`,
+    to: options.to,
+    subject: options.subject,
+    html: options.html,
+    text: options.text
+  };
+  const info = await transporter.sendMail(mailOptions);
+  return info;
 };
 
 // Send password reset email
@@ -332,6 +346,7 @@ const sendWelcomeEmail = async (email, userName) => {
 };
 
 module.exports = {
+  sendMail,
   sendPasswordResetEmail,
   sendWelcomeEmail
 }; 
