@@ -5,9 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Panel - Bookstore</title>
   <link rel="stylesheet" href="css/admin.css">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <div id="admin-login-container">
+  <div id="admin-login-container" style="display:block;">
     <form id="admin-login-form">
       <h2>Admin Login</h2>
       <input type="email" id="admin-email" placeholder="Email" required />
@@ -17,47 +19,224 @@
     </form>
   </div>
   <div id="admin-panel" style="display:none;">
-    <nav class="admin-nav">
-      <h1>Bookstore Admin Panel</h1>
-      <ul>
-        <li><a href="#dashboard">Dashboard</a></li>
-        <li><a href="#books">Books</a></li>
-        <li><a href="#users">Users</a></li>
-        <li><a href="#orders">Orders</a></li>
-        <li><a href="#analytics">Analytics</a></li>
-        <li><a href="#settings">Settings</a></li>
+    <div class="admin-sidebar">
+      <div class="admin-profile">
+        <h1>Bookstore Admin Panel</h1>
+      </div>
+      <ul class="admin-menu">
+          <li><a href="#dashboard" aria-label="Dashboard">Dashboard</a></li>
+          <li><a href="#books" aria-label="Manage Books">Manage Books</a></li>
+          <li><a href="#users" aria-label="Manage Users">Manage Users</a></li>
+          <li><a href="#orders" aria-label="Manage Orders">Manage Orders</a></li>
+          <li><a href="#analytics" aria-label="Analytics">Analytics</a></li>
+          <li class="settings-menu">
+            <a href="#settings" id="settings-link">Settings</a>
+            <ul class="settings-submenu" style="display:none;">
+              <li><a href="#theme-settings" class="settings-sub-link" aria-label="Theme Settings">Theme</a></li>
+              <li><a href="#font-settings" class="settings-sub-link" aria-label="Font Settings">Font</a></li>
+              <li><a href="#page-management" class="settings-sub-link" aria-label="Page Management">Pages</a></li>
+            </ul>
+          </li>
       </ul>
-    </nav>
+    </div>
     <main id="admin-main">
-      <section id="dashboard">
+  <section id="dashboard" class="admin-section-hidden" style="display:none;">
         <h2>Dashboard</h2>
-        <div id="stats"></div>
+        <div class="dashboard-cards">
+          <div class="dashboard-card" id="stat-users">
+            <div class="dashboard-card-icon">👤</div>
+            <div class="dashboard-card-label">Users</div>
+            <div class="dashboard-card-value">0</div>
+          </div>
+          <div class="dashboard-card" id="stat-books">
+            <div class="dashboard-card-icon">📚</div>
+            <div class="dashboard-card-label">Books</div>
+            <div class="dashboard-card-value">0</div>
+          </div>
+          <div class="dashboard-card" id="stat-orders">
+            <div class="dashboard-card-icon">🛒</div>
+            <div class="dashboard-card-label">Orders</div>
+            <div class="dashboard-card-value">0</div>
+          </div>
+          <div class="dashboard-card" id="stat-revenue">
+            <div class="dashboard-card-icon">💰</div>
+            <div class="dashboard-card-label">Revenue</div>
+            <div class="dashboard-card-value">0</div>
+          </div>
+        </div>
+        <div id="audit-log-section" style="margin-top:32px;">
+          <h3>Recent Admin Actions</h3>
+          <ul id="audit-log-list" style="list-style:none;padding:0;margin:0;background:#fff;border-radius:8px;border:1px solid #eee;"></ul>
+        </div>
       </section>
-      <section id="books">
+  <section id="books" class="admin-section-hidden" style="display:none;">
         <h2>Manage Books</h2>
-        <form id="excel-upload-form" enctype="multipart/form-data" style="margin-bottom:20px;">
+        <form id="excel-upload-form" enctype="multipart/form-data" class="bulk-import-section">
           <label for="excel-file">Bulk Import/Update (Excel):</label>
-          <input type="file" id="excel-file" accept=".xlsx,.xls" required />
+          <input type="file" id="excel-file" class="custom-file-input" accept=".xlsx,.xls" required />
+          <label for="excel-file" class="custom-file-label">Choose File</label>
+          <span class="file-chosen" id="file-chosen">No file chosen</span>
           <button type="submit">Upload</button>
           <span id="excel-upload-status" style="margin-left:10px;"></span>
         </form>
         <div id="books-list"></div>
       </section>
-      <section id="users">
+  <section id="users" class="admin-section-hidden" style="display:none;">
         <h2>Manage Users</h2>
+        <div style="margin-bottom:12px;">
+          <input type="text" id="user-search" placeholder="Search users by name or email" style="width:60%;padding:6px;">
+        </div>
         <div id="users-list"></div>
+        <div id="users-pagination" style="margin-top:10px;"></div>
       </section>
-      <section id="orders">
+  <section id="orders" class="admin-section-hidden" style="display:none;">
         <h2>Manage Orders</h2>
+        <div style="margin-bottom:12px;">
+          <input type="text" id="order-search" placeholder="Search orders by user, status, or ID" style="width:60%;padding:6px;">
+        </div>
         <div id="orders-list"></div>
+        <div id="orders-pagination" style="margin-top:10px;"></div>
       </section>
-      <section id="analytics">
-        <h2>Analytics</h2>
-        <div id="analytics-data"></div>
+  <section id="analytics" class="admin-section-hidden" style="display:none;">
+        <h2 style="color:var(--primary-color);margin-bottom:24px;">Analytics</h2>
+        <div class="analytics-summary-cards">
+          <div class="analytics-card" id="analytics-revenue">
+            <div class="analytics-card-label">Total Revenue</div>
+            <div class="analytics-card-value" id="analytics-revenue-value">₹0</div>
+          </div>
+          <div class="analytics-card" id="analytics-orders-today">
+            <div class="analytics-card-label">Orders Today</div>
+            <div class="analytics-card-value" id="analytics-orders-today-value">0</div>
+          </div>
+          <div class="analytics-card" id="analytics-orders-week">
+            <div class="analytics-card-label">Orders This Week</div>
+            <div class="analytics-card-value" id="analytics-orders-week-value">0</div>
+          </div>
+          <div class="analytics-card" id="analytics-orders-month">
+            <div class="analytics-card-label">Orders This Month</div>
+            <div class="analytics-card-value" id="analytics-orders-month-value">0</div>
+          </div>
+        </div>
+        <div class="analytics-charts" style="margin-top:32px;">
+          <div class="analytics-chart-block">
+            <h3>User Growth (Daily)</h3>
+            <canvas id="userGrowthChart" height="120"></canvas>
+          </div>
+          <div class="analytics-chart-block">
+            <h3>Order Status Breakdown</h3>
+            <canvas id="orderStatusChart" height="120"></canvas>
+          </div>
+          <div class="analytics-chart-block">
+            <h3>Revenue Trend (Last 30 Days)</h3>
+            <canvas id="revenueTrendChart" height="120"></canvas>
+          </div>
+          <div class="analytics-chart-block">
+            <h3>Geographic Distribution (by City)</h3>
+            <canvas id="geoDistributionChart" height="120"></canvas>
+          </div>
+        </div>
+        <div class="analytics-top-books" style="margin-top:32px;">
+          <h3>Top-Selling Books</h3>
+          <ul id="analytics-top-books-list"></ul>
+        </div>
       </section>
-      <section id="settings">
+  <section id="settings" class="admin-section-hidden" style="display:none;">
         <h2>Settings</h2>
-        <div id="settings-form"></div>
+        <p>Please select a settings category from the sidebar menu:</p>
+        <ul>
+          <li><strong>Theme:</strong> Customize colors and appearance</li>
+          <li><strong>Font:</strong> Change font settings</li>
+          <li><strong>Pages:</strong> Manage website pages</li>
+        </ul>
+      </section>
+  <section id="theme-settings" class="admin-section-hidden" style="display:none;">
+        <h2>Theme Customization</h2>
+        <div id="settings-form">
+          <form id="theme-settings-form" style="max-width:400px;margin-top:20px;">
+            <label for="primaryColor">Primary Color:</label>
+              <input type="color" id="primaryColor" name="primaryColor" value="#e94e77" style="margin-bottom:10px;width:100%;border:2px solid #333;">
+            <br>
+            <label for="accentColor">Accent Color:</label>
+              <input type="color" id="accentColor" name="accentColor" value="#ff6b9d" style="margin-bottom:10px;width:100%;border:2px solid #333;">
+            <br>
+            <label for="bgColor">Background Color:</label>
+              <input type="color" id="bgColor" name="bgColor" value="#ffffff" style="margin-bottom:10px;width:100%;border:2px solid #333;">
+            <br>
+            <label for="cardColor">Card Color:</label>
+              <input type="color" id="cardColor" name="cardColor" value="#fff" style="margin-bottom:10px;width:100%;border:2px solid #333;">
+            <br>
+            <button type="submit" style="margin-top:10px;background:#e94e77;color:#fff;padding:8px 18px;border:none;border-radius:8px;font-family:'Poppins',sans-serif;cursor:pointer;">Save Theme</button>
+            <button type="button" id="default-theme-btn" style="margin-top:10px;margin-left:10px;background:#aaa;color:#fff;padding:8px 18px;border:none;border-radius:8px;font-family:'Poppins',sans-serif;cursor:pointer;">Default</button>
+            <button type="button" id="undo-theme-btn" style="margin-top:10px;margin-left:10px;background:#888;color:#fff;padding:8px 18px;border:none;border-radius:8px;font-family:'Poppins',sans-serif;cursor:pointer;">Undo</button>
+          </form>
+          <div id="theme-save-status" style="margin-top:10px;color:#e94e77;"></div>
+        </div>
+      </section>
+  <section id="font-settings" class="admin-section-hidden" style="display:none;">
+        <h2>Font Customization</h2>
+        <form id="font-customization-form" style="max-width:400px;margin-top:20px;">
+          <label for="headerFont">Header Font:</label>
+          <select id="headerFont" name="headerFont" style="margin-bottom:10px;width:100%;">
+            <option value="Poppins">Poppins</option>
+            <option value="Roboto">Roboto</option>
+            <option value="Montserrat">Montserrat</option>
+            <option value="Lato">Lato</option>
+            <option value="Open Sans">Open Sans</option>
+            <option value="Merriweather">Merriweather</option>
+            <option value="Oswald">Oswald</option>
+            <option value="Nunito">Nunito</option>
+          </select>
+          <br>
+          <label for="contentFont">Content Font:</label>
+          <select id="contentFont" name="contentFont" style="margin-bottom:10px;width:100%;">
+            <option value="Poppins">Poppins</option>
+            <option value="Roboto">Roboto</option>
+            <option value="Montserrat">Montserrat</option>
+            <option value="Lato">Lato</option>
+            <option value="Open Sans">Open Sans</option>
+            <option value="Merriweather">Merriweather</option>
+            <option value="Oswald">Oswald</option>
+            <option value="Nunito">Nunito</option>
+          </select>
+          <br>
+          <label for="sidebarFont">Sidebar Font:</label>
+          <select id="sidebarFont" name="sidebarFont" style="margin-bottom:10px;width:100%;">
+            <option value="Poppins">Poppins</option>
+            <option value="Roboto">Roboto</option>
+            <option value="Montserrat">Montserrat</option>
+            <option value="Lato">Lato</option>
+            <option value="Open Sans">Open Sans</option>
+            <option value="Merriweather">Merriweather</option>
+            <option value="Oswald">Oswald</option>
+            <option value="Nunito">Nunito</option>
+          </select>
+          <br>
+          <button type="submit" style="margin-top:10px;background:#e94e77;color:#fff;padding:8px 18px;border:none;border-radius:8px;font-family:'Poppins',sans-serif;cursor:pointer;">Save Fonts</button>
+          <button type="button" id="default-font-btn" style="margin-top:10px;margin-left:10px;background:#aaa;color:#fff;padding:8px 18px;border:none;border-radius:8px;font-family:'Poppins',sans-serif;cursor:pointer;">Default</button>
+          <button type="button" id="undo-font-btn" style="margin-top:10px;margin-left:10px;background:#888;color:#fff;padding:8px 18px;border:none;border-radius:8px;font-family:'Poppins',sans-serif;cursor:pointer;">Undo</button>
+        </form>
+        <div id="font-save-status" style="margin-top:10px;color:#e94e77;"></div>
+        <div id="font-preview" style="margin-top:20px;padding:16px;background:#f9f9f9;border-radius:8px;">
+          <h3 style="margin-bottom:8px;">Font Preview</h3>
+          <div>
+            <span id="preview-header" style="font-size:1.5em;display:block;margin-bottom:8px;">Header Font Example</span>
+            <span id="preview-content" style="font-size:1em;display:block;margin-bottom:8px;">Content Font Example</span>
+            <span id="preview-sidebar" style="font-size:1em;display:block;">Sidebar Font Example</span>
+          </div>
+        </div>
+      </section>
+  <section id="page-management" class="admin-section-hidden" style="display:none;">
+        <h2>Page Management</h2>
+        <div id="page-management-ui" style="max-width:500px;margin-top:20px;">
+          <div style="margin-bottom:16px;">
+            <input type="text" id="new-page-name" placeholder="New page name" style="width:60%;padding:6px;">
+            <button id="add-page-btn" style="background:#e94e77;color:#fff;padding:6px 16px;border:none;border-radius:8px;font-family:'Poppins',sans-serif;cursor:pointer;">Add Page</button>
+          </div>
+          <ul id="pages-list" style="list-style:none;padding:0;margin:0;border:1px solid #eee;border-radius:8px;background:#fff;">
+            <!-- Pages will be listed here -->
+          </ul>
+        </div>
+        <div id="page-management-status" style="margin-top:10px;color:#e94e77;"></div>
       </section>
     </main>
   </div>
