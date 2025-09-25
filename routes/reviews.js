@@ -2,13 +2,13 @@ const express = require('express');
 const router = express.Router();
 const Book = require('../models/Book');
 const User = require('../models/User');
-const auth = require('../middleware/auth');
+const { protect, adminOnly } = require('../middleware/auth');
 const { catchAsync } = require('../utils/errorResponse');
 
 // @desc    Add a review to a book
 // @route   POST /api/reviews/:bookId
 // @access  Private
-router.post('/:bookId', auth, catchAsync(async (req, res) => {
+router.post('/:bookId', protect, catchAsync(async (req, res) => {
   const { rating, title, comment } = req.body;
   const bookId = req.params.bookId;
   const userId = req.user.id;
@@ -174,7 +174,7 @@ router.get('/:bookId', catchAsync(async (req, res) => {
 // @desc    Update a review
 // @route   PUT /api/reviews/:bookId/:reviewId
 // @access  Private
-router.put('/:bookId/:reviewId', auth, catchAsync(async (req, res) => {
+router.put('/:bookId/:reviewId', protect, catchAsync(async (req, res) => {
   const { rating, title, comment } = req.body;
   const { bookId, reviewId } = req.params;
   const userId = req.user.id;
@@ -251,7 +251,7 @@ router.put('/:bookId/:reviewId', auth, catchAsync(async (req, res) => {
 // @desc    Delete a review
 // @route   DELETE /api/reviews/:bookId/:reviewId
 // @access  Private
-router.delete('/:bookId/:reviewId', auth, catchAsync(async (req, res) => {
+router.delete('/:bookId/:reviewId', protect, catchAsync(async (req, res) => {
   const { bookId, reviewId } = req.params;
   const userId = req.user.id;
 
@@ -312,7 +312,7 @@ router.delete('/:bookId/:reviewId', auth, catchAsync(async (req, res) => {
 // @desc    Mark review as helpful
 // @route   POST /api/reviews/:bookId/:reviewId/helpful
 // @access  Private
-router.post('/:bookId/:reviewId/helpful', auth, catchAsync(async (req, res) => {
+router.post('/:bookId/:reviewId/helpful', protect, catchAsync(async (req, res) => {
   const { bookId, reviewId } = req.params;
   const userId = req.user.id;
 
@@ -357,7 +357,7 @@ router.post('/:bookId/:reviewId/helpful', auth, catchAsync(async (req, res) => {
 // @desc    Get user's reviews
 // @route   GET /api/reviews/user/me
 // @access  Private
-router.get('/user/me', auth, catchAsync(async (req, res) => {
+router.get('/user/me', protect, catchAsync(async (req, res) => {
   const userId = req.user.id;
   const { page = 1, limit = 10 } = req.query;
 
