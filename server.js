@@ -21,6 +21,8 @@ const bookRoutes = require('./routes/books');
 const cartRoutes = require('./routes/cart');
 const wishlistRoutes = require('./routes/wishlist');
 const orderRoutes = require('./routes/orders');
+const couponRoutes = require('./routes/coupons');
+const reviewRoutes = require('./routes/reviews');
 
 // Initialize express app
 const app = express();
@@ -95,8 +97,8 @@ app.use('/js', express.static(path.join(__dirname, 'js')));
 app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use('/favicon.ico', express.static(path.join(__dirname, 'images', 'favicon.ico')));
 
-// Serve static files from the 'bookstore' directory
-app.use(express.static(path.join(__dirname, 'bookstore')));
+// Serve static files from project root (HTML files are at root)
+app.use(express.static(__dirname));
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -105,6 +107,27 @@ app.get('/api/health', (req, res) => {
     message: 'Bookworld India API is running',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development'
+  });
+});
+
+// API root info
+app.get('/api', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Welcome to Bookworld India API',
+    endpoints: {
+      health: '/api/health',
+      auth: '/api/auth',
+      books: '/api/books',
+      cart: '/api/cart',
+      wishlist: '/api/wishlist',
+      orders: '/api/orders',
+      coupons: '/api/coupons',
+      reviews: '/api/reviews',
+      admin: '/api/admin',
+      affiliate: '/api/affiliate',
+      orderAdmin: '/api/order-admin'
+    }
   });
 });
 
@@ -118,6 +141,8 @@ app.use('/api/books', bookRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/wishlist', wishlistRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/coupons', couponRoutes);
+app.use('/api/reviews', reviewRoutes);
 // Register admin API route
 const adminRoutes = require('./routes/admin');
 app.use('/api/admin', adminRoutes);
