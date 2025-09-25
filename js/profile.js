@@ -314,6 +314,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         }, 3000);
     };
 
+    // Theme settings loader for profile page
+    async function loadThemeSettingsForSite() {
+      try {
+        const res = await fetch('/api/admin/theme');
+        if (!res.ok) throw new Error('Failed to load theme');
+        const settings = await res.json();
+        const root = document.documentElement;
+        root.style.setProperty('--primary-color', settings.primaryColor);
+        root.style.setProperty('--accent-color', settings.accentColor);
+        root.style.setProperty('--bg-color', settings.bgColor);
+        root.style.setProperty('--card-color', settings.cardColor);
+      } catch (e) {
+        // fallback: do nothing, use default CSS
+      }
+    }
+
+    // Load theme settings on every page load
+    loadThemeSettingsForSite();
+
     // --- Event Listeners ---
 
     // Profile form submission
@@ -388,4 +407,4 @@ document.addEventListener('DOMContentLoaded', async () => {
         await loadOrders();
         document.body.classList.remove('body-hidden');
     }
-}); 
+});
