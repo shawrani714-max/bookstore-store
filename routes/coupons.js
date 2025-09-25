@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Coupon = require('../models/Coupon');
 const Order = require('../models/Order');
-const auth = require('../middleware/auth');
+const { protect, adminOnly } = require('../middleware/auth');
 const { catchAsync } = require('../utils/errorResponse');
 
 // @desc    Get all valid coupons (public)
@@ -30,7 +30,7 @@ router.get('/', catchAsync(async (req, res) => {
 // @desc    Validate and apply coupon
 // @route   POST /api/coupons/validate
 // @access  Private
-router.post('/validate', auth, catchAsync(async (req, res) => {
+router.post('/validate', protect, catchAsync(async (req, res) => {
   const { code, orderAmount, items = [] } = req.body;
   const userId = req.user.id;
 
@@ -123,7 +123,7 @@ router.get('/:code', catchAsync(async (req, res) => {
 // @desc    Create new coupon (admin)
 // @route   POST /api/coupons/admin
 // @access  Private (Admin)
-router.post('/admin', auth, catchAsync(async (req, res) => {
+router.post('/admin', protect, adminOnly, catchAsync(async (req, res) => {
   const {
     code,
     name,
@@ -196,7 +196,7 @@ router.post('/admin', auth, catchAsync(async (req, res) => {
 // @desc    Get all coupons (admin)
 // @route   GET /api/coupons/admin/all
 // @access  Private (Admin)
-router.get('/admin/all', auth, catchAsync(async (req, res) => {
+router.get('/admin/all', protect, adminOnly, catchAsync(async (req, res) => {
   const { page = 1, limit = 10, status = 'all' } = req.query;
 
   let query = {};
@@ -240,7 +240,7 @@ router.get('/admin/all', auth, catchAsync(async (req, res) => {
 // @desc    Update coupon (admin)
 // @route   PUT /api/coupons/admin/:id
 // @access  Private (Admin)
-router.put('/admin/:id', auth, catchAsync(async (req, res) => {
+router.put('/admin/:id', protect, adminOnly, catchAsync(async (req, res) => {
   const couponId = req.params.id;
   const updateData = req.body;
 
@@ -277,7 +277,7 @@ router.put('/admin/:id', auth, catchAsync(async (req, res) => {
 // @desc    Delete coupon (admin)
 // @route   DELETE /api/coupons/admin/:id
 // @access  Private (Admin)
-router.delete('/admin/:id', auth, catchAsync(async (req, res) => {
+router.delete('/admin/:id', protect, adminOnly, catchAsync(async (req, res) => {
   const couponId = req.params.id;
 
   const coupon = await Coupon.findById(couponId);
@@ -307,7 +307,7 @@ router.delete('/admin/:id', auth, catchAsync(async (req, res) => {
 // @desc    Get coupon usage statistics (admin)
 // @route   GET /api/coupons/admin/stats
 // @access  Private (Admin)
-router.get('/admin/stats', auth, catchAsync(async (req, res) => {
+router.get('/admin/stats', protect, adminOnly, catchAsync(async (req, res) => {
   const stats = await Coupon.aggregate([
     {
       $group: {
@@ -366,7 +366,7 @@ router.get('/admin/stats', auth, catchAsync(async (req, res) => {
 // @desc    Get coupon usage history (admin)
 // @route   GET /api/coupons/admin/:id/usage
 // @access  Private (Admin)
-router.get('/admin/:id/usage', auth, catchAsync(async (req, res) => {
+router.get('/admin/:id/usage', protect, adminOnly, catchAsync(async (req, res) => {
   const couponId = req.params.id;
   const { page = 1, limit = 10 } = req.query;
 
