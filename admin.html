@@ -1,252 +1,109 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Panel - Bookstore</title>
-  <link rel="stylesheet" href="css/admin.css">
-  <!-- Chart.js CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - Bookworld India</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
 </head>
 <body>
-  <div id="admin-login-container" style="display:block;">
-    <form id="admin-login-form">
-      <h2>Admin Login</h2>
-      <input type="email" id="admin-email" placeholder="Email" required />
-      <input type="password" id="admin-password" placeholder="Password" required />
-      <button type="submit">Login</button>
-      <div id="admin-login-error" style="color:red;margin-top:10px;"></div>
-    </form>
-  </div>
-  <div id="admin-panel" style="display:none;">
-    <div class="admin-sidebar">
-      <div class="admin-profile">
-        <h1>Bookstore Admin Panel</h1>
-      </div>
-      <ul class="admin-menu">
-          <li><a href="#dashboard" aria-label="Dashboard">Dashboard</a></li>
-          <li><a href="#books" aria-label="Manage Books">Manage Books</a></li>
-          <li><a href="#users" aria-label="Manage Users">Manage Users</a></li>
-          <li><a href="#orders" aria-label="Manage Orders">Manage Orders</a></li>
-          <li><a href="#analytics" aria-label="Analytics">Analytics</a></li>
-          <li class="settings-menu">
-            <a href="#settings" id="settings-link">Settings</a>
-            <ul class="settings-submenu" style="display:none;">
-              <li><a href="#theme-settings" class="settings-sub-link" aria-label="Theme Settings">Theme</a></li>
-              <li><a href="#font-settings" class="settings-sub-link" aria-label="Font Settings">Font</a></li>
-              <li><a href="#page-management" class="settings-sub-link" aria-label="Page Management">Pages</a></li>
-            </ul>
-          </li>
-      </ul>
-    </div>
-    <main id="admin-main">
-      <!-- Mobile Bottom Navigation -->
-      <nav class="admin-bottom-nav" id="admin-bottom-nav" style="display:none;">
-        <a href="#dashboard" id="nav-dashboard" aria-label="Dashboard"><span class="fa fa-home"></span><br>Home</a>
-        <a href="#analytics" id="nav-analytics" aria-label="Analytics"><span class="fa fa-chart-bar"></span><br>Analytics</a>
-        <a href="#orders" id="nav-orders" aria-label="Orders"><span class="fa fa-shopping-cart"></span><br>Orders</a>
-        <a href="#settings" id="nav-settings" aria-label="Settings"><span class="fa fa-cog"></span><br>Settings</a>
-      </nav>
-  <section id="dashboard" class="admin-section-hidden" style="display:none;">
-        <h2>Dashboard</h2>
-        <div class="dashboard-cards">
-          <div class="dashboard-card" id="stat-users">
-            <div class="dashboard-card-icon">👤</div>
-            <div class="dashboard-card-label">Users</div>
-            <div class="dashboard-card-value">0</div>
-          </div>
-          <div class="dashboard-card" id="stat-books">
-            <div class="dashboard-card-icon">📚</div>
-            <div class="dashboard-card-label">Books</div>
-            <div class="dashboard-card-value">0</div>
-          </div>
-          <div class="dashboard-card" id="stat-orders">
-            <div class="dashboard-card-icon">🛒</div>
-            <div class="dashboard-card-label">Orders</div>
-            <div class="dashboard-card-value">0</div>
-          </div>
-          <div class="dashboard-card" id="stat-revenue">
-            <div class="dashboard-card-icon">💰</div>
-            <div class="dashboard-card-label">Revenue</div>
-            <div class="dashboard-card-value">0</div>
-          </div>
+
+    <!-- Header & Navbar -->
+    <header class="header-main">
+        <nav class="navbar navbar-expand-lg">
+            <div class="container">
+                <a class="navbar-brand" href="/">
+                    <i class="fas fa-book-open"></i> Bookworld India
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav mx-auto">
+                        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/shop">Shop</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/blog">Blog</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="/about">About</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
+                    </ul>
+                    <div class="navbar-icons">
+                        <a href="#" class="search-icon"><i class="fas fa-search"></i></a>
+                        <a href="/wishlist" class="position-relative">
+                            <i class="fas fa-heart"></i>
+                            <span class="badge bg-danger icon-badge" id="wishlist-count">0</span>
+                        </a>
+                        <a href="/cart" class="position-relative">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="badge bg-danger icon-badge" id="cart-count">0</span>
+                        </a>
+                        <a href="/profile"><i class="fas fa-user-circle"></i></a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <!-- Search Bar (hidden by default) -->
+        <div class="search-bar-container container" style="display: none;">
+            <div class="input-group my-2">
+                <input type="text" id="search-input" class="form-control" placeholder="Search for books...">
+                <button class="btn btn-primary" id="search-button">Search</button>
+            </div>
         </div>
-        <div id="audit-log-section" style="margin-top:32px;">
-          <h3>Recent Admin Actions</h3>
-          <ul id="audit-log-list" style="list-style:none;padding:0;margin:0;background:#fff;border-radius:8px;border:1px solid #eee;"></ul>
+    </header>
+
+    <main class="container py-5">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <h1 class="text-center mb-4">About Bookworld India</h1>
+                <p class="lead">Welcome to Bookworld India, your number one source for all things books. We're dedicated to giving you the very best of literature, with a focus on dependability, customer service, and uniqueness.</p>
+                <p>Founded in 2023, Bookworld India has come a long way from its beginnings. When we first started out, our passion for books drove us to do intense research, and gave us the impetus to turn hard work and inspiration into to a booming online store. We now serve customers all over India, and are thrilled to be a part of the fair trade wing of the publishing industry.</p>
+                <p>We hope you enjoy our products as much as we enjoy offering them to you. If you have any questions or comments, please don't hesitate to contact us.</p>
+                <h3 class="mt-5 text-center">Our Mission</h3>
+                <p>To make reading accessible and affordable for everyone, fostering a community of book lovers and lifelong learners.</p>
+            </div>
         </div>
-      </section>
-  <section id="books" class="admin-section-hidden" style="display:none;">
-        <h2>Manage Books</h2>
-        <form id="excel-upload-form" enctype="multipart/form-data" class="bulk-import-section">
-          <label for="excel-file">Bulk Import/Update (Excel):</label>
-          <input type="file" id="excel-file" class="custom-file-input" accept=".xlsx,.xls" required />
-          <label for="excel-file" class="custom-file-label">Choose File</label>
-          <span class="file-chosen" id="file-chosen">No file chosen</span>
-          <button type="submit">Upload</button>
-          <span id="excel-upload-status" style="margin-left:10px;"></span>
-        </form>
-        <div id="books-list"></div>
-      </section>
-  <section id="users" class="admin-section-hidden" style="display:none;">
-        <h2>Manage Users</h2>
-        <div style="margin-bottom:12px;">
-          <input type="text" id="user-search" placeholder="Search users by name or email" style="width:60%;padding:6px;">
-        </div>
-        <div id="users-list"></div>
-        <div id="users-pagination" style="margin-top:10px;"></div>
-      </section>
-  <section id="orders" class="admin-section-hidden" style="display:none;">
-        <h2>Manage Orders</h2>
-        <div style="margin-bottom:12px;">
-          <input type="text" id="order-search" placeholder="Search orders by user, status, or ID" style="width:60%;padding:6px;">
-        </div>
-        <div id="orders-list"></div>
-        <div id="orders-pagination" style="margin-top:10px;"></div>
-      </section>
-  <section id="analytics" class="admin-section-hidden" style="display:none;">
-        <h2 style="color:var(--primary-color);margin-bottom:24px;">Analytics</h2>
-        <div class="analytics-summary-cards">
-          <div class="analytics-card" id="analytics-revenue">
-            <div class="analytics-card-label">Total Revenue</div>
-            <div class="analytics-card-value" id="analytics-revenue-value">₹0</div>
-          </div>
-          <div class="analytics-card" id="analytics-orders-today">
-            <div class="analytics-card-label">Orders Today</div>
-            <div class="analytics-card-value" id="analytics-orders-today-value">0</div>
-          </div>
-          <div class="analytics-card" id="analytics-orders-week">
-            <div class="analytics-card-label">Orders This Week</div>
-            <div class="analytics-card-value" id="analytics-orders-week-value">0</div>
-          </div>
-          <div class="analytics-card" id="analytics-orders-month">
-            <div class="analytics-card-label">Orders This Month</div>
-            <div class="analytics-card-value" id="analytics-orders-month-value">0</div>
-          </div>
-        </div>
-        <div class="analytics-charts" style="margin-top:32px;">
-          <div class="analytics-chart-block">
-            <h3>User Growth (Daily)</h3>
-            <canvas id="userGrowthChart" height="120"></canvas>
-          </div>
-          <div class="analytics-chart-block">
-            <h3>Order Status Breakdown</h3>
-            <canvas id="orderStatusChart" height="120"></canvas>
-          </div>
-          <div class="analytics-chart-block">
-            <h3>Revenue Trend (Last 30 Days)</h3>
-            <canvas id="revenueTrendChart" height="120"></canvas>
-          </div>
-          <div class="analytics-chart-block">
-            <h3>Geographic Distribution (by City)</h3>
-            <canvas id="geoDistributionChart" height="120"></canvas>
-          </div>
-        </div>
-        <div class="analytics-top-books" style="margin-top:32px;">
-          <h3>Top-Selling Books</h3>
-          <ul id="analytics-top-books-list"></ul>
-        </div>
-      </section>
-  <section id="settings" class="admin-section-hidden" style="display:none;">
-        <h2>Settings</h2>
-        <p>Please select a settings category from the sidebar menu:</p>
-        <ul>
-          <li><strong>Theme:</strong> Customize colors and appearance</li>
-          <li><strong>Font:</strong> Change font settings</li>
-          <li><strong>Pages:</strong> Manage website pages</li>
-        </ul>
-      </section>
-  <section id="theme-settings" class="admin-section-hidden" style="display:none;">
-        <h2>Theme Customization</h2>
-        <div id="settings-form">
-          <form id="theme-settings-form" style="max-width:400px;margin-top:20px;">
-            <label for="primaryColor">Primary Color:</label>
-              <input type="color" id="primaryColor" name="primaryColor" value="#e94e77" style="margin-bottom:10px;width:100%;border:2px solid #333;">
-            <br>
-            <label for="accentColor">Accent Color:</label>
-              <input type="color" id="accentColor" name="accentColor" value="#ff6b9d" style="margin-bottom:10px;width:100%;border:2px solid #333;">
-            <br>
-            <label for="bgColor">Background Color:</label>
-              <input type="color" id="bgColor" name="bgColor" value="#ffffff" style="margin-bottom:10px;width:100%;border:2px solid #333;">
-            <br>
-            <label for="cardColor">Card Color:</label>
-              <input type="color" id="cardColor" name="cardColor" value="#fff" style="margin-bottom:10px;width:100%;border:2px solid #333;">
-            <br>
-            <button type="submit" style="margin-top:10px;background:#e94e77;color:#fff;padding:8px 18px;border:none;border-radius:8px;font-family:'Poppins',sans-serif;cursor:pointer;">Save Theme</button>
-            <button type="button" id="default-theme-btn" style="margin-top:10px;margin-left:10px;background:#aaa;color:#fff;padding:8px 18px;border:none;border-radius:8px;font-family:'Poppins',sans-serif;cursor:pointer;">Default</button>
-            <button type="button" id="undo-theme-btn" style="margin-top:10px;margin-left:10px;background:#888;color:#fff;padding:8px 18px;border:none;border-radius:8px;font-family:'Poppins',sans-serif;cursor:pointer;">Undo</button>
-          </form>
-          <div id="theme-save-status" style="margin-top:10px;color:#e94e77;"></div>
-        </div>
-      </section>
-  <section id="font-settings" class="admin-section-hidden" style="display:none;">
-        <h2>Font Customization</h2>
-        <form id="font-customization-form" style="max-width:400px;margin-top:20px;">
-          <label for="headerFont">Header Font:</label>
-          <select id="headerFont" name="headerFont" style="margin-bottom:10px;width:100%;">
-            <option value="Poppins">Poppins</option>
-            <option value="Roboto">Roboto</option>
-            <option value="Montserrat">Montserrat</option>
-            <option value="Lato">Lato</option>
-            <option value="Open Sans">Open Sans</option>
-            <option value="Merriweather">Merriweather</option>
-            <option value="Oswald">Oswald</option>
-            <option value="Nunito">Nunito</option>
-          </select>
-          <br>
-          <label for="contentFont">Content Font:</label>
-          <select id="contentFont" name="contentFont" style="margin-bottom:10px;width:100%;">
-            <option value="Poppins">Poppins</option>
-            <option value="Roboto">Roboto</option>
-            <option value="Montserrat">Montserrat</option>
-            <option value="Lato">Lato</option>
-            <option value="Open Sans">Open Sans</option>
-            <option value="Merriweather">Merriweather</option>
-            <option value="Oswald">Oswald</option>
-            <option value="Nunito">Nunito</option>
-          </select>
-          <br>
-          <label for="sidebarFont">Sidebar Font:</label>
-          <select id="sidebarFont" name="sidebarFont" style="margin-bottom:10px;width:100%;">
-            <option value="Poppins">Poppins</option>
-            <option value="Roboto">Roboto</option>
-            <option value="Montserrat">Montserrat</option>
-            <option value="Lato">Lato</option>
-            <option value="Open Sans">Open Sans</option>
-            <option value="Merriweather">Merriweather</option>
-            <option value="Oswald">Oswald</option>
-            <option value="Nunito">Nunito</option>
-          </select>
-          <br>
-          <button type="submit" style="margin-top:10px;background:#e94e77;color:#fff;padding:8px 18px;border:none;border-radius:8px;font-family:'Poppins',sans-serif;cursor:pointer;">Save Fonts</button>
-          <button type="button" id="default-font-btn" style="margin-top:10px;margin-left:10px;background:#aaa;color:#fff;padding:8px 18px;border:none;border-radius:8px;font-family:'Poppins',sans-serif;cursor:pointer;">Default</button>
-          <button type="button" id="undo-font-btn" style="margin-top:10px;margin-left:10px;background:#888;color:#fff;padding:8px 18px;border:none;border-radius:8px;font-family:'Poppins',sans-serif;cursor:pointer;">Undo</button>
-        </form>
-        <div id="font-save-status" style="margin-top:10px;color:#e94e77;"></div>
-        <div id="font-preview" style="margin-top:20px;padding:16px;background:#f9f9f9;border-radius:8px;">
-          <h3 style="margin-bottom:8px;">Font Preview</h3>
-          <div>
-            <span id="preview-header" style="font-size:1.5em;display:block;margin-bottom:8px;">Header Font Example</span>
-            <span id="preview-content" style="font-size:1em;display:block;margin-bottom:8px;">Content Font Example</span>
-            <span id="preview-sidebar" style="font-size:1em;display:block;">Sidebar Font Example</span>
-          </div>
-        </div>
-      </section>
-  <section id="page-management" class="admin-section-hidden" style="display:none;">
-        <h2>Page Management</h2>
-        <div id="page-management-ui" style="max-width:500px;margin-top:20px;">
-          <div style="margin-bottom:16px;">
-            <input type="text" id="new-page-name" placeholder="New page name" style="width:60%;padding:6px;">
-            <button id="add-page-btn" style="background:#e94e77;color:#fff;padding:6px 16px;border:none;border-radius:8px;font-family:'Poppins',sans-serif;cursor:pointer;">Add Page</button>
-          </div>
-          <ul id="pages-list" style="list-style:none;padding:0;margin:0;border:1px solid #eee;border-radius:8px;background:#fff;">
-            <!-- Pages will be listed here -->
-          </ul>
-        </div>
-        <div id="page-management-status" style="margin-top:10px;color:#e94e77;"></div>
-      </section>
     </main>
-  </div>
-  <script src="js/admin.js"></script>
+
+    <!-- Footer -->
+    <footer class="footer-main bg-dark text-white pt-5 pb-2 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-2 mb-3">
+                    <h5 class="text-white">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/about">About Us</a></li>
+                        <li><a href="/contact">Contact</a></li>
+                        <li><a href="/shop">Shop</a></li>
+                        <li><a href="/faq">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <h5 class="text-white">Contact Us</h5>
+                    <p>Email: support@bookworldindia.com<br>Phone: +91 12345 67890</p>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <h5 class="text-white">Follow Us</h5>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="text-center">
+                <p>&copy; 2023 Bookworld India. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button id="back-to-top-btn" title="Go to top"><i class="fas fa-arrow-up"></i></button>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/main.js"></script>
 </body>
-</html>
+</html> 
