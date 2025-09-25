@@ -289,6 +289,43 @@ body {
 	z-index: 100;
 	box-shadow: 2px 0 12px rgba(233,78,119,0.08);
 }
+	.admin-sidebar {
+		width: 60px;
+		min-width: 60px;
+		padding-top: 0.5em;
+		align-items: center;
+	}
+	.admin-menu, .admin-profile {
+		font-size: 0.9em;
+		padding: 0;
+		text-align: center;
+	}
+	.admin-menu li, .admin-profile span {
+		padding: 0.5em 0.2em;
+	}
+	.admin-sidebar {
+		position: static;
+		width: 100vw;
+		height: auto;
+		flex-direction: row;
+		justify-content: space-between;
+		box-shadow: none;
+		padding: 0.5em 0.2em;
+	}
+	.admin-menu {
+		display: flex;
+		flex-direction: row;
+		width: 100vw;
+		justify-content: space-around;
+		font-size: 1em;
+	}
+	.admin-menu li {
+		padding: 0.5em 0.2em;
+	}
+	.admin-profile {
+		display: none;
+	}
+
 @media (max-width: 900px) {
 	.admin-sidebar {
 		width: 60px;
@@ -303,6 +340,17 @@ body {
 	}
 	.admin-menu li, .admin-profile span {
 		padding: 0.5em 0.2em;
+	}
+	#admin-main {
+		margin-left: 60px;
+		padding: 1em;
+	}
+	section {
+		margin-left: 0;
+		padding: 1em 0.5em;
+	}
+	.dashboard-cards {
+		gap: 1em;
 	}
 }
 
@@ -328,6 +376,41 @@ body {
 	}
 	.admin-profile {
 		display: none;
+	}
+	#admin-main {
+		margin-left: 0;
+		padding: 0.5em;
+	}
+	section {
+		margin-left: 0;
+		padding: 0.5em 0.2em;
+		border-radius: 10px;
+	}
+	h2 {
+		font-size: 1.2em;
+	}
+	.dashboard-cards {
+		flex-direction: column;
+		gap: 0.7em;
+	}
+	.dashboard-card {
+		min-width: unset;
+		width: 100%;
+		padding: 1em;
+	}
+	.modern-table th, .modern-table td, .admin-table th, .admin-table td {
+		padding: 0.5em 0.3em;
+		font-size: 0.95em;
+	}
+}
+
+/* Extra: Make tables scrollable on small screens */
+@media (max-width: 600px) {
+	.table-responsive, .modern-table, .admin-table {
+		display: block;
+		width: 100%;
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
 	}
 }
 .admin-profile {
