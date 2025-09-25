@@ -63,10 +63,10 @@ router.get('/:id', protect, async (req, res) => {
     }
 });
 
-// @route   POST /api/orders/create
+// @route   POST /api/orders
 // @desc    Create new order from cart
 // @access  Private
-router.post('/create', protect, async (req, res) => {
+router.post('/', protect, async (req, res) => {
     console.log('ORDER BODY:', req.body);
     try {
         const {
@@ -103,7 +103,8 @@ router.post('/create', protect, async (req, res) => {
         await order.save();
         await order.populate('items.book');
 
-        // Track affiliate if present
+        // Track affiliate if present (supports body, query, or header)
+        const affiliateCode = req.body.affiliateCode || req.query.affiliate || req.headers['x-affiliate-code'];
         if (affiliateCode) {
             const User = require('../models/User');
             const affiliate = await User.findOne({ 'affiliate.code': affiliateCode });
