@@ -1,3 +1,114 @@
+/* Modern mobile dashboard redesign */
+@media (max-width: 600px) {
+	/* Bottom navigation bar */
+	.admin-bottom-nav {
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		width: 100vw;
+		background: #fff;
+		box-shadow: 0 -2px 12px rgba(0,0,0,0.08);
+		display: flex;
+		justify-content: space-around;
+		align-items: center;
+		z-index: 999;
+		height: 56px;
+	}
+	.admin-bottom-nav a {
+		flex: 1;
+		text-align: center;
+		color: #e94e77;
+		font-size: 1.2em;
+		padding: 8px 0;
+		text-decoration: none;
+		transition: color 0.2s;
+	}
+	.admin-bottom-nav a.active {
+		color: #22223b;
+		font-weight: 600;
+	}
+	/* Dashboard cards grid */
+	.dashboard-cards {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 0.7em;
+		margin-bottom: 1em;
+	}
+	.dashboard-card {
+		min-width: unset;
+		width: 100%;
+		padding: 1em 0.5em;
+		border-radius: 12px;
+		box-shadow: 0 2px 8px rgba(233,78,119,0.10);
+		margin-bottom: 0;
+	}
+	.dashboard-card-icon {
+		font-size: 2em;
+		margin-bottom: 0.2em;
+	}
+	.dashboard-card-label {
+		font-size: 1em;
+		margin-bottom: 0.1em;
+	}
+	.dashboard-card-value {
+		font-size: 1.2em;
+	}
+	/* Section cards */
+	section {
+		padding: 0.7em 0.2em;
+		border-radius: 10px;
+		margin-bottom: 1em;
+		box-shadow: 0 2px 8px rgba(233,78,119,0.08);
+	}
+	/* Analytics charts and cards */
+	.analytics-summary-cards {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 0.7em;
+		margin-bottom: 1em;
+	}
+	.analytics-card {
+		min-width: unset;
+		width: 100%;
+		padding: 0.7em 0.5em;
+		border-radius: 10px;
+		margin-bottom: 0;
+	}
+	.analytics-charts {
+		grid-template-columns: 1fr;
+		gap: 0.7em;
+	}
+	.analytics-chart-block canvas {
+		max-width: 100%;
+		max-height: 120px;
+	}
+	/* Orders list */
+	.orders-list {
+		background: #fff;
+		border-radius: 10px;
+		box-shadow: 0 2px 8px rgba(233,78,119,0.08);
+		padding: 0.7em 0.5em;
+		margin-bottom: 1em;
+	}
+	.order-list-item {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 0.5em 0;
+		border-bottom: 1px solid #eee;
+	}
+	.order-list-item:last-child {
+		border-bottom: none;
+	}
+	.order-user {
+		font-weight: 600;
+		color: #22223b;
+	}
+	.order-value {
+		color: #e94e77;
+		font-weight: 500;
+	}
+}
 /* Custom file input styles for bulk import */
 .bulk-import-section {
 	position: relative;
