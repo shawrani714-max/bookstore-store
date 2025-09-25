@@ -19,7 +19,11 @@
     </form>
   </div>
   <div id="admin-panel" style="display:none;">
-    <div class="admin-sidebar">
+    <!-- Hamburger menu for mobile -->
+    <button id="sidebar-toggle" class="sidebar-toggle" aria-label="Open sidebar" style="display:none;">
+      <span class="hamburger-icon"></span>
+    </button>
+    <div class="admin-sidebar" id="admin-sidebar">
       <div class="admin-profile">
         <h1>Bookstore Admin Panel</h1>
       </div>
@@ -241,5 +245,24 @@
     </main>
   </div>
   <script src="js/admin.js"></script>
+  <script>
+    // Hamburger menu toggle for mobile
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    const adminSidebar = document.getElementById('admin-sidebar');
+    function updateSidebarVisibility() {
+      if (window.innerWidth <= 600) {
+        sidebarToggle.style.display = 'block';
+        adminSidebar.classList.add('sidebar-hidden');
+      } else {
+        sidebarToggle.style.display = 'none';
+        adminSidebar.classList.remove('sidebar-hidden');
+      }
+    }
+    window.addEventListener('resize', updateSidebarVisibility);
+    window.addEventListener('DOMContentLoaded', updateSidebarVisibility);
+    sidebarToggle.addEventListener('click', function() {
+      adminSidebar.classList.toggle('sidebar-hidden');
+    });
+  </script>
 </body>
 </html>
