@@ -313,6 +313,25 @@ document.addEventListener('DOMContentLoaded', () => {
     // Observe all fade-in elements
     document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 
+    // --- Theme settings loader for website ---
+    async function loadThemeSettingsForSite() {
+        try {
+            const res = await fetch('/api/admin/theme');
+            if (!res.ok) throw new Error('Failed to load theme');
+            const settings = await res.json();
+            const root = document.documentElement;
+            root.style.setProperty('--primary-color', settings.primaryColor);
+            root.style.setProperty('--accent-color', settings.accentColor);
+            root.style.setProperty('--bg-color', settings.bgColor);
+            root.style.setProperty('--card-color', settings.cardColor);
+        } catch (e) {
+            // fallback: do nothing, use default CSS
+        }
+    }
+
+    // Load theme settings on every page load
+    loadThemeSettingsForSite();
+
     // --- Initializations ---
     renderFeaturedBooks();
     updateCartCount();
@@ -345,4 +364,4 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 1000);
         }
     }
-}); 
+});
