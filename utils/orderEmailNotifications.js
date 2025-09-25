@@ -1,4 +1,4 @@
-const emailService = require('./emailService');
+const { sendMail } = require('./emailService');
 const User = require('../models/User');
 
 async function notifyOrderItemAction(order, item, action) {
@@ -21,7 +21,7 @@ async function notifyOrderItemAction(order, item, action) {
     default:
       return;
   }
-  await emailService.sendMail({
+  await sendMail({
     to: user.email,
     subject,
     html
