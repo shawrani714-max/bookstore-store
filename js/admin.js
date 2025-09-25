@@ -1,9 +1,984 @@
 document.addEventListener('DOMContentLoaded', function() {
-  // Example: Load dashboard stats
-  fetch('/api/admin/stats')
-    .then(res => res.json())
-    .then(data => {
-      document.getElementById('stats').innerText = JSON.stringify(data, null, 2);
+  // Custom file input logic for bulk import (declare first!)
+  const excelFileInput = document.getElementById('excel-file');
+  const fileChosenSpan = document.getElementById('file-chosen');
+  // Bulk import Excel upload AJAX handler
+  const excelUploadForm = document.getElementById('excel-upload-form');
+  const excelUploadStatus = document.getElementById('excel-upload-status');
+  if (excelFileInput && fileChosenSpan) {
+    excelFileInput.addEventListener('change', function() {
+      if (this.files && this.files.length > 0) {
+        fileChosenSpan.textContent = this.files[0].name;
+      } else {
+        fileChosenSpan.textContent = 'No file chosen';
+      }
     });
-  // TODO: Add logic for books, users, orders, analytics, settings
+  }
+  if (excelUploadForm && excelFileInput) {
+    excelUploadForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      if (!excelFileInput.files || !excelFileInput.files[0]) {
+        excelUploadStatus.textContent = 'Please choose a file.';
+        return;
+      }
+      excelUploadStatus.textContent = 'Uploading...';
+      const formData = new FormData();
+      formData.append('excel', excelFileInput.files[0]); // <-- field name must match backend
+      try {
+        const token = localStorage.getItem('adminToken');
+        const res = await fetch('/api/admin/books/import', {
+          method: 'POST',
+          headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+          body: formData
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          excelUploadStatus.textContent = 'Upload successful!';
+          // Optionally reload books list
+          if (typeof loadBooks === 'function') loadBooks();
+        } else {
+          excelUploadStatus.textContent = data.message || 'Upload failed.';
+        }
+      } catch (err) {
+        excelUploadStatus.textContent = 'Error uploading file.';
+      }
+      setTimeout(() => { excelUploadStatus.textContent = ''; }, 3000);
+    });
+  }
+  // Always declare themeForm at the very top
+  const themeForm = document.getElementById('theme-settings-form');
+  // Declare themeForm at the top so it's available everywhere
+  // Token and authFetch helpers (must be at top)
+  const setToken = (t) => localStorage.setItem('adminToken', t);
+  const clearToken = () => localStorage.removeItem('adminToken');
+  const authFetch = (url, options = {}) => {
+    const token = getToken();
+    const headers = Object.assign(
+      { 'Content-Type': 'application/json' },
+      options.headers || {}
+    );
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    return fetch(url, Object.assign({}, options, { headers }));
+  };
+  // Declare themeForm at the top so it's available everywhere
+  // Improved: Only show login form if not authenticated
+  var panelContainer = document.getElementById('admin-panel');
+  var loginContainer = document.getElementById('admin-login-container');
+  var sections = document.querySelectorAll('#admin-main > section');
+  const getToken = () => localStorage.getItem('adminToken');
+  function showOnlyLogin() {
+    // Hide admin panel and all sections
+    if (panelContainer) panelContainer.style.display = 'none';
+    if (loginContainer) loginContainer.style.display = 'block';
+    if (sections && sections.length) {
+      sections.forEach(sec => { sec.style.display = 'none'; });
+    }
+  }
+  function showOnlyPanel() {
+    // Show admin panel, hide login
+    if (loginContainer) loginContainer.style.display = 'none';
+    if (panelContainer) panelContainer.style.display = 'block';
+    // Hide all sections, then show dashboard only
+    const allSections = document.querySelectorAll('#admin-main > section');
+    allSections.forEach(sec => { sec.style.display = 'none'; });
+    var dashboard = document.getElementById('dashboard');
+    if (dashboard) dashboard.style.display = 'block';
+    
+    // Attach sidebar menu event listeners (excluding settings link)
+    const menuLinks = document.querySelectorAll('.admin-menu a:not(#settings-link)');
+    console.log('Setting up navigation for', menuLinks.length, 'menu links');
+    if (menuLinks.length) {
+      menuLinks.forEach(link => {
+        console.log('Setting up click handler for:', link.getAttribute('href'));
+        link.onclick = function(e) {
+          e.preventDefault();
+          const target = this.getAttribute('href').replace('#', '');
+          console.log('Menu link clicked:', target);
+          showSectionWithData(target);
+        };
+      });
+    }
+    
+    // Attach settings submenu event listeners
+    const settingsLink = document.getElementById('settings-link');
+    const settingsSubmenu = document.querySelector('.settings-submenu');
+    const settingsMenu = document.querySelector('.settings-menu');
+    
+    if (settingsMenu && settingsLink && settingsSubmenu) {
+      // Expand/collapse on click
+      settingsLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        console.log('Settings main link clicked');
+        settingsSubmenu.style.display = settingsSubmenu.style.display === 'none' ? 'block' : 'none';
+        // Don't navigate to a section, just expand/collapse the submenu
+      });
+      
+      // Expand on hover
+      settingsMenu.addEventListener('mouseenter', function() {
+        settingsSubmenu.style.display = 'block';
+      });
+      settingsMenu.addEventListener('mouseleave', function() {
+        settingsSubmenu.style.display = 'none';
+      });
+      
+      // Show correct section on sub-link click
+      const subLinks = document.querySelectorAll('.settings-sub-link');
+      console.log('Setting up', subLinks.length, 'settings sub-links');
+      subLinks.forEach(link => {
+        console.log('Setting up sub-link handler for:', link.getAttribute('href'));
+        link.onclick = function(e) {
+          e.preventDefault();
+          const target = this.getAttribute('href').replace('#', '');
+          console.log('Settings sub-link clicked:', target);
+          showSectionWithData(target);
+        };
+      });
+    }
+  }
+  // On page load, always show only login first and do NOT auto-show admin panel if token exists
+  showOnlyLogin();
+  // Remove any auto-login logic. Only show admin panel after successful login event.
+  // Load audit log
+  async function loadAuditLog() {
+    const logList = document.getElementById('audit-log-list');
+    if (!logList) return;
+    logList.innerHTML = '<li>Loading...</li>';
+    try {
+      const res = await authFetch('/api/admin/audit-log');
+      const logs = await res.json();
+      if (Array.isArray(logs) && logs.length) {
+        logList.innerHTML = logs.map(log => `<li style="padding:8px 12px;border-bottom:1px solid #eee;font-size:0.98em;"><b>${log.action}</b> <span style="color:#666;">${log.details}</span> <span style="float:right;color:#aaa;">${new Date(log.timestamp).toLocaleString()}</span></li>`).join('');
+      } else {
+        logList.innerHTML = '<li>No recent admin actions.</li>';
+      }
+    } catch {
+      logList.innerHTML = '<li>Error loading audit log.</li>';
+    }
+  }
+  // Page management logic
+  const pagesListEl = document.getElementById('pages-list');
+  const addPageBtn = document.getElementById('add-page-btn');
+  const newPageNameInput = document.getElementById('new-page-name');
+  const pageStatus = document.getElementById('page-management-status');
+
+  // Example: initial pages (should be loaded from backend)
+  let pages = [];
+  // Load pages from backend
+  async function loadPages() {
+    try {
+      const res = await authFetch('/api/admin/pages');
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        pages = data;
+        renderPages();
+      }
+    } catch (e) {
+      pageStatus.textContent = 'Error loading pages.';
+    }
+  }
+
+  function renderPages() {
+    pagesListEl.innerHTML = '';
+    pages.forEach((page, idx) => {
+      const li = document.createElement('li');
+      li.setAttribute('draggable', 'true');
+      li.style.display = 'flex';
+      li.style.alignItems = 'center';
+      li.style.justifyContent = 'space-between';
+      li.style.padding = '8px 12px';
+      li.style.borderBottom = '1px solid #eee';
+      li.style.background = page.visible ? '#fff' : '#f9f9f9';
+      li.innerHTML = `
+        <span style="flex:1;">
+          <input type="text" value="${page.name}" style="border:none;background:transparent;font-size:1em;width:70%;" onchange="this.blur()">
+        </span>
+        <button class="rename-page-btn" style="background:#ffb6c1;color:#fff;border:none;border-radius:6px;padding:4px 10px;margin-right:6px;cursor:pointer;">Rename</button>
+        <button class="hide-page-btn" style="background:${page.visible ? '#e94e77' : '#aaa'};color:#fff;border:none;border-radius:6px;padding:4px 10px;margin-right:6px;cursor:pointer;">${page.visible ? 'Hide' : 'Show'}</button>
+        <button class="delete-page-btn" style="background:#333;color:#fff;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;">Delete</button>
+        <span class="drag-handle" style="cursor:grab;margin-left:8px;">&#9776;</span>
+      `;
+      // Rename
+      li.querySelector('.rename-page-btn').onclick = async function() {
+        const newName = li.querySelector('input').value.trim();
+        if (newName && newName !== page.name) {
+          try {
+            const res = await authFetch(`/api/admin/pages/${page._id}/rename`, {
+              method: 'PUT',
+              body: JSON.stringify({ name: newName })
+            });
+            const data = await res.json();
+            if (data.success) {
+              pageStatus.textContent = 'Page renamed.';
+              loadPages();
+            } else {
+              pageStatus.textContent = data.message || 'Rename failed.';
+            }
+          } catch {
+            pageStatus.textContent = 'Rename failed.';
+          }
+          setTimeout(() => { pageStatus.textContent = ''; }, 1500);
+        }
+      };
+      // Hide/Show
+      li.querySelector('.hide-page-btn').onclick = async function() {
+        try {
+          const res = await authFetch(`/api/admin/pages/${page._id}/visible`, {
+            method: 'PUT',
+            body: JSON.stringify({ visible: !page.visible })
+          });
+          const data = await res.json();
+          if (data.success) {
+            pageStatus.textContent = data.page.visible ? 'Page shown.' : 'Page hidden.';
+            loadPages();
+          } else {
+            pageStatus.textContent = data.message || 'Update failed.';
+          }
+        } catch {
+          pageStatus.textContent = 'Update failed.';
+        }
+        setTimeout(() => { pageStatus.textContent = ''; }, 1500);
+      };
+      // Delete
+      li.querySelector('.delete-page-btn').onclick = async function() {
+        if (confirm('Delete this page?')) {
+          try {
+            const res = await authFetch(`/api/admin/pages/${page._id}`, { method: 'DELETE' });
+            const data = await res.json();
+            if (data.success) {
+              pageStatus.textContent = 'Page deleted.';
+              loadPages();
+            } else {
+              pageStatus.textContent = data.message || 'Delete failed.';
+            }
+          } catch {
+            pageStatus.textContent = 'Delete failed.';
+          }
+          setTimeout(() => { pageStatus.textContent = ''; }, 1500);
+        }
+      };
+      // Drag-and-drop
+      li.ondragstart = function(e) {
+        e.dataTransfer.setData('text/plain', idx);
+        li.style.opacity = '0.5';
+      };
+      li.ondragend = function() {
+        li.style.opacity = '1';
+      };
+      li.ondragover = function(e) {
+        e.preventDefault();
+        li.style.background = '#ffe4ec';
+      };
+      li.ondragleave = function() {
+        li.style.background = page.visible ? '#fff' : '#f9f9f9';
+      };
+      li.ondrop = async function(e) {
+        e.preventDefault();
+        const fromIdx = Number(e.dataTransfer.getData('text/plain'));
+        const toIdx = idx;
+        if (fromIdx !== toIdx) {
+          const moved = pages.splice(fromIdx, 1)[0];
+          pages.splice(toIdx, 0, moved);
+          // Update order in backend
+          try {
+            const orderArr = pages.map((p, i) => ({ id: p._id, order: i }));
+            await authFetch('/api/admin/pages/reorder', {
+              method: 'PUT',
+              body: JSON.stringify({ order: orderArr })
+            });
+            loadPages();
+          } catch {
+            pageStatus.textContent = 'Reorder failed.';
+            setTimeout(() => { pageStatus.textContent = ''; }, 1500);
+          }
+        }
+      };
+      pagesListEl.appendChild(li);
+    });
+  }
+
+  if (addPageBtn && newPageNameInput && pagesListEl) {
+    addPageBtn.onclick = async function() {
+      const name = newPageNameInput.value.trim();
+      if (!name) {
+        pageStatus.textContent = 'Page name required.';
+        newPageNameInput.classList.add('input-error');
+        setTimeout(() => { newPageNameInput.classList.remove('input-error'); }, 1500);
+        return;
+      }
+      if (!/^[a-zA-Z0-9 _-]{2,32}$/.test(name)) {
+        pageStatus.textContent = 'Invalid page name. Use 2-32 letters, numbers, spaces, - or _.';
+        newPageNameInput.classList.add('input-error');
+        setTimeout(() => { newPageNameInput.classList.remove('input-error'); }, 2000);
+        return;
+      }
+      if (pages.some(p => p.name.toLowerCase() === name.toLowerCase())) {
+        pageStatus.textContent = 'Page already exists.';
+        newPageNameInput.classList.add('input-error');
+        setTimeout(() => { newPageNameInput.classList.remove('input-error'); }, 1500);
+        return;
+      }
+      try {
+        const res = await authFetch('/api/admin/pages', {
+          method: 'POST',
+          body: JSON.stringify({ name })
+        });
+        const data = await res.json();
+        if (data.success) {
+          newPageNameInput.value = '';
+          pageStatus.textContent = 'Page added.';
+          loadPages();
+        } else {
+          pageStatus.textContent = data.message || 'Add failed.';
+        }
+      } catch {
+        pageStatus.textContent = 'Add failed.';
+      }
+      setTimeout(() => { pageStatus.textContent = ''; }, 1500);
+    };
+    loadPages();
+  }
+  // Theme preset logic
+  const themePresets = {
+    light: {
+      primaryColor: '#e94e77',
+      accentColor: '#ff6b9d',
+      bgColor: '#ffffff',
+      cardColor: '#fff'
+    },
+    dark: {
+      primaryColor: '#22223b',
+      accentColor: '#4a4e69',
+      bgColor: '#232323',
+      cardColor: '#2c2c2c'
+    },
+    pastel: {
+      primaryColor: '#eec9d2',
+      accentColor: '#ffe4ec',
+      bgColor: '#f9f7f7',
+      cardColor: '#fff0f6'
+    }
+  };
+  const presetBtns = document.querySelectorAll('.theme-preset-btn');
+  if (presetBtns.length && themeForm) {
+    presetBtns.forEach(btn => {
+      btn.addEventListener('click', function() {
+        const preset = btn.getAttribute('data-preset');
+        const colors = themePresets[preset];
+        if (colors) {
+          themeForm.primaryColor.value = colors.primaryColor;
+          themeForm.accentColor.value = colors.accentColor;
+          themeForm.bgColor.value = colors.bgColor;
+          themeForm.cardColor.value = colors.cardColor;
+        }
+      });
+    });
+  }
+  // Font customization logic
+  const fontForm = document.getElementById('font-customization-form');
+  const fontSaveStatus = document.getElementById('font-save-status');
+
+  function applyFontSettings(fontSettings) {
+    if (!fontSettings) return;
+    document.documentElement.style.setProperty('--header-font', fontSettings.headerFont || 'Poppins');
+    document.documentElement.style.setProperty('--content-font', fontSettings.contentFont || 'Poppins');
+    document.documentElement.style.setProperty('--sidebar-font', fontSettings.sidebarFont || 'Poppins');
+  }
+
+  async function saveFontSettingsToDB(fontSettings) {
+    try {
+      const res = await authFetch('/api/admin/theme', {
+        method: 'POST',
+        body: JSON.stringify({ fontSettings })
+      });
+      if (!res.ok) throw new Error('Failed to save font');
+      fontSaveStatus.textContent = 'Font settings saved!';
+      applyFontSettings(fontSettings);
+      setTimeout(() => { fontSaveStatus.textContent = ''; }, 2000);
+    } catch (e) {
+      fontSaveStatus.textContent = 'Error saving font settings.';
+    }
+  }
+
+  if (fontForm) {
+    fontForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const statusEl = document.getElementById('font-save-status');
+      const headerFont = fontForm.headerFont.value;
+      const contentFont = fontForm.contentFont.value;
+      const sidebarFont = fontForm.sidebarFont.value;
+      if (!headerFont || !contentFont || !sidebarFont) {
+        statusEl.textContent = 'All font selections are required.';
+        return;
+      }
+      const fontSettings = { headerFont, contentFont, sidebarFont };
+      saveFontSettingsToDB(fontSettings);
+  });
+  // Live font preview
+    const previewHeader = document.getElementById('preview-header');
+    const previewContent = document.getElementById('preview-content');
+    const previewSidebar = document.getElementById('preview-sidebar');
+    function updateFontPreview() {
+      previewHeader.style.fontFamily = fontForm.headerFont.value;
+      previewContent.style.fontFamily = fontForm.contentFont.value;
+      previewSidebar.style.fontFamily = fontForm.sidebarFont.value;
+    }
+    fontForm.headerFont.addEventListener('change', updateFontPreview);
+    fontForm.contentFont.addEventListener('change', updateFontPreview);
+    fontForm.sidebarFont.addEventListener('change', updateFontPreview);
+    updateFontPreview();
+  }
+
+  // Load font settings from backend on page load
+  async function loadFontSettings() {
+    try {
+      const res = await authFetch('/api/admin/theme');
+      if (!res.ok) throw new Error('Failed to load font settings');
+      const data = await res.json();
+      if (data && data.fontSettings) {
+        applyFontSettings(data.fontSettings);
+        // Set form values
+        if (fontForm) {
+          fontForm.headerFont.value = data.fontSettings.headerFont || 'Poppins';
+          fontForm.contentFont.value = data.fontSettings.contentFont || 'Poppins';
+          fontForm.sidebarFont.value = data.fontSettings.sidebarFont || 'Poppins';
+        }
+      }
+    } catch (e) {
+      // fallback: do nothing
+    }
+  }
+  loadFontSettings();
+  // Theme customization logic
+  function applyThemeSettings(settings) {
+    const root = document.documentElement;
+    root.style.setProperty('--primary-color', settings.primaryColor);
+    root.style.setProperty('--accent-color', settings.accentColor);
+    root.style.setProperty('--bg-color', settings.bgColor);
+    root.style.setProperty('--card-color', settings.cardColor);
+  }
+
+  function loadThemeSettings() {
+    const saved = localStorage.getItem('adminThemeSettings');
+    if (saved) {
+      const settings = JSON.parse(saved);
+      applyThemeSettings(settings);
+      // Set form values
+      const form = document.getElementById('theme-settings-form');
+      if (form) {
+        form.primaryColor.value = settings.primaryColor;
+        form.accentColor.value = settings.accentColor;
+        form.bgColor.value = settings.bgColor;
+        form.cardColor.value = settings.cardColor;
+      }
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', loadThemeSettings);
+
+  // Theme customization logic (DB sync)
+  async function fetchThemeSettingsFromDB() {
+    try {
+      const res = await fetch('/api/admin/theme');
+      if (!res.ok) throw new Error('Failed to load theme');
+      const settings = await res.json();
+      applyThemeSettings(settings);
+      // Set form values
+      const form = document.getElementById('theme-settings-form');
+      if (form) {
+        form.primaryColor.value = settings.primaryColor;
+        form.accentColor.value = settings.accentColor;
+        form.bgColor.value = settings.bgColor;
+        form.cardColor.value = settings.cardColor;
+      }
+    } catch (e) {
+      // fallback to localStorage or defaults
+      loadThemeSettings();
+    }
+  }
+
+  async function saveThemeSettingsToDB(settings) {
+    try {
+      const res = await authFetch('/api/admin/theme', {
+        method: 'POST',
+        body: JSON.stringify(settings)
+      });
+      if (!res.ok) throw new Error('Failed to save theme');
+      document.getElementById('theme-save-status').textContent = 'Theme saved!';
+    } catch (e) {
+      document.getElementById('theme-save-status').textContent = 'Error saving theme.';
+    }
+  }
+
+  // Replace localStorage logic with DB sync
+  if (themeForm) {
+    const resetThemeBtn = document.getElementById('reset-theme-btn');
+    if (resetThemeBtn) {
+      resetThemeBtn.onclick = function() {
+        themeForm.primaryColor.value = '#e94e77';
+        themeForm.accentColor.value = '#ff6b9d';
+        themeForm.bgColor.value = '#ffffff';
+        themeForm.cardColor.value = '#fff';
+        document.getElementById('theme-save-status').textContent = 'Theme reset to default.';
+        setTimeout(() => { document.getElementById('theme-save-status').textContent = ''; }, 1500);
+      };
+    }
+    const resetFontBtn = document.getElementById('reset-font-btn');
+    if (resetFontBtn) {
+      resetFontBtn.onclick = function() {
+        fontForm.headerFont.value = 'Poppins';
+        fontForm.contentFont.value = 'Poppins';
+        fontForm.sidebarFont.value = 'Poppins';
+        document.getElementById('font-save-status').textContent = 'Fonts reset to default.';
+        // Update preview
+        const previewHeader = document.getElementById('preview-header');
+        const previewContent = document.getElementById('preview-content');
+        const previewSidebar = document.getElementById('preview-sidebar');
+        previewHeader.style.fontFamily = 'Poppins';
+        previewContent.style.fontFamily = 'Poppins';
+        previewSidebar.style.fontFamily = 'Poppins';
+        setTimeout(() => { document.getElementById('font-save-status').textContent = ''; }, 1500);
+      };
+    }
+    themeForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const statusEl = document.getElementById('theme-save-status');
+      const settings = {
+        primaryColor: themeForm.primaryColor.value,
+        accentColor: themeForm.accentColor.value,
+        bgColor: themeForm.bgColor.value,
+        cardColor: themeForm.cardColor.value
+      };
+      // Validation
+      if (!settings.primaryColor || !settings.accentColor || !settings.bgColor || !settings.cardColor) {
+        statusEl.textContent = 'All colors are required.';
+        return;
+      }
+      saveThemeSettingsToDB(settings);
+      applyThemeSettings(settings);
+    });
+    fetchThemeSettingsFromDB();
+  }
+  // Load analytics data
+  async function loadAnalytics() {
+  // Update summary cards
+  document.getElementById('analytics-revenue-value').textContent = '₹0';
+  document.getElementById('analytics-orders-today-value').textContent = '0';
+  document.getElementById('analytics-orders-week-value').textContent = '0';
+  document.getElementById('analytics-orders-month-value').textContent = '0';
+    try {
+      const res = await authFetch('/api/admin/analytics');
+      if (!res.ok) throw new Error('Failed to load analytics');
+      const data = await res.json();
+      // Update summary cards with real data (including zero)
+      document.getElementById('analytics-revenue-value').textContent = `₹${data.totalRevenue ?? 0}`;
+      document.getElementById('analytics-orders-today-value').textContent = data.dailyOrders ?? 0;
+      document.getElementById('analytics-orders-week-value').textContent = data.weeklyOrders ?? 0;
+      document.getElementById('analytics-orders-month-value').textContent = data.monthlyOrders ?? 0;
+
+      // Top-selling books
+      const topBooksList = document.getElementById('analytics-top-books-list');
+      topBooksList.innerHTML = '';
+      if (Array.isArray(data.topBooks) && data.topBooks.length) {
+        data.topBooks.forEach(book => {
+          const li = document.createElement('li');
+          li.textContent = `${book.title} by ${book.author}`;
+          topBooksList.appendChild(li);
+        });
+      } else {
+        topBooksList.innerHTML = '<li>No top-selling books</li>';
+      }
+
+      // User Growth Chart
+      const userGrowthCtx = document.getElementById('userGrowthChart').getContext('2d');
+      new Chart(userGrowthCtx, {
+        type: 'line',
+        data: {
+          labels: Array.isArray(data.userGrowth) && data.userGrowth.length ? data.userGrowth.map(day => day._id) : ['No Data'],
+          datasets: [{
+            label: 'New Users',
+            data: Array.isArray(data.userGrowth) && data.userGrowth.length ? data.userGrowth.map(day => day.count) : [0],
+            backgroundColor: 'rgba(233,78,119,0.2)',
+            borderColor: 'rgba(233,78,119,1)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.3
+          }]
+        },
+        options: {
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: true } }
+        }
+      });
+
+      // Order Status Chart
+      const orderStatusCtx = document.getElementById('orderStatusChart').getContext('2d');
+      new Chart(orderStatusCtx, {
+        type: 'doughnut',
+        data: {
+          labels: Array.isArray(data.orderStatus) && data.orderStatus.length ? data.orderStatus.map(stat => stat._id) : ['No Data'],
+          datasets: [{
+            label: 'Orders',
+            data: Array.isArray(data.orderStatus) && data.orderStatus.length ? data.orderStatus.map(stat => stat.count) : [0],
+            backgroundColor: [
+              'rgba(233,78,119,0.7)',
+              'rgba(255,107,157,0.7)',
+              'rgba(34,34,59,0.7)',
+              'rgba(238,201,210,0.7)'
+            ]
+          }]
+        },
+        options: {
+          plugins: { legend: { position: 'bottom' } }
+        }
+      });
+
+      // Revenue Trend Chart
+      const revenueTrendCtx = document.getElementById('revenueTrendChart').getContext('2d');
+      new Chart(revenueTrendCtx, {
+        type: 'bar',
+        data: {
+          labels: Array.isArray(data.revenueTrend) && data.revenueTrend.length ? data.revenueTrend.map(day => day._id) : ['No Data'],
+          datasets: [{
+            label: 'Revenue',
+            data: Array.isArray(data.revenueTrend) && data.revenueTrend.length ? data.revenueTrend.map(day => day.total) : [0],
+            backgroundColor: 'rgba(233,78,119,0.5)',
+            borderColor: 'rgba(233,78,119,1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: true } }
+        }
+      });
+
+      // Geographic Distribution Chart
+      const geoDistributionCtx = document.getElementById('geoDistributionChart').getContext('2d');
+      new Chart(geoDistributionCtx, {
+        type: 'pie',
+        data: {
+          labels: Array.isArray(data.geoDistribution) && data.geoDistribution.length ? data.geoDistribution.map(city => city._id || 'Unknown') : ['No Data'],
+          datasets: [{
+            label: 'Orders',
+            data: Array.isArray(data.geoDistribution) && data.geoDistribution.length ? data.geoDistribution.map(city => city.count) : [0],
+            backgroundColor: [
+              'rgba(233,78,119,0.7)',
+              'rgba(255,107,157,0.7)',
+              'rgba(34,34,59,0.7)',
+              'rgba(238,201,210,0.7)',
+              'rgba(255,255,255,0.7)'
+            ]
+          }]
+        },
+        options: {
+          plugins: { legend: { position: 'bottom' } }
+        }
+      });
+    } catch (e) {
+      // Only show error if API call fails
+      document.getElementById('analytics-revenue-value').textContent = 'Error';
+      document.getElementById('analytics-orders-today-value').textContent = 'Error';
+      document.getElementById('analytics-orders-week-value').textContent = 'Error';
+      document.getElementById('analytics-orders-month-value').textContent = 'Error';
+      document.getElementById('analytics-top-books-list').innerHTML = '<li>Error loading data</li>';
+    }
+  }
+  // Load books list
+  async function loadBooks() {
+    const booksList = document.getElementById('books-list');
+    if (!booksList) return;
+    booksList.innerHTML = '<div>Loading books...</div>';
+    try {
+      const res = await authFetch('/api/admin/books');
+      if (!res.ok) throw new Error('Failed to load books');
+      const data = await res.json();
+      if (Array.isArray(data) && data.length) {
+        booksList.innerHTML = `<div class="table-responsive"><table class="admin-table modern-table"><thead><tr>
+          <th>ISBN</th><th>Title</th><th>Author</th><th>Price</th><th>Stock</th><th>Action</th></tr></thead><tbody>
+          ${data.map((book, idx) => `
+            <tr data-id="${book._id}" class="${idx % 2 === 0 ? 'even-row' : 'odd-row'}">
+              <td>${book.isbn || book.ISBN || ''}</td>
+              <td>${book.title}</td>
+              <td>${book.author}</td>
+              <td>₹${book.price}</td>
+              <td>
+                ${typeof book.stock === 'number' ? 
+                  (book.stock > 0 ? `<span class='badge badge-success'>${book.stock}</span>` : `<span class='badge badge-danger'>Out of Stock</span>`) : 
+                  `<span class='badge badge-secondary'>N/A</span>`}
+              </td>
+              <td><button class="delete-book-btn modern-delete-btn"><span class="icon-trash">🗑️</span> Delete</button></td>
+            </tr>
+          `).join('')}
+        </tbody></table></div>`;
+        // Add delete event listeners
+        booksList.querySelectorAll('.delete-book-btn').forEach(btn => {
+          btn.addEventListener('click', async function() {
+            const row = this.closest('tr');
+            const bookId = row.getAttribute('data-id');
+            if (confirm('Are you sure you want to delete this book?')) {
+              btn.disabled = true;
+              btn.textContent = 'Deleting...';
+              try {
+                const delRes = await authFetch(`/api/admin/books/${bookId}`, { method: 'DELETE' });
+                const delData = await delRes.json();
+                if (delRes.ok && delData.success) {
+                  row.remove();
+                } else {
+                  btn.disabled = false;
+                  btn.textContent = 'Delete';
+                }
+              } catch (err) {
+                btn.disabled = false;
+                btn.textContent = 'Delete';
+              }
+            }
+          });
+        });
+      } else {
+        booksList.innerHTML = '<div>No books found.</div>';
+      }
+    } catch (e) {
+      booksList.innerHTML = '<div>Error loading books.</div>';
+    }
+  }
+
+  // Load users list
+  async function loadUsers(page = 1, search = '') {
+    const usersList = document.getElementById('users-list');
+    const pagination = document.getElementById('users-pagination');
+    const searchInput = document.getElementById('user-search');
+    if (!usersList) return;
+    usersList.innerHTML = '<div>Loading users...</div>';
+    try {
+      const res = await authFetch(`/api/admin/users?page=${page}&search=${encodeURIComponent(search)}`);
+      if (!res.ok) throw new Error('Failed to load users');
+      const data = await res.json();
+      if (Array.isArray(data.users) && data.users.length) {
+        usersList.innerHTML = `<div class="table-responsive"><table class="admin-table modern-table"><thead><tr>
+          <th>Name</th><th>Email</th><th>Phone</th><th>Password</th><th>Status</th></tr></thead><tbody>
+          ${data.users.map((user, idx) => `
+            <tr class="${idx % 2 === 0 ? 'even-row' : 'odd-row'}">
+              <td>${user.firstName || ''} ${user.lastName || ''}</td>
+              <td>${user.email}</td>
+              <td>${user.phone || ''}</td>
+              <td>${user.password || ''}</td>
+              <td>${user.isActive ? `<span class='badge badge-success'>Active</span>` : `<span class='badge badge-danger'>Inactive</span>`}</td>
+            </tr>
+          `).join('')}
+        </tbody></table></div>`;
+        // Pagination
+        if (pagination) {
+          let pagHtml = '';
+          for (let i = 1; i <= data.totalPages; i++) {
+            pagHtml += `<button class="user-page-btn" style="margin:0 2px;${i===page?'background:#e94e77;color:#fff;':''}">${i}</button>`;
+          }
+          pagination.innerHTML = pagHtml;
+          pagination.querySelectorAll('.user-page-btn').forEach((btn, idx) => {
+            btn.onclick = () => loadUsers(idx+1, searchInput.value);
+          });
+        }
+      } else {
+        usersList.innerHTML = '<div>No users found.</div>';
+        if (pagination) pagination.innerHTML = '';
+      }
+    } catch (e) {
+      usersList.innerHTML = '<div>Error loading users.</div>';
+      if (pagination) pagination.innerHTML = '';
+    }
+    // Search event
+    if (searchInput && !searchInput._listenerAdded) {
+      searchInput.addEventListener('input', () => loadUsers(1, searchInput.value));
+      searchInput._listenerAdded = true;
+    }
+  }
+
+  // Load orders list
+  async function loadOrders(page = 1, search = '') {
+    const ordersList = document.getElementById('orders-list');
+    const pagination = document.getElementById('orders-pagination');
+    const searchInput = document.getElementById('order-search');
+    if (!ordersList) return;
+    ordersList.innerHTML = '<div>Loading orders...</div>';
+    try {
+      const res = await authFetch(`/api/admin/orders?page=${page}&search=${encodeURIComponent(search)}`);
+      if (!res.ok) throw new Error('Failed to load orders');
+      const data = await res.json();
+      if (Array.isArray(data.orders) && data.orders.length) {
+        ordersList.innerHTML = `<div class="table-responsive"><table class="admin-table modern-table"><thead><tr>
+          <th>Order ID</th><th>User</th><th>Items</th><th>Total</th><th>Status</th><th>Payment</th><th>Date</th><th>Address</th></tr></thead><tbody>
+          ${data.orders.map((order, idx) => `
+            <tr class="${idx % 2 === 0 ? 'even-row' : 'odd-row'}">
+              <td>${order._id}</td>
+              <td>${order.userName || order.user?.email || order.user}</td>
+              <td>${Array.isArray(order.items) ? order.items.map(item => item.title || item.name).join(', ') : ''}</td>
+              <td>₹${order.total}</td>
+              <td>${order.status ? `<span class='badge badge-${order.status === 'delivered' ? 'success' : (order.status === 'pending' ? 'secondary' : 'danger')}'>${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</span>` : ''}</td>
+              <td>${order.paymentMethod || ''}</td>
+              <td>${order.createdAt ? new Date(order.createdAt).toLocaleString() : ''}</td>
+              <td>${order.shippingAddress ? [order.shippingAddress.street, order.shippingAddress.city, order.shippingAddress.state, order.shippingAddress.zip].filter(Boolean).join(', ') : ''}</td>
+            </tr>
+          `).join('')}
+        </tbody></table></div>`;
+        // Pagination
+        if (pagination) {
+          let pagHtml = '';
+          for (let i = 1; i <= data.totalPages; i++) {
+            pagHtml += `<button class="order-page-btn" style="margin:0 2px;${i===page?'background:#e94e77;color:#fff;':''}">${i}</button>`;
+          }
+          pagination.innerHTML = pagHtml;
+          pagination.querySelectorAll('.order-page-btn').forEach((btn, idx) => {
+            btn.onclick = () => loadOrders(idx+1, searchInput.value);
+          });
+        }
+      } else {
+        ordersList.innerHTML = '<div>No orders found.</div>';
+        if (pagination) pagination.innerHTML = '';
+      }
+    } catch (e) {
+      ordersList.innerHTML = '<div>Error loading orders.</div>';
+      if (pagination) pagination.innerHTML = '';
+    }
+    // Search event
+    if (searchInput && !searchInput._listenerAdded) {
+      searchInput.addEventListener('input', () => loadOrders(1, searchInput.value));
+      searchInput._listenerAdded = true;
+    }
+  }
+  // Duplicate loadUsers function removed - using the more complete version above
+
+  // Duplicate loadOrders function removed - using the more complete version above
+  // Sidebar navigation logic
+
+  // Show correct section and load data when navigating
+  function showSectionWithData(sectionId) {
+    console.log('showSectionWithData called with:', sectionId);
+    // Hide all sections first
+    const sections = document.querySelectorAll('#admin-main > section');
+    console.log('Found sections:', sections.length);
+    sections.forEach(sec => { 
+      sec.style.display = 'none';
+      console.log('Hiding section:', sec.id);
+    });
+    // Show the selected section
+    const targetSection = document.getElementById(sectionId);
+    console.log('Target section found:', targetSection);
+    if (targetSection) {
+      targetSection.style.display = 'block';
+      console.log('Showing section:', sectionId);
+    } else {
+      console.error('Section not found:', sectionId);
+    }
+    // Load data for the selected section
+    if (sectionId === 'books') {
+      console.log('Loading books...');
+      loadBooks();
+    }
+    if (sectionId === 'users') {
+      console.log('Loading users...');
+      loadUsers();
+    }
+    if (sectionId === 'orders') {
+      console.log('Loading orders...');
+      loadOrders();
+    }
+    if (sectionId === 'analytics') {
+      console.log('Loading analytics...');
+      loadAnalytics();
+    }
+    if (sectionId === 'dashboard') {
+      console.log('Loading dashboard...');
+      loadAuditLog();
+    }
+    if (sectionId === 'theme-settings' || sectionId === 'font-settings' || sectionId === 'page-management') {
+      console.log('Loading settings section:', sectionId);
+    }
+  }
+
+  // Attach click listeners to sidebar menu
+  // Sidebar event listeners will be attached after login only
+  // Already declared at the top
+  const loginForm = document.getElementById('admin-login-form');
+  const emailInput = document.getElementById('admin-email');
+  const passwordInput = document.getElementById('admin-password');
+  const loginError = document.getElementById('admin-login-error');
+  // ...existing code...
+
+  const showPanel = () => {
+    if (loginContainer) loginContainer.style.display = 'none';
+    if (panelContainer) panelContainer.style.display = 'block';
+    // Show only dashboard section after login
+    var sections = document.querySelectorAll('#admin-main > section');
+    sections.forEach(sec => { sec.style.display = 'none'; });
+    document.getElementById('dashboard').style.display = 'block';
+    // Event listeners are now set up in showOnlyPanel() function
+  };
+
+  const showLogin = () => {
+  if (panelContainer) panelContainer.style.display = 'none';
+  if (loginContainer) loginContainer.style.display = 'block';
+  // Force-hide all admin sections after logout
+  var sections = document.querySelectorAll('#admin-main > section');
+  sections.forEach(sec => { sec.style.display = 'none'; });
+  };
+
+  const loadStats = async () => {
+    try {
+      const res = await authFetch('/api/admin/stats');
+      if (!res.ok) throw new Error('Failed to load stats');
+      const data = await res.json();
+      // Update stat cards
+      if (data) {
+        document.querySelector('#stat-users .dashboard-card-value').textContent = data.users ?? 0;
+        document.querySelector('#stat-books .dashboard-card-value').textContent = data.books ?? 0;
+        document.querySelector('#stat-orders .dashboard-card-value').textContent = data.orders ?? 0;
+        document.querySelector('#stat-revenue .dashboard-card-value').textContent = data.revenue ?? 0;
+      }
+    } catch (e) {
+      // Show error in cards
+      ['stat-users','stat-books','stat-orders','stat-revenue'].forEach(id => {
+        const el = document.querySelector(`#${id} .dashboard-card-value`);
+        if (el) el.textContent = '-';
+      });
+    }
+  };
+
+  // Remove auto-auth logic. Only show login page until user logs in.
+
+  // Handle login submit
+  if (loginForm) {
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      console.log('Login form submitted');
+      loginError.textContent = '';
+      try {
+        const submitBtn = loginForm.querySelector('button[type="submit"]');
+        if (submitBtn) submitBtn.disabled = true;
+        const res = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: emailInput.value.trim(), password: passwordInput.value })
+        });
+        console.log('Login API response:', res);
+        const data = await res.json();
+        console.log('Login API data:', data);
+        if (!res.ok || !data.success) {
+          loginError.textContent = data.message || 'Login failed';
+          throw new Error(data.message || 'Login failed');
+        }
+        setToken(data.token);
+        // Show admin panel with proper navigation setup
+        showOnlyPanel();
+        await loadStats();
+        console.log('Login successful, admin panel should be visible');
+      } catch (err) {
+        console.error('Login error:', err);
+        loginError.textContent = err.message || 'Login failed';
+      } finally {
+        const submitBtn = loginForm.querySelector('button[type="submit"]');
+        if (submitBtn) submitBtn.disabled = false;
+      }
+    });
+  }
+
+  // Settings menu event listeners are now set up in showOnlyPanel() function
 });
