@@ -37,8 +37,7 @@ const orderItemSchema = new mongoose.Schema({
     min: [0, 'Discount cannot be negative'],
     max: [100, 'Discount cannot exceed 100%'],
     default: 0
-  }
-}, {
+  },
   // Partial fulfillment fields
   status: {
     type: String,
@@ -59,7 +58,8 @@ const orderItemSchema = new mongoose.Schema({
     type: Number,
     min: [0, 'Extra payment cannot be negative'],
     default: 0
-  },
+  }
+}, {
   timestamps: false,
   toJSON: { virtuals: true },
   toObject: { virtuals: true }
