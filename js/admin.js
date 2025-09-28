@@ -1,14 +1,12 @@
-    // Hide sidebar by default on mobile after login
+// Hide sidebar by default on mobile after login
     // Removed forced sidebar-hidden addition here. Only setupSidebarToggle controls sidebar-hidden.
 document.addEventListener('DOMContentLoaded', function() {
   // Hamburger menu toggle for mobile sidebar
-  function setupSidebarToggle() {
+  const setupSidebarToggle = () => {
   const sidebar = document.getElementById('admin-sidebar');
   const hamburgerBtn = document.getElementById('sidebar-toggle');
   const closeBtn = document.getElementById('sidebar-close');
-    function isMobile() {
-      return window.innerWidth <= 600;
-    }
+    const isMobile = () => window.innerWidth <= 600;
   if (sidebar && hamburgerBtn) {
       // Only add sidebar-hidden if not already present
       if (isMobile() && !sidebar.classList.contains('sidebar-hidden')) {
@@ -16,46 +14,46 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       // Hamburger should always be visible when sidebar is hidden (handled by CSS)
       // Hamburger click opens sidebar (mobile only)
-      hamburgerBtn.onclick = function() {
+      hamburgerBtn.onclick = () => {
         if (isMobile()) {
           sidebar.classList.remove('sidebar-hidden');
         }
       };
       // Close button click closes sidebar (mobile only)
       if (closeBtn) {
-        closeBtn.onclick = function() {
+        closeBtn.onclick = () => {
           if (isMobile()) {
             sidebar.classList.add('sidebar-hidden');
           }
         };
       }
       // No need to manually toggle display, CSS now handles icon visibility
-      window.addEventListener('resize', function() {
+      window.addEventListener('resize', () => {
         if (!isMobile()) {
           sidebar.classList.remove('sidebar-hidden');
         }
       });
     }
-  }
+  };
   setupSidebarToggle();
-  // Keyboard navigation for sidebar menu
+  // Sidebar keyboard navigation (ES6+)
   const menuLinks = document.querySelectorAll('.admin-menu a');
   menuLinks.forEach(link => {
     link.tabIndex = 0;
-    link.addEventListener('keydown', function(e) {
+    link.addEventListener('keydown', e => {
       if (e.key === 'Enter' || e.key === ' ') {
         link.click();
       }
     });
   });
 
-  // Dashboard card hover/active accessibility
+  // Dashboard card accessibility (ES6+)
   const dashboardCards = document.querySelectorAll('.dashboard-card');
   dashboardCards.forEach(card => {
     card.tabIndex = 0;
     card.setAttribute('role', 'button');
     card.setAttribute('aria-label', card.querySelector('.dashboard-card-label')?.textContent || 'Dashboard stat');
-    card.addEventListener('keydown', function(e) {
+    card.addEventListener('keydown', e => {
       if (e.key === 'Enter' || e.key === ' ') {
         card.classList.add('dashboard-card-active');
         setTimeout(() => card.classList.remove('dashboard-card-active'), 200);
@@ -211,204 +209,191 @@ document.addEventListener('DOMContentLoaded', function() {
   showOnlyLogin();
   // Remove any auto-login logic. Only show admin panel after successful login event.
   // Load audit log
-  async function loadAuditLog() {
-    const logList = document.getElementById('audit-log-list');
-    if (!logList) return;
-    logList.innerHTML = '<li>Loading...</li>';
-    try {
-      const res = await authFetch('/api/admin/audit-log');
-      const logs = await res.json();
-      if (Array.isArray(logs) && logs.length) {
-        logList.innerHTML = logs.map(log => `<li style="padding:8px 12px;border-bottom:1px solid #eee;font-size:0.98em;"><b>${log.action}</b> <span style="color:#666;">${log.details}</span> <span style="float:right;color:#aaa;">${new Date(log.timestamp).toLocaleString()}</span></li>`).join('');
-      } else {
-        logList.innerHTML = '<li>No recent admin actions.</li>';
-      }
-    } catch {
-      logList.innerHTML = '<li>Error loading audit log.</li>';
+  // Dashboard functions (ES6+ refactor)
+const loadAuditLog = async () => {
+  const logList = document.getElementById('audit-log-list');
+  if (!logList) return;
+  logList.innerHTML = '<li>Loading...</li>';
+  try {
+    const res = await authFetch('/api/admin/audit-log');
+    const logs = await res.json();
+    if (Array.isArray(logs) && logs.length) {
+      logList.innerHTML = logs.map(log => `<li style="padding:8px 12px;border-bottom:1px solid #eee;font-size:0.98em;"><b>${log.action}</b> <span style="color:#666;">${log.details}</span> <span style="float:right;color:#aaa;">${new Date(log.timestamp).toLocaleString()}</span></li>`).join('');
+    } else {
+      logList.innerHTML = '<li>No recent admin actions.</li>';
     }
+  } catch {
+    logList.innerHTML = '<li>Error loading audit log.</li>';
   }
-  // Page management logic
-  const pagesListEl = document.getElementById('pages-list');
-  const addPageBtn = document.getElementById('add-page-btn');
-  const newPageNameInput = document.getElementById('new-page-name');
-  const pageStatus = document.getElementById('page-management-status');
+};
 
-  // Example: initial pages (should be loaded from backend)
-  let pages = [];
-  // Load pages from backend
-  async function loadPages() {
-    try {
-      const res = await authFetch('/api/admin/pages');
-      const data = await res.json();
-      if (Array.isArray(data)) {
-        pages = data;
-        renderPages();
-      }
-    } catch (e) {
-      pageStatus.textContent = 'Error loading pages.';
+let pages = [];
+const loadPages = async () => {
+  try {
+    const res = await authFetch('/api/admin/pages');
+    const data = await res.json();
+    if (Array.isArray(data)) {
+      pages = data;
+      renderPages();
     }
+  } catch (e) {
+    pageStatus.textContent = 'Error loading pages.';
   }
+};
 
-  function renderPages() {
-    pagesListEl.innerHTML = '';
-    pages.forEach((page, idx) => {
-      const li = document.createElement('li');
-      li.setAttribute('draggable', 'true');
-      li.style.display = 'flex';
-      li.style.alignItems = 'center';
-      li.style.justifyContent = 'space-between';
-      li.style.padding = '8px 12px';
-      li.style.borderBottom = '1px solid #eee';
-      li.style.background = page.visible ? '#fff' : '#f9f9f9';
-      li.innerHTML = `
-        <span style="flex:1;">
-          <input type="text" value="${page.name}" style="border:none;background:transparent;font-size:1em;width:70%;" onchange="this.blur()">
-        </span>
-        <button class="rename-page-btn" style="background:#ffb6c1;color:#fff;border:none;border-radius:6px;padding:4px 10px;margin-right:6px;cursor:pointer;">Rename</button>
-        <button class="hide-page-btn" style="background:${page.visible ? '#e94e77' : '#aaa'};color:#fff;border:none;border-radius:6px;padding:4px 10px;margin-right:6px;cursor:pointer;">${page.visible ? 'Hide' : 'Show'}</button>
-        <button class="delete-page-btn" style="background:#333;color:#fff;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;">Delete</button>
-        <span class="drag-handle" style="cursor:grab;margin-left:8px;">&#9776;</span>
-      `;
-      // Rename
-      li.querySelector('.rename-page-btn').onclick = async function() {
-        const newName = li.querySelector('input').value.trim();
-        if (newName && newName !== page.name) {
-          try {
-            const res = await authFetch(`/api/admin/pages/${page._id}/rename`, {
-              method: 'PUT',
-              body: JSON.stringify({ name: newName })
-            });
-            const data = await res.json();
-            if (data.success) {
-              pageStatus.textContent = 'Page renamed.';
-              loadPages();
-            } else {
-              pageStatus.textContent = data.message || 'Rename failed.';
-            }
-          } catch {
-            pageStatus.textContent = 'Rename failed.';
-          }
-          setTimeout(() => { pageStatus.textContent = ''; }, 1500);
-        }
-      };
-      // Hide/Show
-      li.querySelector('.hide-page-btn').onclick = async function() {
+const renderPages = () => {
+  pagesListEl.innerHTML = '';
+  pages.forEach((page, idx) => {
+    const li = document.createElement('li');
+    li.setAttribute('draggable', 'true');
+    li.style.display = 'flex';
+    li.style.alignItems = 'center';
+    li.style.justifyContent = 'space-between';
+    li.style.padding = '8px 12px';
+    li.style.borderBottom = '1px solid #eee';
+    li.style.background = page.visible ? '#fff' : '#f9f9f9';
+    li.innerHTML = `
+      <span style="flex:1;">
+        <input type="text" value="${page.name}" style="border:none;background:transparent;font-size:1em;width:70%;" onchange="this.blur()">
+      </span>
+      <button class="rename-page-btn" style="background:#ffb6c1;color:#fff;border:none;border-radius:6px;padding:4px 10px;margin-right:6px;cursor:pointer;">Rename</button>
+      <button class="hide-page-btn" style="background:${page.visible ? '#e94e77' : '#aaa'};color:#fff;border:none;border-radius:6px;padding:4px 10px;margin-right:6px;cursor:pointer;">${page.visible ? 'Hide' : 'Show'}</button>
+      <button class="delete-page-btn" style="background:#333;color:#fff;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;">Delete</button>
+      <span class="drag-handle" style="cursor:grab;margin-left:8px;">&#9776;</span>
+    `;
+    // Rename
+    li.querySelector('.rename-page-btn').onclick = async () => {
+      const newName = li.querySelector('input').value.trim();
+      if (newName && newName !== page.name) {
         try {
-          const res = await authFetch(`/api/admin/pages/${page._id}/visible`, {
+          const res = await authFetch(`/api/admin/pages/${page._id}/rename`, {
             method: 'PUT',
-            body: JSON.stringify({ visible: !page.visible })
+            body: JSON.stringify({ name: newName })
           });
           const data = await res.json();
           if (data.success) {
-            pageStatus.textContent = data.page.visible ? 'Page shown.' : 'Page hidden.';
+            pageStatus.textContent = 'Page renamed.';
             loadPages();
           } else {
-            pageStatus.textContent = data.message || 'Update failed.';
+            pageStatus.textContent = data.message || 'Rename failed.';
           }
         } catch {
-          pageStatus.textContent = 'Update failed.';
+          pageStatus.textContent = 'Rename failed.';
         }
         setTimeout(() => { pageStatus.textContent = ''; }, 1500);
-      };
-      // Delete
-      li.querySelector('.delete-page-btn').onclick = async function() {
-        if (confirm('Delete this page?')) {
-          try {
-            const res = await authFetch(`/api/admin/pages/${page._id}`, { method: 'DELETE' });
-            const data = await res.json();
-            if (data.success) {
-              pageStatus.textContent = 'Page deleted.';
-              loadPages();
-            } else {
-              pageStatus.textContent = data.message || 'Delete failed.';
-            }
-          } catch {
-            pageStatus.textContent = 'Delete failed.';
-          }
-          setTimeout(() => { pageStatus.textContent = ''; }, 1500);
-        }
-      };
-      // Drag-and-drop
-      li.ondragstart = function(e) {
-        e.dataTransfer.setData('text/plain', idx);
-        li.style.opacity = '0.5';
-      };
-      li.ondragend = function() {
-        li.style.opacity = '1';
-      };
-      li.ondragover = function(e) {
-        e.preventDefault();
-        li.style.background = '#ffe4ec';
-      };
-      li.ondragleave = function() {
-        li.style.background = page.visible ? '#fff' : '#f9f9f9';
-      };
-      li.ondrop = async function(e) {
-        e.preventDefault();
-        const fromIdx = Number(e.dataTransfer.getData('text/plain'));
-        const toIdx = idx;
-        if (fromIdx !== toIdx) {
-          const moved = pages.splice(fromIdx, 1)[0];
-          pages.splice(toIdx, 0, moved);
-          // Update order in backend
-          try {
-            const orderArr = pages.map((p, i) => ({ id: p._id, order: i }));
-            await authFetch('/api/admin/pages/reorder', {
-              method: 'PUT',
-              body: JSON.stringify({ order: orderArr })
-            });
-            loadPages();
-          } catch {
-            pageStatus.textContent = 'Reorder failed.';
-            setTimeout(() => { pageStatus.textContent = ''; }, 1500);
-          }
-        }
-      };
-      pagesListEl.appendChild(li);
-    });
-  }
-
-  if (addPageBtn && newPageNameInput && pagesListEl) {
-    addPageBtn.onclick = async function() {
-      const name = newPageNameInput.value.trim();
-      if (!name) {
-        pageStatus.textContent = 'Page name required.';
-        newPageNameInput.classList.add('input-error');
-        setTimeout(() => { newPageNameInput.classList.remove('input-error'); }, 1500);
-        return;
       }
-      if (!/^[a-zA-Z0-9 _-]{2,32}$/.test(name)) {
-        pageStatus.textContent = 'Invalid page name. Use 2-32 letters, numbers, spaces, - or _.';
-        newPageNameInput.classList.add('input-error');
-        setTimeout(() => { newPageNameInput.classList.remove('input-error'); }, 2000);
-        return;
-      }
-      if (pages.some(p => p.name.toLowerCase() === name.toLowerCase())) {
-        pageStatus.textContent = 'Page already exists.';
-        newPageNameInput.classList.add('input-error');
-        setTimeout(() => { newPageNameInput.classList.remove('input-error'); }, 1500);
-        return;
-      }
+    };
+    // Hide/Show
+    li.querySelector('.hide-page-btn').onclick = async () => {
       try {
-        const res = await authFetch('/api/admin/pages', {
-          method: 'POST',
-          body: JSON.stringify({ name })
+        const res = await authFetch(`/api/admin/pages/${page._id}/visible`, {
+          method: 'PUT',
+          body: JSON.stringify({ visible: !page.visible })
         });
         const data = await res.json();
         if (data.success) {
-          newPageNameInput.value = '';
-          pageStatus.textContent = 'Page added.';
+          pageStatus.textContent = data.page.visible ? 'Page shown.' : 'Page hidden.';
           loadPages();
         } else {
-          pageStatus.textContent = data.message || 'Add failed.';
+          pageStatus.textContent = data.message || 'Update failed.';
         }
       } catch {
-        pageStatus.textContent = 'Add failed.';
+        pageStatus.textContent = 'Update failed.';
       }
       setTimeout(() => { pageStatus.textContent = ''; }, 1500);
     };
-    loadPages();
-  }
+    // Delete
+    li.querySelector('.delete-page-btn').onclick = async () => {
+      if (confirm('Delete this page?')) {
+        try {
+          const res = await authFetch(`/api/admin/pages/${page._id}`, { method: 'DELETE' });
+          const data = await res.json();
+          if (data.success) {
+            pageStatus.textContent = 'Page deleted.';
+            loadPages();
+          } else {
+            pageStatus.textContent = data.message || 'Delete failed.';
+          }
+        } catch {
+          pageStatus.textContent = 'Delete failed.';
+        }
+        setTimeout(() => { pageStatus.textContent = ''; }, 1500);
+      }
+    };
+    // Drag-and-drop
+    li.ondragstart = e => {
+      e.dataTransfer.setData('text/plain', idx);
+      li.style.opacity = '0.5';
+    };
+    li.ondragend = () => {
+      li.style.opacity = '1';
+    };
+    li.ondragover = e => {
+      e.preventDefault();
+      li.style.background = '#ffe4ec';
+    };
+    li.ondragleave = () => {
+      li.style.background = page.visible ? '#fff' : '#f9f9f9';
+    };
+    li.ondrop = async e => {
+      e.preventDefault();
+      const fromIdx = Number(e.dataTransfer.getData('text/plain'));
+      const toIdx = idx;
+      if (fromIdx !== toIdx) {
+        const moved = pages.splice(fromIdx, 1)[0];
+        pages.splice(toIdx, 0, moved);
+        // Update order in backend
+        try {
+          const orderArr = pages.map((p, i) => ({ id: p._id, order: i }));
+          await authFetch('/api/admin/pages/reorder', {
+            method: 'PUT',
+            body: JSON.stringify({ order: orderArr })
+          });
+          loadPages();
+        } catch {
+          pageStatus.textContent = 'Reorder failed.';
+        }
+        setTimeout(() => { pageStatus.textContent = ''; }, 1500);
+      }
+    };
+    pagesListEl.appendChild(li);
+  });
+}
+
+  // Dashboard/page management DOM elements (ES6+)
+const pagesListEl = document.getElementById('pages-list');
+const addPageBtn = document.getElementById('add-page-btn');
+const newPageNameInput = document.getElementById('new-page-name');
+const pageStatus = document.getElementById('page-management-status');
+
+if (addPageBtn && newPageNameInput && pagesListEl) {
+  addPageBtn.onclick = async () => {
+    const name = newPageNameInput.value.trim();
+    if (!name) {
+      pageStatus.textContent = 'Page name required.';
+      newPageNameInput.classList.add('input-error');
+      setTimeout(() => { newPageNameInput.classList.remove('input-error'); }, 1500);
+      return;
+    }
+    try {
+      const res = await authFetch('/api/admin/pages', {
+        method: 'POST',
+        body: JSON.stringify({ name })
+      });
+      const data = await res.json();
+      if (data.success) {
+        pageStatus.textContent = 'Page added.';
+        newPageNameInput.value = '';
+        loadPages();
+      } else {
+        pageStatus.textContent = data.message || 'Add failed.';
+      }
+    } catch {
+      pageStatus.textContent = 'Add failed.';
+    }
+    setTimeout(() => { pageStatus.textContent = ''; }, 1500);
+  };
+}
   // Theme preset logic
   const themePresets = {
     light: {
@@ -755,171 +740,167 @@ document.addEventListener('DOMContentLoaded', function() {
       document.getElementById('analytics-top-books-list').innerHTML = '<li>Error loading data</li>';
     }
   }
-  // Load books list
-  async function loadBooks() {
-    const booksList = document.getElementById('books-list');
-    if (!booksList) return;
-    booksList.innerHTML = '<div>Loading books...</div>';
-    try {
-      const res = await authFetch('/api/admin/books');
-      if (!res.ok) throw new Error('Failed to load books');
-      const data = await res.json();
-      if (Array.isArray(data) && data.length) {
-        booksList.innerHTML = `<div class="table-responsive"><table class="admin-table modern-table"><thead><tr>
-          <th>ISBN</th><th>Title</th><th>Author</th><th>Price</th><th>Stock</th><th>Action</th></tr></thead><tbody>
-          ${data.map((book, idx) => `
-            <tr data-id="${book._id}" class="${idx % 2 === 0 ? 'even-row' : 'odd-row'}">
-              <td>${book.isbn || book.ISBN || ''}</td>
-              <td>${book.title}</td>
-              <td>${book.author}</td>
-              <td>₹${book.price}</td>
-              <td>
-                ${typeof book.stock === 'number' ? 
-                  (book.stock > 0 ? `<span class='badge badge-success'>${book.stock}</span>` : `<span class='badge badge-danger'>Out of Stock</span>`) : 
-                  `<span class='badge badge-secondary'>N/A</span>`}
-              </td>
-              <td><button class="delete-book-btn modern-delete-btn">Delete</button></td>
-            </tr>
-          `).join('')}
-        </tbody></table></div>`;
-        // Add delete event listeners
-        booksList.querySelectorAll('.delete-book-btn').forEach(btn => {
-          btn.addEventListener('click', async function() {
-            const row = this.closest('tr');
-            const bookId = row.getAttribute('data-id');
-            if (confirm('Are you sure you want to delete this book?')) {
-              btn.disabled = true;
-              btn.textContent = 'Deleting...';
-              try {
-                const delRes = await authFetch(`/api/admin/books/${bookId}`, { method: 'DELETE' });
-                const delData = await delRes.json();
-                if (delRes.ok && delData.success) {
-                  row.remove();
-                } else {
-                  btn.disabled = false;
-                  btn.textContent = 'Delete';
-                }
-              } catch (err) {
+  // CRUD functions (ES6+ refactor)
+const loadBooks = async () => {
+  const booksList = document.getElementById('books-list');
+  if (!booksList) return;
+  booksList.innerHTML = '<div>Loading books...</div>';
+  try {
+    const res = await authFetch('/api/admin/books');
+    if (!res.ok) throw new Error('Failed to load books');
+    const data = await res.json();
+    if (Array.isArray(data) && data.length) {
+      booksList.innerHTML = `<div class="table-responsive"><table class="admin-table modern-table"><thead><tr>
+        <th>ISBN</th><th>Title</th><th>Author</th><th>Price</th><th>Stock</th><th>Action</th></tr></thead><tbody>
+        ${data.map((book, idx) => `
+          <tr data-id="${book._id}" class="${idx % 2 === 0 ? 'even-row' : 'odd-row'}">
+            <td>${book.isbn || book.ISBN || ''}</td>
+            <td>${book.title}</td>
+            <td>${book.author}</td>
+            <td>₹${book.price}</td>
+            <td>
+              ${typeof book.stock === 'number' ? 
+                (book.stock > 0 ? `<span class='badge badge-success'>${book.stock}</span>` : `<span class='badge badge-danger'>Out of Stock</span>`) : 
+                `<span class='badge badge-secondary'>N/A</span>`}
+            </td>
+            <td><button class="delete-book-btn modern-delete-btn">Delete</button></td>
+          </tr>
+        `).join('')}
+      </tbody></table></div>`;
+      // Add delete event listeners with custom modal
+      booksList.querySelectorAll('.delete-book-btn').forEach(btn => {
+        btn.addEventListener('click', async function() {
+          const row = this.closest('tr');
+          const bookId = row.getAttribute('data-id');
+          const confirmed = await customConfirm();
+          if (confirmed) {
+            btn.disabled = true;
+            btn.textContent = 'Deleting...';
+            try {
+              const delRes = await authFetch(`/api/admin/books/${bookId}`, { method: 'DELETE' });
+              const delData = await delRes.json();
+              if (delRes.ok && delData.success) {
+                row.remove();
+              } else {
                 btn.disabled = false;
                 btn.textContent = 'Delete';
               }
+            } catch (err) {
+              btn.disabled = false;
+              btn.textContent = 'Delete';
             }
-          });
+          }
         });
-      } else {
-        booksList.innerHTML = '<div>No books found.</div>';
-      }
-    } catch (e) {
-      booksList.innerHTML = '<div>Error loading books.</div>';
+      });
+    } else {
+      booksList.innerHTML = '<div>No books found.</div>';
     }
+  } catch (e) {
+    booksList.innerHTML = '<div>Error loading books.</div>';
   }
+};
 
-  // Load users list
-  async function loadUsers(page = 1, search = '') {
-    const usersList = document.getElementById('users-list');
-    const pagination = document.getElementById('users-pagination');
-    const searchInput = document.getElementById('user-search');
-    if (!usersList) return;
-    usersList.innerHTML = '<div>Loading users...</div>';
-    try {
-      const res = await authFetch(`/api/admin/users?page=${page}&search=${encodeURIComponent(search)}`);
-      if (!res.ok) throw new Error('Failed to load users');
-      const data = await res.json();
-      if (Array.isArray(data.users) && data.users.length) {
-        usersList.innerHTML = `<div class="table-responsive"><table class="admin-table modern-table"><thead><tr>
-          <th>Name</th><th>Email</th><th>Phone</th><th>Password</th><th>Status</th></tr></thead><tbody>
-          ${data.users.map((user, idx) => `
-            <tr class="${idx % 2 === 0 ? 'even-row' : 'odd-row'}">
-              <td>${user.firstName || ''} ${user.lastName || ''}</td>
-              <td>${user.email}</td>
-              <td>${user.phone || ''}</td>
-              <td>${user.password || ''}</td>
-              <td>${user.isActive ? `<span class='badge badge-success'>Active</span>` : `<span class='badge badge-danger'>Inactive</span>`}</td>
-            </tr>
-          `).join('')}
-        </tbody></table></div>`;
-        // Pagination
-        if (pagination) {
-          let pagHtml = '';
-          for (let i = 1; i <= data.totalPages; i++) {
-            pagHtml += `<button class="user-page-btn" style="margin:0 2px;${i===page?'background:#e94e77;color:#fff;':''}">${i}</button>`;
-          }
-          pagination.innerHTML = pagHtml;
-          pagination.querySelectorAll('.user-page-btn').forEach((btn, idx) => {
-            btn.onclick = () => loadUsers(idx+1, searchInput.value);
-          });
+const loadUsers = async (page = 1, search = '') => {
+  const usersList = document.getElementById('users-list');
+  const pagination = document.getElementById('users-pagination');
+  const searchInput = document.getElementById('user-search');
+  if (!usersList) return;
+  usersList.innerHTML = '<div>Loading users...</div>';
+  try {
+    const res = await authFetch(`/api/admin/users?page=${page}&search=${encodeURIComponent(search)}`);
+    if (!res.ok) throw new Error('Failed to load users');
+    const data = await res.json();
+    if (Array.isArray(data.users) && data.users.length) {
+      usersList.innerHTML = `<div class="table-responsive"><table class="admin-table modern-table"><thead><tr>
+        <th>Name</th><th>Email</th><th>Phone</th><th>Password</th><th>Status</th></tr></thead><tbody>
+        ${data.users.map((user, idx) => `
+          <tr class="${idx % 2 === 0 ? 'even-row' : 'odd-row'}">
+            <td>${user.firstName || ''} ${user.lastName || ''}</td>
+            <td>${user.email}</td>
+            <td>${user.phone || ''}</td>
+            <td>${user.password || ''}</td>
+            <td>${user.isActive ? `<span class='badge badge-success'>Active</span>` : `<span class='badge badge-danger'>Inactive</span>`}</td>
+          </tr>
+        `).join('')}
+      </tbody></table></div>`;
+      // Pagination
+      if (pagination) {
+        let pagHtml = '';
+        for (let i = 1; i <= data.totalPages; i++) {
+          pagHtml += `<button class="user-page-btn" style="margin:0 2px;${i===page?`background:#e94e77;color:#fff;`:''}">${i}</button>`;
         }
-      } else {
-        usersList.innerHTML = '<div>No users found.</div>';
-        if (pagination) pagination.innerHTML = '';
+        pagination.innerHTML = pagHtml;
+        pagination.querySelectorAll('.user-page-btn').forEach((btn, idx) => {
+          btn.onclick = () => loadUsers(idx+1, searchInput.value);
+        });
       }
-    } catch (e) {
-      usersList.innerHTML = '<div>Error loading users.</div>';
+    } else {
+      usersList.innerHTML = '<div>No users found.</div>';
       if (pagination) pagination.innerHTML = '';
     }
-    // Search event
-    if (searchInput && !searchInput._listenerAdded) {
-      searchInput.addEventListener('input', () => loadUsers(1, searchInput.value));
-      searchInput._listenerAdded = true;
-    }
+  } catch (e) {
+    usersList.innerHTML = '<div>Error loading users.</div>';
+    if (pagination) pagination.innerHTML = '';
   }
+  // Search event
+  if (searchInput && !searchInput._listenerAdded) {
+    searchInput.addEventListener('input', () => loadUsers(1, searchInput.value));
+    searchInput._listenerAdded = true;
+  }
+};
 
-  // Load orders list
-  async function loadOrders(page = 1, search = '') {
-    const ordersList = document.getElementById('orders-list');
-    const pagination = document.getElementById('orders-pagination');
-    const searchInput = document.getElementById('order-search');
-    if (!ordersList) return;
-    ordersList.innerHTML = '<div>Loading orders...</div>';
-    try {
-      const res = await authFetch(`/api/admin/orders?page=${page}&search=${encodeURIComponent(search)}`);
-      if (!res.ok) throw new Error('Failed to load orders');
-      const data = await res.json();
-      if (Array.isArray(data.orders) && data.orders.length) {
-        ordersList.innerHTML = `<div class="table-responsive"><table class="admin-table modern-table"><thead><tr>
-          <th>Order ID</th><th>User</th><th>Items</th><th>Total</th><th>Status</th><th>Payment</th><th>Date</th><th>Address</th></tr></thead><tbody>
-          ${data.orders.map((order, idx) => `
-            <tr class="${idx % 2 === 0 ? 'even-row' : 'odd-row'}">
-              <td>${order._id}</td>
-              <td>${order.userName || order.user?.email || order.user}</td>
-              <td>${Array.isArray(order.items) ? order.items.map(item => item.title || item.name).join(', ') : ''}</td>
-              <td>₹${order.total}</td>
-              <td>${order.status ? `<span class='badge badge-${order.status === 'delivered' ? 'success' : (order.status === 'pending' ? 'secondary' : 'danger')}'>${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</span>` : ''}</td>
-              <td>${order.paymentMethod || ''}</td>
-              <td>${order.createdAt ? new Date(order.createdAt).toLocaleString() : ''}</td>
-              <td>${order.shippingAddress ? [order.shippingAddress.street, order.shippingAddress.city, order.shippingAddress.state, order.shippingAddress.zip].filter(Boolean).join(', ') : ''}</td>
-            </tr>
-          `).join('')}
-        </tbody></table></div>`;
-        // Pagination
-        if (pagination) {
-          let pagHtml = '';
-          for (let i = 1; i <= data.totalPages; i++) {
-            pagHtml += `<button class="order-page-btn" style="margin:0 2px;${i===page?'background:#e94e77;color:#fff;':''}">${i}</button>`;
-          }
-          pagination.innerHTML = pagHtml;
-          pagination.querySelectorAll('.order-page-btn').forEach((btn, idx) => {
-            btn.onclick = () => loadOrders(idx+1, searchInput.value);
-          });
+const loadOrders = async (page = 1, search = '') => {
+  const ordersList = document.getElementById('orders-list');
+  const pagination = document.getElementById('orders-pagination');
+  const searchInput = document.getElementById('order-search');
+  if (!ordersList) return;
+  ordersList.innerHTML = '<div>Loading orders...</div>';
+  try {
+    const res = await authFetch(`/api/admin/orders?page=${page}&search=${encodeURIComponent(search)}`);
+    if (!res.ok) throw new Error('Failed to load orders');
+    const data = await res.json();
+    if (Array.isArray(data.orders) && data.orders.length) {
+      ordersList.innerHTML = `<div class="table-responsive"><table class="admin-table modern-table"><thead><tr>
+        <th>Order ID</th><th>User</th><th>Items</th><th>Total</th><th>Status</th><th>Payment</th><th>Date</th><th>Address</th></tr></thead><tbody>
+        ${data.orders.map((order, idx) => `
+          <tr class="${idx % 2 === 0 ? 'even-row' : 'odd-row'}">
+            <td>${order._id}</td>
+            <td>${order.userName || order.user?.email || order.user}</td>
+            <td>${Array.isArray(order.items) ? order.items.map(item => item.title || item.name).join(', ') : ''}</td>
+            <td>₹${order.total}</td>
+            <td>${order.status ? `<span class='badge badge-${order.status === 'delivered' ? 'success' : (order.status === 'pending' ? 'secondary' : 'danger')}'>${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</span>` : ''}</td>
+            <td>${order.paymentMethod || ''}</td>
+            <td>${order.createdAt ? new Date(order.createdAt).toLocaleString() : ''}</td>
+            <td>${order.shippingAddress ? [order.shippingAddress.street, order.shippingAddress.city, order.shippingAddress.state, order.shippingAddress.zip].filter(Boolean).join(', ') : ''}</td>
+          </tr>
+        `).join('')}
+      </tbody></table></div>`;
+      // Pagination
+      if (pagination) {
+        let pagHtml = '';
+        for (let i = 1; i <= data.totalPages; i++) {
+          pagHtml += `<button class="order-page-btn" style="margin:0 2px;${i===page?`background:#e94e77;color:#fff;`:''}">${i}</button>`;
         }
-      } else {
-        ordersList.innerHTML = '<div>No orders found.</div>';
-        if (pagination) pagination.innerHTML = '';
+        pagination.innerHTML = pagHtml;
+        pagination.querySelectorAll('.order-page-btn').forEach((btn, idx) => {
+          btn.onclick = () => loadOrders(idx+1, searchInput.value);
+        });
       }
-    } catch (e) {
-      ordersList.innerHTML = '<div>Error loading orders.</div>';
+    } else {
+      ordersList.innerHTML = '<div>No orders found.</div>';
       if (pagination) pagination.innerHTML = '';
     }
-    // Search event
-    if (searchInput && !searchInput._listenerAdded) {
-      searchInput.addEventListener('input', () => loadOrders(1, searchInput.value));
-      searchInput._listenerAdded = true;
-    }
+  } catch (e) {
+    ordersList.innerHTML = '<div>Error loading orders.</div>';
+    if (pagination) pagination.innerHTML = '';
   }
-  // Duplicate loadUsers function removed - using the more complete version above
-
-  // Duplicate loadOrders function removed - using the more complete version above
-  // Sidebar navigation logic
+  // Search event
+  if (searchInput && !searchInput._listenerAdded) {
+    searchInput.addEventListener('input', () => loadOrders(1, searchInput.value));
+    searchInput._listenerAdded = true;
+  }
+};
+// Sidebar navigation logic
 
   // Show correct section and load data when navigating
   function showSectionWithData(sectionId) {
@@ -954,10 +935,6 @@ document.addEventListener('DOMContentLoaded', function() {
       loadOrders();
     }
     if (sectionId === 'analytics') {
-  // ...removed console.log...
-      loadAnalytics();
-    }
-    if (sectionId === 'dashboard') {
   // ...removed console.log...
       loadAuditLog();
     }
@@ -1054,3 +1031,68 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Settings menu event listeners are now set up in showOnlyPanel() function
 });
+
+// Custom confirmation modal HTML (add to body if not present)
+if (!document.getElementById('custom-confirm-modal')) {
+  const modalHtml = `
+    <div id="custom-confirm-modal" class="custom-modal-overlay" style="display:none;">
+      <div class="custom-modal-box">
+        <div class="custom-modal-title">Confirm Delete</div>
+        <div class="custom-modal-message">Are you sure you want to delete this book?</div>
+        <div class="custom-modal-actions">
+          <button id="custom-modal-cancel" class="custom-modal-btn cancel">Cancel</button>
+          <button id="custom-modal-confirm" class="custom-modal-btn delete">Delete</button>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
+
+// Custom confirm function
+const customConfirm = () => {
+  return new Promise(resolve => {
+    const modal = document.getElementById('custom-confirm-modal');
+    const cancelBtn = document.getElementById('custom-modal-cancel');
+    const confirmBtn = document.getElementById('custom-modal-confirm');
+    modal.style.display = 'flex';
+    const cleanup = () => {
+      modal.style.display = 'none';
+      cancelBtn.removeEventListener('click', onCancel);
+      confirmBtn.removeEventListener('click', onConfirm);
+    };
+    const onCancel = () => { cleanup(); resolve(false); };
+    const onConfirm = () => { cleanup(); resolve(true); };
+    cancelBtn.addEventListener('click', onCancel);
+    confirmBtn.addEventListener('click', onConfirm);
+  });
+};
+
+// Update book delete logic to use customConfirm
+const booksList = document.getElementById('books-list');
+if (booksList) {
+  booksList.querySelectorAll('.delete-book-btn').forEach(btn => {
+    btn.addEventListener('click', async function() {
+      const row = this.closest('tr');
+      const bookId = row.getAttribute('data-id');
+      const confirmed = await customConfirm();
+      if (confirmed) {
+        btn.disabled = true;
+        btn.textContent = 'Deleting...';
+        try {
+          const delRes = await authFetch(`/api/admin/books/${bookId}`, { method: 'DELETE' });
+          const delData = await delRes.json();
+          if (delRes.ok && delData.success) {
+            row.remove();
+          } else {
+            btn.disabled = false;
+            btn.textContent = 'Delete';
+          }
+        } catch (err) {
+          btn.disabled = false;
+          btn.textContent = 'Delete';
+        }
+      }
+    });
+  });
+}
