@@ -1,27 +1,108 @@
-@media (min-width: 901px) {
-	body, #admin-main, .dashboard-cards, .dashboard-card, .dashboard-card-label, .dashboard-card-value, .dashboard-card-icon, h1, h2, h3, h4, h5, h6, .bulk-import-section, .admin-table, .admin-table th, .admin-table td, .custom-file-label, .file-chosen {
-		font-size: 0.97em !important;
+@media (min-width: 901px) and (max-width: 1100px) {
+	.dashboard-cards {
+		grid-template-columns: repeat(4, 1fr) !important;
+		gap: 10px !important;
+		padding: 8px 8px !important;
+		margin-bottom: 0.5em !important;
 	}
-	.dashboard-card-label {
-		font-size: 1em !important;
-	}
-	.dashboard-card-value {
-		font-size: 1.15em !important;
+	.dashboard-card {
+		padding: 8px 0 !important;
+		min-width: 120px !important;
+		font-size: 0.85em !important;
 	}
 	.dashboard-card-icon {
-		font-size: 2.1em !important;
-	}
-	.admin-table th, .admin-table td {
-		font-size: 0.97em !important;
-	}
-	h1 {
-		font-size: 1.5em !important;
-	}
-	h2 {
 		font-size: 1.2em !important;
 	}
+	.dashboard-card-label {
+		font-size: 0.85em !important;
+	}
+	.dashboard-card-value {
+		font-size: 0.9em !important;
+	}
+}
+/* Consistent button style */
+.btn, button, .modern-delete-btn, .delete-book-btn {
+	background: #e94e77;
+	color: #fff;
+	border: none;
+	border-radius: 8px;
+	font-family: 'Poppins', sans-serif;
+	font-size: 1em;
+	padding: 6px 18px;
+	cursor: pointer;
+	transition: background 0.2s, box-shadow 0.2s;
+}
+.btn:disabled, button:disabled {
+	opacity: 0.7;
+	cursor: not-allowed;
+}
+.btn.loading, button.loading {
+	position: relative;
+	pointer-events: none;
+}
+.btn.loading::after, button.loading::after {
+	content: '';
+	/* =============================== */
+	/* 1. Responsive Layouts           */
+	/* =============================== */
+	position: absolute;
+	right: 12px;
+	top: 50%;
+	width: 18px;
+	height: 18px;
+	border: 2px solid #fff;
+	border-top: 2px solid #e94e77;
+	border-radius: 50%;
+	/* =============================== */
+	/* 2. Sidebar Styles               */
+	/* =============================== */
+	animation: spin 0.7s linear infinite;
+	transform: translateY(-50%);
+}
+@keyframes spin {
+	to { transform: rotate(360deg); }
+}
+@media (max-width: 600px) {
+	.admin-table-wrapper {
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+		width: 100%;
+	/* =============================== */
+	/* 3. Dashboard Cards              */
+	/* =============================== */
+		margin-bottom: 1em;
+	}
+	.admin-table {
+		min-width: 600px;
+		width: 100%;
+		display: block;
+	}
+}
+@media (min-width: 901px) {
+	body, #admin-main, .dashboard-cards, .dashboard-card, .dashboard-card-label, .dashboard-card-value, .dashboard-card-icon, h1, h2, h3, h4, h5, h6, .bulk-import-section, .admin-table, .admin-table th, .admin-table td, .custom-file-label, .file-chosen {
+		font-size: 0.92em !important;
+	}
+	.dashboard-card-label {
+		font-size: 0.95em !important;
+	}
+	.dashboard-card-value {
+		font-size: 1em !important;
+	}
+	.dashboard-card-icon {
+		font-size: 1.7em !important;
+	}
+	.admin-table th, .admin-table td,
+	.modern-table th, .modern-table td {
+		font-size: 0.78em !important;
+	}
+	h1 {
+		font-size: 1em !important;
+	}
+	h2 {
+		font-size: 0.9em !important;
+	}
 	h3 {
-		font-size: 1.1em !important;
+		font-size: 0.85em !important;
 	}
 }
 /* Dashboard card active (keyboard) */
@@ -30,6 +111,9 @@
 	background: #ffe3ed;
 	outline: 2px solid #e94e77;
 }
+	/* =============================== */
+	/* 5. Buttons & Badges             */
+	/* =============================== */
 /* Sidebar menu icons */
 .admin-menu .menu-icon {
 	margin-right: 10px;
@@ -47,6 +131,9 @@
 		display: none !important;
 	}
 }
+	/* =============================== */
+	/* 6. Analytics & Misc             */
+	/* =============================== */
 @media (min-width: 601px) and (max-width: 900px) {
 	.admin-sidebar {
 		width: 160px !important;
@@ -70,6 +157,9 @@
 		font-size: 1.7em !important;
 	}
 	.dashboard-card-label {
+	/* =============================== */
+	/* 7. Utility & Theme Variables    */
+	/* =============================== */
 		font-size: 1em !important;
 	}
 	.dashboard-card-value {
@@ -78,6 +168,9 @@
 	.admin-table th, .admin-table td {
 		font-size: 0.95em !important;
 		padding: 6px 8px !important;
+	/* =============================== */
+	/* 8. Miscellaneous                */
+	/* =============================== */
 	}
 	.modern-delete-btn, .delete-book-btn {
 		padding: 3px 8px !important;
@@ -379,17 +472,22 @@
 /* Modern admin table styles */
 .modern-table {
 	width: 100%;
+	min-width: 0;
 	border-collapse: separate;
 	border-spacing: 0;
 	background: #fff;
 	box-shadow: 0 2px 8px rgba(34,34,59,0.06);
 	border-radius: 10px;
-	overflow: hidden;
-	font-size: 1em;
+	overflow-x: auto;
+	font-size: 0.6em;
+	table-layout: auto;
+	word-break: break-word;
 }
 .modern-table th, .modern-table td {
-	padding: 14px 16px;
+	padding: 12px 10px;
 	text-align: left;
+	white-space: normal;
+	word-break: break-word;
 }
 .modern-table thead th {
 	background: #ffe4ec;
@@ -758,4 +856,62 @@ dashboard-card-value {
 	color: var(--primary-color);
 	display: flex !important;
 	display: none !important;
+}
+
+/* Custom modal styles for confirmation dialog */
+.custom-modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(34,34,59,0.25);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+.custom-modal-box {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(233,78,119,0.15);
+  padding: 32px 28px 24px 28px;
+  min-width: 320px;
+  max-width: 90vw;
+  text-align: center;
+}
+.custom-modal-title {
+  font-size: 1.25em;
+  font-weight: bold;
+  color: #e94e77;
+  margin-bottom: 12px;
+}
+.custom-modal-message {
+  font-size: 1em;
+  color: #22223b;
+  margin-bottom: 24px;
+}
+.custom-modal-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+.custom-modal-btn {
+  padding: 8px 24px;
+  border-radius: 6px;
+  border: none;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.custom-modal-btn.cancel {
+  background: #eee;
+  color: #22223b;
+}
+.custom-modal-btn.cancel:hover {
+  background: #ddd;
+}
+.custom-modal-btn.delete {
+  background: #e94e77;
+  color: #fff;
+}
+.custom-modal-btn.delete:hover {
+  background: #c43c63;
 }
