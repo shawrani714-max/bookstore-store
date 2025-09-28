@@ -219,9 +219,9 @@ app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'admin.html'));
 });
 
-console.log('Registering /checkout.html route');
+// ...removed console.log...
 app.get('/checkout.html', (req, res) => {
-  console.log('Serving /checkout.html');
+  // ...removed console.log...
   res.sendFile(path.join(__dirname, 'checkout.html'));
 });
 
@@ -233,8 +233,8 @@ app.use(errorHandler);
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err, promise) => {
-  console.log(`Error: ${err.message}`);
-  console.log('Unhandled Promise Rejection');
+  // ...removed console.log...
+  // ...removed console.log...
   
   // Close server & exit process
   server.close(() => process.exit(1));
@@ -242,8 +242,8 @@ process.on('unhandledRejection', (err, promise) => {
 
 // Handle uncaught exceptions
 process.on('uncaughtException', (err) => {
-  console.log(`Error: ${err.message}`);
-  console.log('Uncaught Exception');
+  // ...removed console.log...
+  // ...removed console.log...
   
   // Close server & exit process
   process.exit(1);
@@ -252,10 +252,10 @@ process.on('uncaughtException', (err) => {
 // Start server
 const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📚 Bookworld India API is live!`);
-  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🔗 API URL: http://localhost:${PORT}/api`);
+  // ...removed console.log...
+  // ...removed console.log...
+  // ...removed console.log...
+  // ...removed console.log...
 });
 
 module.exports = app; 
