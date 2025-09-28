@@ -1,3 +1,24 @@
+@media (max-width: 600px) {
+		.admin-sidebar {
+			padding-top: 48px !important;
+		}
+		.admin-sidebar .sidebar-title, .admin-sidebar h1, .admin-sidebar h2 {
+			display: block !important;
+			visibility: visible !important;
+			font-size: 1em !important;
+			text-align: center !important;
+			margin-bottom: 18px !important;
+			margin-top: 0 !important;
+			white-space: normal !important;
+			position: relative;
+			z-index: 1;
+		}
+		.sidebar-close {
+			top: 12px !important;
+			right: 12px !important;
+			z-index: 2;
+		}
+}
 @media (min-width: 901px) and (max-width: 1100px) {
 	.dashboard-cards {
 		grid-template-columns: repeat(4, 1fr) !important;
@@ -22,15 +43,16 @@
 }
 /* Consistent button style */
 .btn, button, .modern-delete-btn, .delete-book-btn {
-	background: #e94e77;
-	color: #fff;
+	background: transparent !important;
+	color: inherit;
 	border: none;
-	border-radius: 8px;
+	box-shadow: none !important;
+	border-radius: 0 !important;
 	font-family: 'Poppins', sans-serif;
 	font-size: 1em;
-	padding: 6px 18px;
+	padding: 0 !important;
 	cursor: pointer;
-	transition: background 0.2s, box-shadow 0.2s;
+	transition: none;
 }
 .btn:disabled, button:disabled {
 	opacity: 0.7;
@@ -91,10 +113,16 @@
 	.dashboard-card-icon {
 		font-size: 1.7em !important;
 	}
-	.admin-table th, .admin-table td,
-	.modern-table th, .modern-table td {
-		font-size: 0.78em !important;
-	}
+		.admin-table th, .admin-table td {
+			font-size: 0.78em !important;
+			padding: 6px 6px !important;
+			line-height: 1.3 !important;
+		}
+		.modern-table th, .modern-table td {
+			font-size: 0.78em !important;
+			padding: 8px 8px !important;
+			line-height: 1.3 !important;
+		}
 	h1 {
 		font-size: 1em !important;
 	}
@@ -135,6 +163,37 @@
 	/* 6. Analytics & Misc             */
 	/* =============================== */
 @media (min-width: 601px) and (max-width: 900px) {
+	body, #admin-main, section, .bulk-import-section, .dashboard-cards, .dashboard-card, .admin-sidebar, .admin-menu, .admin-menu a, .settings-menu, .settings-submenu, .custom-file-label, .file-chosen {
+		font-size: 0.95em !important;
+	}
+	h1, .sidebar-title {
+		font-size: 1.5em !important;
+		margin-bottom: 0.5em !important;
+	}
+	h2 {
+		font-size: 1.5em !important;
+		margin-bottom: 0.5em !important;
+	}
+	h3 {
+		font-size: 0.9em !important;
+	}
+	.btn, button, .modern-delete-btn, .delete-book-btn {
+		font-size: 1em !important;
+		padding: 5px 14px !important;
+	}
+	.admin-menu a {
+		padding: 0.75em !important;
+	}
+	.dashboard-card-icon {
+		font-size: 1.2em !important;
+	}
+	.dashboard-card-label {
+		font-size: 0.95em !important;
+	}
+	.dashboard-card-value {
+		font-size: 1.5em !important;
+	}
+}
 	.admin-sidebar {
 		width: 160px !important;
 	}
@@ -165,20 +224,20 @@
 	.dashboard-card-value {
 		font-size: 1.1em !important;
 	}
-	.admin-table th, .admin-table td {
-		font-size: 0.95em !important;
-		padding: 6px 8px !important;
-	/* =============================== */
-	/* 8. Miscellaneous                */
-	/* =============================== */
-	}
+		.admin-table th, .admin-table td {
+			font-size: 1.2em !important;
+			padding: 4px 6px !important;
+		}
+		.modern-table th, .modern-table td {
+			font-size: 1.2em !important;
+			padding: 10px 8px !important;
+		}
 	.modern-delete-btn, .delete-book-btn {
 		padding: 3px 8px !important;
 		min-width: 50px !important;
 		height: 24px !important;
 		font-size: 0.98em !important;
 	}
-}
 /* Sidebar always visible on desktop/tablet, hidden/toggle on mobile */
 .admin-sidebar {
 	transition: transform 0.35s cubic-bezier(0.4,0,0.2,1), box-shadow 0.3s;
@@ -205,37 +264,39 @@
 	z-index: 1101;
 }
 
+
 .hamburger-icon {
-	width: 13px;
-	height: 13px;
+	width: 18px;
+	height: 18px;
 	display: block;
 	position: relative;
+	background: none !important;
+	box-shadow: none !important;
+	border-radius: 0 !important;
+	margin-left:0px !important;
+	padding-left: 0px!important;
 }
-.hamburger-icon::before,
-.hamburger-icon::after,
-.hamburger-icon span,
-.hamburger-icon .line3 {
-	content: '';
+.hamburger-icon .bar {
 	display: block;
 	position: absolute;
 	left: 0;
 	width: 100%;
-	height: 2px;
+	height: 4px;
 	background: #e94e77;
-	border-radius: 2px;
+	border-radius: 4px;
 	transition: all 0.3s;
 }
-.hamburger-icon::before {
-	top: 1px;
+.hamburger-icon .bar1 {
+	top: 2px;
+	left:0.5px;
 }
-.hamburger-icon .line3 {
-	top: 10px;
+.hamburger-icon .bar2 {
+	top: 9px;
+	left:0.5px;
 }
-.hamburger-icon span {
-	top: 19px;
-}
-.hamburger-icon::after {
-	top: 28px;
+.hamburger-icon .bar3 {
+	top: 16px;
+	left:0.5px;
 }
 /* Default: hide close icon */
 .sidebar-close {
@@ -352,7 +413,7 @@
 		.sidebar-toggle {
 			position: fixed;
 			top: 18px;
-			left: 18px;
+			left: 6px;
 			z-index: 1102;
 			display: flex !important;
 		}
@@ -545,6 +606,10 @@
 .table-responsive {
 	width: 100%;
 	overflow-x: auto;
+	background: transparent;
+	border-radius: 10px;
+	box-shadow: none;
+	margin-bottom: 1em;
 }
 /* Analytics summary cards */
 .analytics-summary-cards {
@@ -685,14 +750,20 @@ body {
 	background: var(--card-color);
 }
 .admin-table th, .admin-table td {
-	padding: 0.5em 1em;
+	padding: 0.7em 1.2em;
 	border-bottom: 1px solid var(--table-border);
 	text-align: left;
+	white-space: nowrap;
+	font-size: 1em;
 }
 .admin-table th {
-	background: var(--table-header-bg);
-	font-weight: bold;
-	color: var(--table-text);
+	background: #ffe4ec;
+	font-weight: 600;
+	color: #e94e77;
+	font-size: 1.05em;
+	letter-spacing: 0.5px;
+	border-bottom: 2px solid #f3d6e3;
+	white-space: nowrap;
 }
 .admin-table tr:last-child td {
 	border-bottom: none;
