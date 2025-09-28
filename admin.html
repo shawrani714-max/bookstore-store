@@ -14,7 +14,7 @@
       <h2>Admin Login</h2>
       <input type="email" id="admin-email" placeholder="Email" required />
       <input type="password" id="admin-password" placeholder="Password" required />
-      <button type="submit">Login</button>
+  <button type="submit" aria-label="Login">Login</button>
       <div id="admin-login-error" style="color:red;margin-top:10px;"></div>
     </form>
   </div>
@@ -22,7 +22,7 @@
     <div class="admin-sidebar" id="admin-sidebar">
       <!-- Close icon for sidebar (visible only on small screens) -->
   <button id="sidebar-close" class="sidebar-close" aria-label="Close sidebar">
-        <span class="close-icon">&times;</span>
+  <span class="close-icon" aria-hidden="true">&times;</span>
       </button>
       <div class="admin-profile">
         <h1>Bookstore Admin Panel</h1>
@@ -45,7 +45,7 @@
     </div>
     <!-- Hamburger menu for mobile (only visible when sidebar is closed) -->
     <button id="sidebar-toggle" class="sidebar-toggle" aria-label="Open sidebar">
-  <span class="hamburger-icon"><span class="line3"></span></span>
+  <span class="hamburger-icon" aria-hidden="true"><span class="line3"></span></span>
     </button>
     <main id="admin-main">
   <section id="dashboard" class="admin-section-hidden" style="display:none;">
@@ -84,7 +84,7 @@
           <input type="file" id="excel-file" class="custom-file-input" accept=".xlsx,.xls" required />
           <label for="excel-file" class="custom-file-label">Choose File</label>
           <span class="file-chosen" id="file-chosen">No file chosen</span>
-          <button type="submit">Upload</button>
+          <button type="submit" aria-label="Upload Excel File">Upload</button>
           <span id="excel-upload-status" style="margin-left:10px;"></span>
         </form>
         <div id="books-list"></div>
@@ -238,7 +238,7 @@
         <div id="page-management-ui" style="max-width:500px;margin-top:20px;">
           <div style="margin-bottom:16px;">
             <input type="text" id="new-page-name" placeholder="New page name" style="width:60%;padding:6px;">
-            <button id="add-page-btn" style="background:#e94e77;color:#fff;padding:6px 16px;border:none;border-radius:8px;font-family:'Poppins',sans-serif;cursor:pointer;">Add Page</button>
+            <button id="add-page-btn" style="background:#e94e77;color:#fff;padding:6px 16px;border:none;border-radius:8px;font-family:'Poppins',sans-serif;cursor:pointer;" aria-label="Add Page">Add Page</button>
           </div>
           <ul id="pages-list" style="list-style:none;padding:0;margin:0;border:1px solid #eee;border-radius:8px;background:#fff;">
             <!-- Pages will be listed here -->
