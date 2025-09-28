@@ -19,20 +19,20 @@
     </form>
   </div>
   <div id="admin-panel" style="display:none;">
-    <!-- Hamburger menu for mobile -->
-    <button id="sidebar-toggle" class="sidebar-toggle" aria-label="Open sidebar" style="display:none;">
-      <span class="hamburger-icon"></span>
-    </button>
     <div class="admin-sidebar" id="admin-sidebar">
+      <!-- Close icon for sidebar (visible only on small screens) -->
+  <button id="sidebar-close" class="sidebar-close" aria-label="Close sidebar">
+        <span class="close-icon">&times;</span>
+      </button>
       <div class="admin-profile">
         <h1>Bookstore Admin Panel</h1>
       </div>
       <ul class="admin-menu">
-          <li><a href="#dashboard" aria-label="Dashboard">Dashboard</a></li>
-          <li><a href="#books" aria-label="Manage Books">Manage Books</a></li>
-          <li><a href="#users" aria-label="Manage Users">Manage Users</a></li>
-          <li><a href="#orders" aria-label="Manage Orders">Manage Orders</a></li>
-          <li><a href="#analytics" aria-label="Analytics">Analytics</a></li>
+          <li><a href="#dashboard" aria-label="Dashboard" role="menuitem"><span class="menu-icon" aria-hidden="true">🏠</span> Dashboard</a></li>
+          <li><a href="#books" aria-label="Manage Books" role="menuitem"><span class="menu-icon" aria-hidden="true">📚</span> Manage Books</a></li>
+          <li><a href="#users" aria-label="Manage Users" role="menuitem"><span class="menu-icon" aria-hidden="true">👤</span> Manage Users</a></li>
+          <li><a href="#orders" aria-label="Manage Orders" role="menuitem"><span class="menu-icon" aria-hidden="true">🛒</span> Manage Orders</a></li>
+          <li><a href="#analytics" aria-label="Analytics" role="menuitem"><span class="menu-icon" aria-hidden="true">📊</span> Analytics</a></li>
           <li class="settings-menu">
             <a href="#settings" id="settings-link">Settings</a>
             <ul class="settings-submenu" style="display:none;">
@@ -43,6 +43,10 @@
           </li>
       </ul>
     </div>
+    <!-- Hamburger menu for mobile (only visible when sidebar is closed) -->
+    <button id="sidebar-toggle" class="sidebar-toggle" aria-label="Open sidebar">
+  <span class="hamburger-icon"><span class="line3"></span></span>
+    </button>
     <main id="admin-main">
   <section id="dashboard" class="admin-section-hidden" style="display:none;">
         <h2>Dashboard</h2>
@@ -70,7 +74,7 @@
         </div>
         <div id="audit-log-section" style="margin-top:32px;">
           <h3>Recent Admin Actions</h3>
-          <ul id="audit-log-list" style="list-style:none;padding:0;margin:0;background:#fff;border-radius:8px;border:1px solid #eee;"></ul>
+          <ul id="audit-log-list" style="list-style:none;padding:0;margin:0;background:#fff;border-radius:8px;border:1px solid #eee;font-size:8px"></ul>
         </div>
       </section>
   <section id="books" class="admin-section-hidden" style="display:none;">
@@ -245,24 +249,5 @@
     </main>
   </div>
   <script src="js/admin.js"></script>
-  <script>
-    // Hamburger menu toggle for mobile
-    const sidebarToggle = document.getElementById('sidebar-toggle');
-    const adminSidebar = document.getElementById('admin-sidebar');
-    function updateSidebarVisibility() {
-      if (window.innerWidth <= 600) {
-        sidebarToggle.style.display = 'block';
-        adminSidebar.classList.add('sidebar-hidden');
-      } else {
-        sidebarToggle.style.display = 'none';
-        adminSidebar.classList.remove('sidebar-hidden');
-      }
-    }
-    window.addEventListener('resize', updateSidebarVisibility);
-    window.addEventListener('DOMContentLoaded', updateSidebarVisibility);
-    sidebarToggle.addEventListener('click', function() {
-      adminSidebar.classList.toggle('sidebar-hidden');
-    });
-  </script>
 </body>
 </html>
