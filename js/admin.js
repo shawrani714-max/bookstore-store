@@ -1,4 +1,67 @@
+    // Hide sidebar by default on mobile after login
+    // Removed forced sidebar-hidden addition here. Only setupSidebarToggle controls sidebar-hidden.
 document.addEventListener('DOMContentLoaded', function() {
+  // Hamburger menu toggle for mobile sidebar
+  function setupSidebarToggle() {
+  const sidebar = document.getElementById('admin-sidebar');
+  const hamburgerBtn = document.getElementById('sidebar-toggle');
+  const closeBtn = document.getElementById('sidebar-close');
+    function isMobile() {
+      return window.innerWidth <= 600;
+    }
+  if (sidebar && hamburgerBtn) {
+      // Only add sidebar-hidden if not already present
+      if (isMobile() && !sidebar.classList.contains('sidebar-hidden')) {
+        sidebar.classList.add('sidebar-hidden');
+      }
+      // Hamburger should always be visible when sidebar is hidden (handled by CSS)
+      // Hamburger click opens sidebar (mobile only)
+      hamburgerBtn.onclick = function() {
+        if (isMobile()) {
+          sidebar.classList.remove('sidebar-hidden');
+        }
+      };
+      // Close button click closes sidebar (mobile only)
+      if (closeBtn) {
+        closeBtn.onclick = function() {
+          if (isMobile()) {
+            sidebar.classList.add('sidebar-hidden');
+          }
+        };
+      }
+      // No need to manually toggle display, CSS now handles icon visibility
+      window.addEventListener('resize', function() {
+        if (!isMobile()) {
+          sidebar.classList.remove('sidebar-hidden');
+        }
+      });
+    }
+  }
+  setupSidebarToggle();
+  // Keyboard navigation for sidebar menu
+  const menuLinks = document.querySelectorAll('.admin-menu a');
+  menuLinks.forEach(link => {
+    link.tabIndex = 0;
+    link.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        link.click();
+      }
+    });
+  });
+
+  // Dashboard card hover/active accessibility
+  const dashboardCards = document.querySelectorAll('.dashboard-card');
+  dashboardCards.forEach(card => {
+    card.tabIndex = 0;
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-label', card.querySelector('.dashboard-card-label')?.textContent || 'Dashboard stat');
+    card.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        card.classList.add('dashboard-card-active');
+        setTimeout(() => card.classList.remove('dashboard-card-active'), 200);
+      }
+    });
+  });
   // Custom file input logic for bulk import (declare first!)
   const excelFileInput = document.getElementById('excel-file');
   const fileChosenSpan = document.getElementById('file-chosen');
@@ -78,6 +141,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // Show admin panel, hide login
     if (loginContainer) loginContainer.style.display = 'none';
     if (panelContainer) panelContainer.style.display = 'block';
+    // Show hamburger button on mobile when admin panel is visible
+    var hamburgerBtn = document.getElementById('sidebar-toggle');
+    if (hamburgerBtn) {
+      if (window.innerWidth <= 600) {
+        hamburgerBtn.style.display = 'flex';
+      } else {
+        hamburgerBtn.style.display = 'none';
+      }
+    }
     // Hide all sections, then show dashboard only
     const allSections = document.querySelectorAll('#admin-main > section');
     allSections.forEach(sec => { sec.style.display = 'none'; });
@@ -86,14 +158,14 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Attach sidebar menu event listeners (excluding settings link)
     const menuLinks = document.querySelectorAll('.admin-menu a:not(#settings-link)');
-    console.log('Setting up navigation for', menuLinks.length, 'menu links');
+  // ...removed console.log...
     if (menuLinks.length) {
       menuLinks.forEach(link => {
-        console.log('Setting up click handler for:', link.getAttribute('href'));
+  // ...removed console.log...
         link.onclick = function(e) {
           e.preventDefault();
           const target = this.getAttribute('href').replace('#', '');
-          console.log('Menu link clicked:', target);
+          // ...removed console.log...
           showSectionWithData(target);
         };
       });
@@ -108,7 +180,7 @@ document.addEventListener('DOMContentLoaded', function() {
       // Expand/collapse on click
       settingsLink.addEventListener('click', function(e) {
         e.preventDefault();
-        console.log('Settings main link clicked');
+  // ...removed console.log...
         settingsSubmenu.style.display = settingsSubmenu.style.display === 'none' ? 'block' : 'none';
         // Don't navigate to a section, just expand/collapse the submenu
       });
@@ -123,13 +195,13 @@ document.addEventListener('DOMContentLoaded', function() {
       
       // Show correct section on sub-link click
       const subLinks = document.querySelectorAll('.settings-sub-link');
-      console.log('Setting up', subLinks.length, 'settings sub-links');
+  // ...removed console.log...
       subLinks.forEach(link => {
-        console.log('Setting up sub-link handler for:', link.getAttribute('href'));
+  // ...removed console.log...
         link.onclick = function(e) {
           e.preventDefault();
           const target = this.getAttribute('href').replace('#', '');
-          console.log('Settings sub-link clicked:', target);
+          // ...removed console.log...
           showSectionWithData(target);
         };
       });
@@ -706,7 +778,7 @@ document.addEventListener('DOMContentLoaded', function() {
                   (book.stock > 0 ? `<span class='badge badge-success'>${book.stock}</span>` : `<span class='badge badge-danger'>Out of Stock</span>`) : 
                   `<span class='badge badge-secondary'>N/A</span>`}
               </td>
-              <td><button class="delete-book-btn modern-delete-btn"><span class="icon-trash">🗑️</span> Delete</button></td>
+              <td><button class="delete-book-btn modern-delete-btn">Delete</button></td>
             </tr>
           `).join('')}
         </tbody></table></div>`;
@@ -851,46 +923,46 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Show correct section and load data when navigating
   function showSectionWithData(sectionId) {
-    console.log('showSectionWithData called with:', sectionId);
+  // ...removed console.log...
     // Hide all sections first
     const sections = document.querySelectorAll('#admin-main > section');
-    console.log('Found sections:', sections.length);
+  // ...removed console.log...
     sections.forEach(sec => { 
       sec.style.display = 'none';
-      console.log('Hiding section:', sec.id);
+  // ...removed console.log...
     });
     // Show the selected section
     const targetSection = document.getElementById(sectionId);
-    console.log('Target section found:', targetSection);
+  // ...removed console.log...
     if (targetSection) {
       targetSection.style.display = 'block';
-      console.log('Showing section:', sectionId);
+  // ...removed console.log...
     } else {
-      console.error('Section not found:', sectionId);
+  // ...removed console.error...
     }
     // Load data for the selected section
     if (sectionId === 'books') {
-      console.log('Loading books...');
+  // ...removed console.log...
       loadBooks();
     }
     if (sectionId === 'users') {
-      console.log('Loading users...');
+  // ...removed console.log...
       loadUsers();
     }
     if (sectionId === 'orders') {
-      console.log('Loading orders...');
+  // ...removed console.log...
       loadOrders();
     }
     if (sectionId === 'analytics') {
-      console.log('Loading analytics...');
+  // ...removed console.log...
       loadAnalytics();
     }
     if (sectionId === 'dashboard') {
-      console.log('Loading dashboard...');
+  // ...removed console.log...
       loadAuditLog();
     }
     if (sectionId === 'theme-settings' || sectionId === 'font-settings' || sectionId === 'page-management') {
-      console.log('Loading settings section:', sectionId);
+  // ...removed console.log...
     }
   }
 
@@ -948,7 +1020,7 @@ document.addEventListener('DOMContentLoaded', function() {
   if (loginForm) {
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      console.log('Login form submitted');
+  // ...removed console.log...
       loginError.textContent = '';
       try {
         const submitBtn = loginForm.querySelector('button[type="submit"]');
@@ -958,7 +1030,7 @@ document.addEventListener('DOMContentLoaded', function() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: emailInput.value.trim(), password: passwordInput.value })
         });
-        console.log('Login API response:', res);
+  // ...removed console.log...
         const data = await res.json();
         console.log('Login API data:', data);
         if (!res.ok || !data.success) {
