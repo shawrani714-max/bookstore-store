@@ -46,6 +46,7 @@
               <li><a href="#theme-settings" class="settings-sub-link" aria-label="Theme Settings">Theme</a></li>
               <li><a href="#font-settings" class="settings-sub-link" aria-label="Font Settings">Font</a></li>
               <li><a href="#page-management" class="settings-sub-link" aria-label="Page Management">Pages</a></li>
+              <li><a href="#banner-management" class="settings-sub-link" aria-label="Banner Management">Banners</a></li>
             </ul>
           </li>
       </ul>
@@ -87,6 +88,48 @@
           <h3>Recent Admin Actions</h3>
           <ul id="audit-log-list" style="list-style:none;padding:0;margin:0;background:#fff;border-radius:8px;border:1px solid #eee;font-size:8px"></ul>
         </div>
+      </section>
+      <section id="banner-management" class="admin-section-hidden" style="display:none;">
+        <h2>Banner Management</h2>
+        <form id="banner-form" enctype="multipart/form-data" style="max-width:520px;margin-top:16px;display:grid;gap:10px;">
+          <input type="text" id="banner-title" placeholder="Title (optional)" />
+          <input type="text" id="banner-subtitle" placeholder="Subtitle (optional)" />
+          <div style="display:flex;gap:8px;">
+            <input type="text" id="banner-cta-text" placeholder="CTA Text (optional)" />
+            <input type="text" id="banner-cta-link" placeholder="CTA Link (optional)" />
+          </div>
+          <div style="display:flex;gap:12px;align-items:center;">
+            <label style="display:flex;align-items:center;gap:6px;">
+              <input type="checkbox" id="banner-overlay" /> Gradient Overlay
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;">
+              Text Color <input type="color" id="banner-text-color" value="#ffffff" />
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;">
+              CTA Text <input type="color" id="banner-cta-color" value="#ffffff" />
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;">
+              CTA BG <input type="color" id="banner-cta-bg" value="#e94e77" />
+            </label>
+          </div>
+          <div>
+            <label for="banner-image">Image (upload or paste URL below)</label>
+            <input type="file" id="banner-image" accept="image/*" />
+          </div>
+          <input type="url" id="banner-image-url" placeholder="Or Image URL" />
+          <progress id="banner-progress" value="0" max="100" style="width:100%;display:none;"></progress>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input type="number" id="banner-order" placeholder="Order (0..)" value="0" style="width:120px;" />
+            <label style="display:flex;align-items:center;gap:6px;">
+              <input type="checkbox" id="banner-active" checked /> Active
+            </label>
+          </div>
+          <button type="submit" class="btn" style="max-width:140px;">Add Banner</button>
+          <span id="banner-status" style="color:var(--primary-color);"></span>
+        </form>
+
+        <div id="banners-list" style="margin-top:18px;border:1px solid #eee;border-radius:8px;background:#fff;padding:10px;"></div>
+        <div id="banner-preview" aria-label="Banner Preview" style="margin-top:18px;"></div>
       </section>
   <section id="books" class="admin-section-hidden" style="display:none;">
         <h2>Manage Books</h2>
