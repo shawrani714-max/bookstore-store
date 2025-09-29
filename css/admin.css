@@ -901,6 +901,36 @@ h2 {
   font-weight: 700;
   letter-spacing: 0.5px;
 }
+/* Banner management layout */
+#banner-management h2 { color: var(--heading-color); }
+#banner-management #banner-form {
+  background: var(--card-color);
+  border: 1px solid var(--table-border);
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+#banner-management #banner-form input[type="text"],
+#banner-management #banner-form input[type="number"],
+#banner-management #banner-form input[type="url"],
+#banner-management #banner-form input[type="file"] {
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  padding: 6px 8px;
+  background: var(--card-color);
+}
+#banner-management #banner-form button {
+  background: var(--button-color) !important;
+  color: var(--button-text-color) !important;
+}
+#banners-list { margin-top: 12px; }
+#banners-list .banner-row { background: var(--card-color); border-radius: 8px; }
+#banners-list .banner-row:hover { background: #fff7fb; }
+#banners-list .drag-handle { color: var(--heading-color); }
+#banner-status { color: var(--heading-color); font-weight: 600; }
+#banner-preview .preview-card { position: relative; border-radius: 12px; overflow: hidden; min-height: 160px; display:flex; align-items:center; justify-content:center; background:#ddd; }
+#banner-preview .preview-card .overlay { position:absolute; inset:0; background:linear-gradient(135deg, rgba(0,0,0,.45), rgba(0,0,0,.25)); display:none; }
+#banner-preview .preview-card .content { position:relative; text-align:center; padding:24px; }
 /* Dashboard stat cards */
 .dashboard-cards {
 	display: flex;
