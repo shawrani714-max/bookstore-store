@@ -233,8 +233,6 @@ app.use(errorHandler);
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err, promise) => {
-  // ...removed console.log...
-  // ...removed console.log...
   
   // Close server & exit process
   server.close(() => process.exit(1));
@@ -242,9 +240,6 @@ process.on('unhandledRejection', (err, promise) => {
 
 // Handle uncaught exceptions
 process.on('uncaughtException', (err) => {
-  // ...removed console.log...
-  // ...removed console.log...
-  
   // Close server & exit process
   process.exit(1);
 });
@@ -252,10 +247,6 @@ process.on('uncaughtException', (err) => {
 // Start server
 const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, '0.0.0.0', () => {
-  // ...removed console.log...
-  // ...removed console.log...
-  // ...removed console.log...
-  // ...removed console.log...
 });
 
 module.exports = app; 
