@@ -43,16 +43,17 @@
 }
 /* Consistent button style */
 .btn, button, .modern-delete-btn, .delete-book-btn {
-	background: transparent !important;
-	color: inherit;
-	border: none;
+	background: var(--button-color) !important;
+	color: var(--button-text-color) !important;
+	border: none !important;
 	box-shadow: none !important;
-	border-radius: 0 !important;
+	border-radius: 6px !important;
 	font-family: 'Poppins', sans-serif;
 	font-size: 1em;
-	padding: 0 !important;
+	padding: 6px 18px !important;
 	cursor: pointer;
-	transition: none;
+	transition: background 0.2s, color 0.2s;
+	display: inline-block;
 }
 .btn:disabled, button:disabled {
 	opacity: 0.7;
@@ -717,14 +718,24 @@
 #admin-login-container {
 	display: block;
 }
+/* Center admin login container */
+#admin-login-container.login-bg {
+  min-height: 30vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-color);
+  margin-left : 38%;
+  margin-top: 15%;
+}
 /* Theme variables */
 :root {
 	--primary-color: #e94e77;
 	--accent-color: #ff6b9d;
-	--bg-color: #f1f1f1;
+	--bg-color: #f7f7f7;
 	--card-color: #fff;
-	--sidebar-text: #fff;
-	--sidebar-border: #ff6b9d;
+	--button-color: #e94e77;
+	--button-text-color: #fff;
 	--heading-color: #e94e77;
 	--table-header-bg: #f4f6f8;
 	--table-border: #eee;
@@ -985,4 +996,200 @@ dashboard-card-value {
 }
 .custom-modal-btn.delete:hover {
   background: #c43c63;
+}
+
+/* Admin Login Page Styles */
+.login-bg {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-color);
+}
+.login-card {
+  background: #fff;
+  padding: 2.5em 2em 2em 2em;
+  border-radius: 18px;
+  box-shadow: 0 4px 32px rgba(233,78,119,0.10);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 320px;
+  max-width: 350px;
+  position: relative;
+}
+.login-logo {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  margin-bottom: 1em;
+  animation: logo-bounce 1.2s infinite alternate;
+}
+@keyframes logo-bounce {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-10px); }
+}
+.login-title {
+  color: #e94e77;
+  font-family: 'Poppins', Arial, sans-serif;
+  font-size: 1em !important;
+  font-weight: 700;
+  margin-bottom: 1.2em;
+  letter-spacing: 0.5px;
+}
+.login-input {
+  width: 100%;
+  padding: 0.7em 1em;
+  margin-bottom: 1em;
+  border: 1px solid #eec9d2;
+  border-radius: 20px;
+  font-size: 1em;
+  font-family: 'Poppins', Arial, sans-serif;
+  transition: border 0.2s;
+}
+.password-wrapper {
+	position: relative;
+	width: 100%;
+}
+
+.password-wrapper {
+	padding-right: 40px;
+}
+
+.toggle-password {
+	position: absolute;
+	right: 18px;
+	top: 50%;
+	transform: translateY(-50%);
+	cursor: pointer;
+	font-size: 1.2em;
+	color: #e94e77;
+	user-select: none;
+	transition: color 0.2s;
+	display: none;
+}
+.toggle-password:active,
+.toggle-password:focus {
+	color: #c13c63;
+}
+.login-input:focus {
+  border-color: #e94e77;
+  outline: none;
+}
+.login-btn {
+  width: 100%;
+  height : 30px;
+  background: #e94e77 !important;
+  color: #fff !important;
+  border: none;
+  border-radius: 18px !important;
+  padding: 0.8em 0;
+  font-size: 1.08em !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(233,78,119,0.08);
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-bottom: 0.5em;
+  margin-left : 8px;
+}
+.login-btn:hover {
+  background: #c2185b;
+}
+.login-error {
+  color: #e94e77;
+  font-size: 0.95em;
+  margin-top: 0.5em;
+  min-height: 1.2em;
+}
+.login-books-anim {
+  display: flex;
+  gap: 10px;
+  margin-top: 1.2em;
+  justify-content: center;
+}
+.book-anim {
+  width: 32px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(233,78,119,0.10);
+  animation: book-float 2s infinite ease-in-out alternate;
+}
+.book-anim:nth-child(2) {
+  animation-delay: 0.5s;
+}
+.book-anim:nth-child(3) {
+  animation-delay: 1s;
+}
+@keyframes book-float {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-12px); }
+}
+@media (max-width: 600px) {
+  #admin-login-container {
+    min-width: 85vw;
+    max-width: 90w;
+    padding: 1.2em 0.7em 1.2em 0.7em;
+	margin-left : 2%!important;
+    margin-top: 20%!important;
+	margin-right : 10%!important;
+  }
+  .login-card {
+    min-width: 90vw;
+    max-width: 95vw;
+    padding: 1.2em 0.7em 1.2em 0.7em;
+  }
+  .login-logo {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 0.7em;
+  }
+  .login-title {
+    font-size: 1.1em;
+    margin-bottom: 0.8em;
+  }
+  .login-btn {
+    font-size: 1em;
+    height: 38px;
+  }
+}
+/* Table header uses accent color, table rows use card color */
+.admin-table th, .modern-table th {
+    background: var(--accent-color) !important;
+    color: #fff !important;
+    font-weight: 600;
+    border-bottom: 2px solid #f3d6e3;
+}
+.admin-table td, .modern-table td {
+    background: var(--card-color) !important;
+    color: #22223b !important;
+}
+.admin-table tr.even-row, .modern-table tr.even-row {
+    background: var(--card-color) !important;
+}
+.admin-table tr.odd-row, .modern-table tr.odd-row {
+    background: var(--card-color) !important;
+}
+.bulk-import-section label {
+    color: #000 !important;
+}
+.custom-modal-title{
+    color: var(--heading-color) !important;
+}
+.delete-book-btn,
+.modern-delete-btn {
+    background: #cc222a !important;
+    color: #fff !important;
+}
+.delete-book-btn:hover,
+.modern-delete-btn:hover {
+    background: #e75353 !important;
+}
+.login-btn {
+    background: var(--button-color) !important;
+    color: #fff !important;
+}
+.login-title {
+    color: var(--heading-color) !important;
 }
