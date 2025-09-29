@@ -1,0 +1,21 @@
+body { font-family: Arial, sans-serif; background: #f4f6f8; margin: 0; }
+#affiliate-container { max-width: 600px; margin: 40px auto; background: #fff; padding: 2em; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+h1 { color: #222; }
+h2 { color: #444; margin-top: 2em; }
+#referral-link { font-size: 1em; padding: 0.5em; margin-bottom: 1em; }
+#affiliate-earnings { font-size: 1.2em; color: #2e7d32; margin-bottom: 1em; }
+#affiliate-orders { list-style: none; padding: 0; }
+#affiliate-orders li { background: #f9f9f9; margin-bottom: 8px; padding: 8px; border-radius: 4px; }
+
+@media (max-width: 600px) {
+	#affiliate-container {
+		max-width: 100%;
+		margin: 10px;
+		padding: 1em;
+		border-radius: 6px;
+	}
+	#affiliate-orders li {
+		padding: 6px;
+		font-size: 0.95em;
+	}
+}
