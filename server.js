@@ -5,9 +5,12 @@ const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 const dotenv = require('dotenv');
 const path = require('path');
+const cookieParser = require('cookie-parser');
 
 // Load environment variables
 dotenv.config({ path: './config.env' });
+const { validateEnv } = require('./config/requiredEnv');
+try { validateEnv(); } catch (e) { console.error(e.message); process.exit(1); }
 
 // Import database connection
 const connectDB = require('./config/database');
@@ -50,7 +53,7 @@ app.use(helmet({
       ],
       imgSrc: ["'self'", "data:", "https:", "blob:"],
       scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://widget.cloudinary.com"],
-      connectSrc: ["'self'", "https://api.cloudinary.com"]
+      connectSrc: ["'self'", "https://api.cloudinary.com", "https://cdn.jsdelivr.net"]
     }
   }
 }));
@@ -72,6 +75,7 @@ app.use('/api/', limiter);
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(cookieParser());
 
 // CORS configuration
 app.use(cors({
@@ -125,6 +129,7 @@ app.get('/api', (req, res) => {
       coupons: '/api/coupons',
       reviews: '/api/reviews',
       admin: '/api/admin',
+      banners: '/api/banners',
       affiliate: '/api/affiliate',
       orderAdmin: '/api/order-admin'
     }
@@ -146,6 +151,17 @@ app.use('/api/reviews', reviewRoutes);
 // Register admin API route
 const adminRoutes = require('./routes/admin');
 app.use('/api/admin', adminRoutes);
+
+// Public banners endpoint
+const Banner = require('./models/Banner');
+app.get('/api/banners', async (req, res) => {
+  try {
+    const banners = await Banner.find({ active: true }).sort({ order: 1, createdAt: -1 });
+    res.json({ success: true, data: banners });
+  } catch (e) {
+    res.status(500).json({ success: false, message: 'Failed to load banners' });
+  }
+});
 
 // Serve HTML pages
 app.get('/', (req, res) => {
@@ -247,6 +263,11 @@ process.on('uncaughtException', (err) => {
 // Start server
 const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, '0.0.0.0', () => {
+  console.log('Registering /checkout.html route');
+  console.log(`🚀 Server running on port ${PORT}`);
+  console.log('📚 Bookworld India API is live!');
+  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`🔗 API URL: http://localhost:${PORT}/api`);
 });
 
 module.exports = app; 
