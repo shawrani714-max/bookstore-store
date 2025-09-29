@@ -522,10 +522,13 @@ if (addPageBtn && newPageNameInput && pagesListEl) {
       // Set form values
       const form = document.getElementById('theme-settings-form');
       if (form) {
-        form.primaryColor.value = settings.primaryColor;
-        form.accentColor.value = settings.accentColor;
-        form.bgColor.value = settings.bgColor;
-        form.cardColor.value = settings.cardColor;
+        if (form.primaryColor) form.primaryColor.value = settings.primaryColor;
+        if (form.accentColor) form.accentColor.value = settings.accentColor;
+        if (form.backgroundColor) form.backgroundColor.value = settings.bgColor;
+        if (form.bgColor) form.bgColor.value = settings.bgColor;
+        if (form.cardColor) form.cardColor.value = settings.cardColor;
+        if (form.buttonColor) form.buttonColor.value = settings.buttonColor || getComputedStyle(document.documentElement).getPropertyValue('--button-color').trim();
+        if (form.headingColor) form.headingColor.value = settings.headingColor || getComputedStyle(document.documentElement).getPropertyValue('--heading-color').trim();
       }
     }
   }
@@ -950,6 +953,53 @@ const loadOrders = async (page = 1, search = '') => {
   const emailInput = document.getElementById('admin-email');
   const passwordInput = document.getElementById('admin-password');
   const loginError = document.getElementById('admin-login-error');
+  // Password show/hide toggle for admin login
+  (function() {
+    var passwordInput = document.getElementById('admin-password');
+    var togglePassword = document.getElementById('toggle-password');
+    if (passwordInput && togglePassword) {
+      // Hide icon initially
+      togglePassword.style.display = 'none';
+      // Show icon on focus or if value exists
+      function updateIconVisibility() {
+        if (passwordInput === document.activeElement || passwordInput.value.length > 0) {
+          togglePassword.style.display = 'inline';
+        } else {
+          togglePassword.style.display = 'none';
+        }
+      }
+      passwordInput.addEventListener('focus', updateIconVisibility);
+      passwordInput.addEventListener('input', updateIconVisibility);
+      passwordInput.addEventListener('blur', function() {
+        setTimeout(updateIconVisibility, 150);
+      });
+      // Initial check in case autofill
+      updateIconVisibility();
+      // Eye icon logic
+      function setEyeIcon(type) {
+        if (type === 'password') {
+          // Slashed eye SVG
+          togglePassword.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e94e77" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l22 22"/><path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-5 0-9.27-3.11-11-7.5a11.05 11.05 0 0 1 5.17-5.17"/><path d="M9.53 9.53A3 3 0 0 0 12 15a3 3 0 0 0 2.47-5.47"/><path d="M14.47 14.47L9.53 9.53"/><path d="M22.54 6.42A11.05 11.05 0 0 0 12 5c-2.61 0-5.01.84-7.04 2.25"/></svg>';
+        } else {
+          // Eye SVG
+          togglePassword.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e94e77" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12C3.73 7.11 8.1 4 12 4s8.27 3.11 11 8c-2.73 4.89-7.1 8-11 8s-8.27-3.11-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+        }
+      }
+      setEyeIcon('password');
+      togglePassword.addEventListener('click', function() {
+        var type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        togglePassword.setAttribute('aria-label', type === 'password' ? 'Show password' : 'Hide password');
+        setEyeIcon(type);
+      });
+      togglePassword.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          togglePassword.click();
+        }
+      });
+    }
+  })();
   // ...existing code...
 
   const showPanel = () => {
@@ -1096,3 +1146,143 @@ if (booksList) {
     });
   });
 }
+
+// Custom confirm modal for theme save (with Yes/No buttons and custom title)
+async function customThemeConfirm() {
+  return new Promise(resolve => {
+    let modal = document.getElementById('custom-theme-confirm-modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'custom-theme-confirm-modal';
+      modal.className = 'custom-modal-overlay';
+      modal.style.display = 'none';
+      modal.innerHTML = `
+        <div class="custom-modal-box">
+          <div class="custom-modal-title" style="color:#e94e77;font-size:1.3em;font-weight:600;margin-bottom:8px;">Save Theme</div>
+          <div class="custom-modal-message" style="margin-bottom:18px;font-size:1.08em;">Are you sure you want to save this theme?</div>
+          <div class="custom-modal-actions" style="display:flex;gap:16px;justify-content:center;">
+            <button id="custom-theme-cancel" class="custom-modal-btn cancel" style="background:#aaa;color:#fff;min-width:80px;">No</button>
+            <button id="custom-theme-confirm" class="custom-modal-btn delete" style="background:#e94e77;color:#fff;min-width:80px;">Yes</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+    modal.style.display = 'flex';
+    const cancelBtn = modal.querySelector('#custom-theme-cancel');
+    const confirmBtn = modal.querySelector('#custom-theme-confirm');
+    const cleanup = () => {
+      modal.style.display = 'none';
+      cancelBtn.removeEventListener('click', onCancel);
+      confirmBtn.removeEventListener('click', onConfirm);
+    };
+    const onCancel = () => { cleanup(); resolve(false); };
+    const onConfirm = () => { cleanup(); resolve(true); };
+    cancelBtn.addEventListener('click', onCancel);
+    confirmBtn.addEventListener('click', onConfirm);
+  });
+}
+
+// Extend theme customization to support button and heading color
+// ...existing code...
+
+// REMOVE Live Theme Preview logic and references
+// Delete or comment out all code related to:
+// - theme-preview-bar
+// - theme-preview-card
+// - theme-preview-bg
+// - updatePreview function for preview only
+function applySavedThemeSettings() {
+  const saved = localStorage.getItem('adminThemeSettings');
+  if (saved) {
+    const settings = JSON.parse(saved);
+    document.documentElement.style.setProperty('--primary-color', settings.primaryColor);
+    document.documentElement.style.setProperty('--accent-color', settings.accentColor);
+    document.documentElement.style.setProperty('--bg-color', settings.bgColor);
+    document.documentElement.style.setProperty('--card-color', settings.cardColor);
+    document.documentElement.style.setProperty('--button-color', settings.buttonColor);
+    document.documentElement.style.setProperty('--heading-color', settings.headingColor);
+  }
+}
+document.addEventListener('DOMContentLoaded', applySavedThemeSettings);
+(function() {
+  var themeForm = document.getElementById('theme-settings-form');
+  if (!themeForm) return;
+  // Add button and heading color pickers if not present
+  if (!document.getElementById('buttonColor')) {
+    var btnLabel = document.createElement('label');
+    btnLabel.htmlFor = 'buttonColor';
+    btnLabel.textContent = 'Button Color:';
+    var btnInput = document.createElement('input');
+    btnInput.type = 'color';
+    btnInput.id = 'buttonColor';
+    btnInput.name = 'buttonColor';
+    btnInput.value = getComputedStyle(document.documentElement).getPropertyValue('--button-color').trim() || '#e94e77';
+    btnInput.style = 'margin-bottom:10px;width:100%;border:2px solid #e94e77;border-radius:8px;height:40px;';
+    themeForm.insertBefore(btnLabel, themeForm.querySelector('div'));
+    themeForm.insertBefore(btnInput, themeForm.querySelector('div'));
+  }
+  if (!document.getElementById('headingColor')) {
+    var headingLabel = document.createElement('label');
+    headingLabel.htmlFor = 'headingColor';
+    headingLabel.textContent = 'Heading Color:';
+    var headingInput = document.createElement('input');
+    headingInput.type = 'color';
+    headingInput.id = 'headingColor';
+    headingInput.name = 'headingColor';
+    headingInput.value = getComputedStyle(document.documentElement).getPropertyValue('--heading-color').trim() || '#e94e77';
+    headingInput.style = 'margin-bottom:10px;width:100%;border:2px solid #e94e77;border-radius:8px;height:40px;';
+    themeForm.insertBefore(headingLabel, themeForm.querySelector('div'));
+    themeForm.insertBefore(headingInput, themeForm.querySelector('div'));
+  }
+    // Set color pickers to saved values on page load
+  const saved = localStorage.getItem('adminThemeSettings');
+  if (saved) {
+    const settings = JSON.parse(saved);
+    if (themeForm.primaryColor) themeForm.primaryColor.value = settings.primaryColor;
+    if (themeForm.accentColor) themeForm.accentColor.value = settings.accentColor;
+    if (themeForm.backgroundColor) themeForm.backgroundColor.value = settings.bgColor;
+    if (themeForm.bgColor) themeForm.bgColor.value = settings.bgColor;
+    if (themeForm.cardColor) themeForm.cardColor.value = settings.cardColor;
+    if (themeForm.buttonColor) themeForm.buttonColor.value = settings.buttonColor || '#e94e77';
+    if (themeForm.headingColor) themeForm.headingColor.value = settings.headingColor || '#e94e77';
+  }
+
+  // REMOVE updatePreview and previewBar/previewCard/previewBg logic
+  // Only apply theme on save/confirm
+  themeForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    var statusEl = document.getElementById('theme-save-status');
+    var btnInput = document.getElementById('buttonColor');
+    var headingInput = document.getElementById('headingColor');
+    var settings = {
+      primaryColor: themeForm.primaryColor.value,
+      accentColor: themeForm.accentColor.value,
+      bgColor: themeForm.backgroundColor ? themeForm.backgroundColor.value : themeForm.bgColor.value,
+      cardColor: themeForm.cardColor.value,
+      buttonColor: btnInput.value,
+      headingColor: headingInput.value
+    };
+    if (!settings.primaryColor || !settings.accentColor || !settings.bgColor || !settings.cardColor || !settings.buttonColor || !settings.headingColor) {
+      statusEl.textContent = 'All colors are required.';
+      return;
+    }
+    // Show custom confirm modal
+    const confirmed = await customThemeConfirm();
+    if (!confirmed) {
+      statusEl.textContent = 'Theme save cancelled.';
+      setTimeout(function() { statusEl.textContent = ''; }, 2000);
+      return;
+    }
+    // Save to localStorage and apply
+    localStorage.setItem('adminThemeSettings', JSON.stringify(settings));
+    document.documentElement.style.setProperty('--primary-color', settings.primaryColor);
+    document.documentElement.style.setProperty('--accent-color', settings.accentColor);
+    document.documentElement.style.setProperty('--bg-color', settings.bgColor);
+    document.documentElement.style.setProperty('--card-color', settings.cardColor);
+    document.documentElement.style.setProperty('--button-color', settings.buttonColor);
+    document.documentElement.style.setProperty('--heading-color', settings.headingColor);
+    statusEl.textContent = 'Theme saved!';
+    setTimeout(function() { statusEl.textContent = ''; }, 2000);
+  });
+})();
