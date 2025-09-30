@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Affiliate Marketing Program - Bookworld India</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .affiliate-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+        
+        .affiliate-hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .affiliate-hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+        
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .benefit-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .benefit-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .benefit-card .icon {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+        
+        .benefit-card h3 {
+            color: #2d3748;
+            margin-bottom: 1rem;
+        }
+        
+        .benefit-card p {
+            color: #718096;
+            line-height: 1.6;
+        }
+        
+        .commission-section {
+            background: #f8fafc;
+            padding: 4rem 0;
+            text-align: center;
+        }
+        
+        .commission-card {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .commission-rate {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #38a169;
+            margin: 1rem 0;
+        }
+        
+        .steps-section {
+            padding: 4rem 0;
+        }
+        
+        .step-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+        
+        .step-number {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        
+        .step-content h4 {
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+        
+        .step-content p {
+            color: #718096;
+            margin: 0;
+        }
+        
+        .cta-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+        
+        .cta-button {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            color: #667eea;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: #718096;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        @media (max-width: 768px) {
+            .affiliate-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .step-card {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .commission-rate {
+                font-size: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header-main">
+        <nav class="navbar navbar-expand-lg">
+            <div class="container">
+                <a class="navbar-brand" href="/">
+                    <i class="fas fa-book-open"></i> Bookworld India
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav mx-auto">
+                        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/shop">Shop</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/blog">Blog</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
+                    </ul>
+                    <div class="navbar-icons">
+                        <a href="/login" class="btn btn-outline-primary me-2">Login</a>
+                        <a href="/signup" class="btn btn-primary">Sign Up</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="affiliate-hero">
+        <div class="container">
+            <h1><i class="fas fa-handshake"></i> Join Our Affiliate Program</h1>
+            <p>Earn money by promoting Bookworld India's amazing book collection</p>
+            <a href="/affiliate" class="cta-button">
+                <i class="fas fa-rocket"></i> Start Earning Now
+            </a>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section class="container py-5">
+        <div class="text-center mb-5">
+            <h2>Why Join Our Affiliate Program?</h2>
+            <p class="text-muted">Discover the benefits of partnering with Bookworld India</p>
+        </div>
+        
+        <div class="benefits-grid">
+            <div class="benefit-card">
+                <div class="icon"><i class="fas fa-dollar-sign"></i></div>
+                <h3>High Commission Rates</h3>
+                <p>Earn up to 5% commission on every sale you refer. The more you sell, the more you earn!</p>
+            </div>
+            
+            <div class="benefit-card">
+                <div class="icon"><i class="fas fa-chart-line"></i></div>
+                <h3>Real-time Analytics</h3>
+                <p>Track your performance with detailed analytics and real-time earnings reports.</p>
+            </div>
+            
+            <div class="benefit-card">
+                <div class="icon"><i class="fas fa-tools"></i></div>
+                <h3>Marketing Tools</h3>
+                <p>Access banners, widgets, and promotional materials to help you succeed.</p>
+            </div>
+            
+            <div class="benefit-card">
+                <div class="icon"><i class="fas fa-users"></i></div>
+                <h3>Dedicated Support</h3>
+                <p>Get help from our dedicated affiliate support team whenever you need it.</p>
+            </div>
+            
+            <div class="benefit-card">
+                <div class="icon"><i class="fas fa-clock"></i></div>
+                <h3>Fast Payouts</h3>
+                <p>Receive your earnings quickly with our fast and secure payment system.</p>
+            </div>
+            
+            <div class="benefit-card">
+                <div class="icon"><i class="fas fa-globe"></i></div>
+                <h3>Global Reach</h3>
+                <p>Promote to customers worldwide and earn commissions from international sales.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Commission Section -->
+    <section class="commission-section">
+        <div class="container">
+            <div class="commission-card">
+                <h2>Earn Up To</h2>
+                <div class="commission-rate">5%</div>
+                <h3>Commission on Every Sale</h3>
+                <p class="text-muted">No limits, no caps. The more you refer, the more you earn!</p>
+                
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number">₹500</div>
+                        <div class="stat-label">Average Order</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">₹25</div>
+                        <div class="stat-label">Per Sale</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">100+</div>
+                        <div class="stat-label">Active Affiliates</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="steps-section">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2>How It Works</h2>
+                <p class="text-muted">Get started in just 3 simple steps</p>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="step-card">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Sign Up</h4>
+                            <p>Create your affiliate account and get your unique referral link</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="step-card">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Share & Promote</h4>
+                            <p>Share your link on social media, blogs, or websites</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="step-card">
+                        <div class="step-content">
+                            <h4>Earn Commissions</h4>
+                            <p>Get paid for every sale made through your referral link</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Success Stories -->
+    <section class="container py-5">
+        <div class="text-center mb-5">
+            <h2>Success Stories</h2>
+            <p class="text-muted">See how our affiliates are earning</p>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-4">
+                <div class="benefit-card">
+                    <div class="icon"><i class="fas fa-user"></i></div>
+                    <h3>Sarah M.</h3>
+                    <p>"I've earned over ₹50,000 in just 3 months by sharing book recommendations on my blog!"</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="benefit-card">
+                    <div class="icon"><i class="fas fa-user"></i></div>
+                    <h3>Rajesh K.</h3>
+                    <p>"The marketing tools provided are excellent. My social media posts drive consistent sales."</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="benefit-card">
+                    <div class="icon"><i class="fas fa-user"></i></div>
+                    <h3>Priya S.</h3>
+                    <p>"Fast payouts and great support. This program has been a game-changer for my income!"</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <h2>Ready to Start Earning?</h2>
+            <p>Join thousands of successful affiliates and start earning today!</p>
+            <a href="/affiliate" class="cta-button">
+                <i class="fas fa-rocket"></i> Join Now - It's Free!
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer-main bg-dark text-white pt-5 pb-2">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <h5 class="text-white">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/about">About Us</a></li>
+                        <li><a href="/contact">Contact</a></li>
+                        <li><a href="/shop">Shop</a></li>
+                        <li><a href="/affiliate">Affiliate Program</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <h5 class="text-white">Contact Us</h5>
+                    <p>Email: support@bookworldindia.com<br>Phone: +91 12345 67890</p>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <h5 class="text-white">Follow Us</h5>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <h5 class="text-white">Affiliate Program</h5>
+                    <p>Earn money by promoting our books. Join our affiliate program today!</p>
+                    <a href="/affiliate" class="btn btn-outline-light btn-sm">Join Now</a>
+                </div>
+            </div>
+            <hr>
+            <div class="text-center">
+                <p>&copy; 2023 Bookworld India. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
