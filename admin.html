@@ -91,34 +91,38 @@
       </section>
       <section id="banner-management" class="admin-section-hidden" style="display:none;">
         <h2>Banner Management</h2>
-        <form id="banner-form" enctype="multipart/form-data" style="max-width:520px;margin-top:16px;display:grid;gap:10px;">
-          <input type="text" id="banner-title" placeholder="Title (optional)" />
-          <input type="text" id="banner-subtitle" placeholder="Subtitle (optional)" />
-          <div style="display:flex;gap:8px;">
-            <input type="text" id="banner-cta-text" placeholder="CTA Text (optional)" />
-            <input type="text" id="banner-cta-link" placeholder="CTA Link (optional)" />
-          </div>
-          <div style="display:flex;gap:12px;align-items:center;">
-            <label style="display:flex;align-items:center;gap:6px;">
-              <input type="checkbox" id="banner-overlay" /> Gradient Overlay
-            </label>
-            <label style="display:flex;align-items:center;gap:6px;">
-              Text Color <input type="color" id="banner-text-color" value="#ffffff" />
-            </label>
-            <label style="display:flex;align-items:center;gap:6px;">
-              CTA Text <input type="color" id="banner-cta-color" value="#ffffff" />
-            </label>
-            <label style="display:flex;align-items:center;gap:6px;">
-              CTA BG <input type="color" id="banner-cta-bg" value="#e94e77" />
-            </label>
-          </div>
-          <div>
-            <label for="banner-image">Image (upload or paste URL below)</label>
-            <input type="file" id="banner-image" accept="image/*" />
-          </div>
-          <input type="url" id="banner-image-url" placeholder="Or Image URL" />
-          <progress id="banner-progress" value="0" max="100" style="width:100%;display:none;"></progress>
-          <div style="display:flex;gap:8px;align-items:center;">
+        
+        <!-- Add New Banner Form -->
+        <div class="banner-form-container">
+          <h3>Add New Banner</h3>
+          <form id="banner-form" enctype="multipart/form-data" style="max-width:520px;margin-top:16px;display:grid;gap:10px;">
+            <input type="text" id="banner-title" placeholder="Title (optional)" />
+            <input type="text" id="banner-subtitle" placeholder="Subtitle (optional)" />
+            <div style="display:flex;gap:8px;">
+              <input type="text" id="banner-cta-text" placeholder="CTA Text (optional)" />
+              <input type="text" id="banner-cta-link" placeholder="CTA Link (optional)" />
+            </div>
+            <div style="display:flex;gap:12px;align-items:center;">
+              <label style="display:flex;align-items:center;gap:6px;">
+                <input type="checkbox" id="banner-overlay" /> Gradient Overlay
+              </label>
+              <label style="display:flex;align-items:center;gap:6px;">
+                Text Color <input type="color" id="banner-text-color" value="#ffffff" />
+              </label>
+              <label style="display:flex;align-items:center;gap:6px;">
+                CTA Text <input type="color" id="banner-cta-color" value="#ffffff" />
+              </label>
+              <label style="display:flex;align-items:center;gap:6px;">
+                CTA BG <input type="color" id="banner-cta-bg" value="#e94e77" />
+              </label>
+            </div>
+            <div>
+              <label for="banner-image">Image (upload or paste URL below)</label>
+              <input type="file" id="banner-image" accept="image/*" />
+            </div>
+            <input type="url" id="banner-image-url" placeholder="Or Image URL" />
+            <progress id="banner-progress" value="0" max="100" style="width:100%;display:none;"></progress>
+            <div style="display:flex;gap:8px;align-items:center;">
             <input type="number" id="banner-order" placeholder="Order (0..)" value="0" style="width:120px;" />
             <label style="display:flex;align-items:center;gap:6px;">
               <input type="checkbox" id="banner-active" checked /> Active
@@ -128,7 +132,28 @@
           <span id="banner-status" style="color:var(--primary-color);"></span>
         </form>
 
-        <div id="banners-list" style="margin-top:18px;border:1px solid #eee;border-radius:8px;background:#fff;padding:10px;"></div>
+        <div id="banners-list" style="
+          margin-top: 18px; 
+          border: 1px solid #eee; 
+          border-radius: 8px; 
+          background: #f8f9fa; 
+          padding: 20px;
+          min-height: 200px;
+        ">
+          <div style="text-align: center; color: #666; padding: 40px;" id="banners-loading">
+            <div style="font-size: 18px; margin-bottom: 10px;">📋</div>
+            <div>Loading banners...</div>
+            <button onclick="renderBannersAdminList()" style="
+              margin-top: 10px; 
+              padding: 8px 16px; 
+              background: #007bff; 
+              color: white; 
+              border: none; 
+              border-radius: 4px; 
+              cursor: pointer;
+            ">Refresh Banners</button>
+          </div>
+        </div>
         <div id="banner-preview" aria-label="Banner Preview" style="margin-top:18px;"></div>
       </section>
   <section id="books" class="admin-section-hidden" style="display:none;">
