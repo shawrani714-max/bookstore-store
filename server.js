@@ -7,6 +7,9 @@ const dotenv = require('dotenv');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 
+// Import logger
+const logger = require('./utils/logger');
+
 // Load environment variables
 dotenv.config({ path: './config.env' });
 const { validateEnv } = require('./config/requiredEnv');
@@ -53,6 +56,7 @@ app.use(helmet({
       ],
       imgSrc: ["'self'", "data:", "https:", "blob:"],
       scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://widget.cloudinary.com"],
+
       connectSrc: ["'self'", "https://api.cloudinary.com", "https://cdn.jsdelivr.net"]
     }
   }
@@ -225,6 +229,11 @@ app.get('/affiliate', (req, res) => {
   res.sendFile(path.join(__dirname, 'affiliate.html'));
 });
 
+// Serve affiliate marketing page
+app.get('/affiliate-program', (req, res) => {
+  res.sendFile(path.join(__dirname, 'affiliate-marketing.html'));
+});
+
 // Serve admin order management page
 app.get('/admin-orders', (req, res) => {
   res.sendFile(path.join(__dirname, 'admin-orders.html'));
@@ -263,6 +272,13 @@ process.on('uncaughtException', (err) => {
 // Start server
 const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, '0.0.0.0', () => {
+  logger.info('Registering /checkout.html route');
+  logger.info(`🚀 Server running on port ${PORT}`);
+  logger.info('📚 Bookworld India API is live!');
+  logger.info(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+  logger.info(`🔗 API URL: http://localhost:${PORT}/api`);
+  
+  // Also log to console for immediate feedback
   console.log('Registering /checkout.html route');
   console.log(`🚀 Server running on port ${PORT}`);
   console.log('📚 Bookworld India API is live!');
