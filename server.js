@@ -65,7 +65,7 @@ app.use(helmet({
 // Rate limiting
 const limiter = rateLimit({
   windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
-  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100, // limit each IP to 100 requests per windowMs
+  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 1000, // limit each IP to 1000 requests per windowMs
   message: {
     success: false,
     message: 'Too many requests from this IP, please try again later.'
@@ -74,7 +74,20 @@ const limiter = rateLimit({
   legacyHeaders: false,
 });
 
+// More lenient rate limiter for auth routes
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 50, // limit each IP to 50 auth requests per windowMs
+  message: {
+    success: false,
+    message: 'Too many login attempts from this IP, please try again later.'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 app.use('/api/', limiter);
+app.use('/api/auth/', authLimiter);
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
@@ -169,85 +182,85 @@ app.get('/api/banners', async (req, res) => {
 
 // Serve HTML pages
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+  res.sendFile(path.join(__dirname, 'html files', 'index.html'));
 });
 
 app.get('/shop', (req, res) => {
-  res.sendFile(path.join(__dirname, 'shop.html'));
+  res.sendFile(path.join(__dirname, 'html files', 'shop.html'));
 });
 
 app.get('/cart', (req, res) => {
-  res.sendFile(path.join(__dirname, 'cart.html'));
+  res.sendFile(path.join(__dirname, 'html files', 'cart.html'));
 });
 
 app.get('/login', (req, res) => {
-  res.sendFile(path.join(__dirname, 'login.html'));
+  res.sendFile(path.join(__dirname, 'html files', 'login.html'));
 });
 
 app.get('/signup', (req, res) => {
-  res.sendFile(path.join(__dirname, 'signup.html'));
+  res.sendFile(path.join(__dirname, 'html files', 'signup.html'));
 });
 
 app.get('/profile', (req, res) => {
-  res.sendFile(path.join(__dirname, 'profile.html'));
+  res.sendFile(path.join(__dirname, 'html files', 'profile.html'));
 });
 
 app.get('/wishlist', (req, res) => {
-  res.sendFile(path.join(__dirname, 'wishlist.html'));
+  res.sendFile(path.join(__dirname, 'html files', 'wishlist.html'));
 });
 
 app.get('/about', (req, res) => {
-  res.sendFile(path.join(__dirname, 'about.html'));
+  res.sendFile(path.join(__dirname, 'html files', 'about.html'));
 });
 
 app.get('/contact', (req, res) => {
-  res.sendFile(path.join(__dirname, 'contact.html'));
+  res.sendFile(path.join(__dirname, 'html files', 'contact.html'));
 });
 
 app.get('/blog', (req, res) => {
-  res.sendFile(path.join(__dirname, 'blog.html'));
+  res.sendFile(path.join(__dirname, 'html files', 'blog.html'));
 });
 
 app.get('/book.html', (req, res) => {
-  res.sendFile(path.join(__dirname, 'book.html'));
+  res.sendFile(path.join(__dirname, 'html files', 'book.html'));
 });
 
 app.get('/blog-detail.html', (req, res) => {
-  res.sendFile(path.join(__dirname, 'blog-detail.html'));
+  res.sendFile(path.join(__dirname, 'html files', 'blog-detail.html'));
 });
 
 app.get('/order-success.html', (req, res) => {
-  res.sendFile(path.join(__dirname, 'order-success.html'));
+  res.sendFile(path.join(__dirname, 'html files', 'order-success.html'));
 });
 
 app.get('/view-orders.html', (req, res) => {
-  res.sendFile(path.join(__dirname, 'view-orders.html'));
+  res.sendFile(path.join(__dirname, 'html files', 'view-orders.html'));
 });
 
 // Serve affiliate dashboard
 app.get('/affiliate', (req, res) => {
-  res.sendFile(path.join(__dirname, 'affiliate.html'));
+  res.sendFile(path.join(__dirname, 'html files', 'affiliate.html'));
 });
 
 // Serve affiliate marketing page
 app.get('/affiliate-program', (req, res) => {
-  res.sendFile(path.join(__dirname, 'affiliate-marketing.html'));
+  res.sendFile(path.join(__dirname, 'html files', 'affiliate-marketing.html'));
 });
 
 // Serve admin order management page
 app.get('/admin-orders', (req, res) => {
-  res.sendFile(path.join(__dirname, 'admin-orders.html'));
+  res.sendFile(path.join(__dirname, 'html files', 'admin-orders.html'));
 });
 
 // Serve admin panel HTML
 app.get('/admin', (req, res) => {
-  res.sendFile(path.join(__dirname, 'admin.html'));
+  res.sendFile(path.join(__dirname, 'html files', 'admin.html'));
 });
 
 // ...removed console.log...
 app.get('/checkout.html', (req, res) => {
   // ...removed console.log...
-  res.sendFile(path.join(__dirname, 'checkout.html'));
+  res.sendFile(path.join(__dirname, 'html files', 'checkout.html'));
 });
 
 // 404 handler
