@@ -1,0 +1,2303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Account - Bookworld India</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
+    <script src="../js/theme-preload.js"></script>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/account.css">
+    <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+    
+    <!-- Custom Modal Styles -->
+    <style>
+        /* Loading state styles */
+        .profile-loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .custom-modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(34,34,59,0.25);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        .custom-modal-box {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(233,78,119,0.15);
+            padding: 32px 28px 24px 28px;
+            min-width: 320px;
+            max-width: 90vw;
+            text-align: center;
+        }
+        .custom-modal-title {
+            font-size: 1.25em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 12px;
+        }
+        .custom-modal-message {
+            font-size: 1em;
+            color: #22223b;
+            margin-bottom: 24px;
+        }
+        .custom-modal-actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+        }
+        .custom-modal-btn {
+            padding: 8px 24px;
+            border-radius: 6px;
+            border: none;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .custom-modal-btn.delete {
+            background: #2c3e50;
+            color: #fff;
+        }
+        .custom-modal-btn.delete:hover {
+            background: #34495e;
+        }
+        .custom-modal-btn.cancel {
+            background: #eee;
+            color: #22223b;
+        }
+        .custom-modal-btn.cancel:hover {
+            background: #ddd;
+        }
+        
+        /* Order Details Modal Styles */
+        .order-modal-box {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            max-width: 600px;
+            width: 90vw;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            /* Hide scrollbar for Chrome, Safari and Opera */
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* Internet Explorer 10+ */
+        }
+        
+        .order-modal-box::-webkit-scrollbar {
+            display: none; /* WebKit */
+        }
+        
+        .order-modal-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            padding: 1.5rem 2rem;
+            border-radius: 16px 16px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .order-modal-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .order-modal-title i {
+            font-size: 1.2rem;
+        }
+        
+        .modal-close-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-close-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+        
+        .order-modal-body {
+            padding: 2rem;
+        }
+        
+        .order-info-section {
+            margin-bottom: 2rem;
+        }
+        
+        .order-info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .order-info-row:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            font-weight: 500;
+            color: #666;
+            font-size: 0.95rem;
+        }
+        
+        .info-value {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .total-amount {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+        
+        .order-status-badge {
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .order-status-badge.delivered {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .order-status-badge.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .order-status-badge.processing {
+            background: #cce7ff;
+            color: #004085;
+        }
+        
+        .section-title {
+            color: #333;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-color);
+        }
+        
+        .order-items-list {
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal-order-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+        }
+        
+        .modal-order-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .modal-item-image {
+            width: 60px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 6px;
+            margin-right: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .modal-item-info {
+            flex: 1;
+        }
+        
+        .modal-item-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.25rem;
+        }
+        
+        .modal-item-quantity {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .modal-item-price {
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+        
+        .order-summary-list {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .summary-row:last-child {
+            border-bottom: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--primary-color);
+        }
+        
+        .order-modal-footer {
+            padding: 1.5rem 2rem;
+            background: #f8f9fa;
+            border-radius: 0 0 16px 16px;
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+        
+        .order-modal-footer .btn {
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .order-modal-footer .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+</head>
+<body>
+    <script type="module" src="../js/auth-guard.js"></script>
+    <header class="header-main">
+        <nav class="navbar navbar-expand-lg">
+            <div class="container">
+                <a class="navbar-brand" href="../">
+                    <img src="../images/logo/BookWorld Log.png" alt="Bookworld India" class="logo-img">
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav mx-auto">
+                        <li class="nav-item"><a class="nav-link" href="../">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="../shop">Shop</a></li>
+                        <li class="nav-item"><a class="nav-link" href="../blog">Blog</a></li>
+                        <li class="nav-item"><a class="nav-link" href="../about">About</a></li>
+                        <li class="nav-item"><a class="nav-link" href="../contact">Contact</a></li>
+                    </ul>
+                    <div class="navbar-icons">
+                        <a href="../wishlist" class="position-relative"><i class="fas fa-heart"></i><span class="badge bg-danger icon-badge" id="wishlist-count">0</span></a>
+                        <a href="../cart" class="position-relative"><i class="fas fa-shopping-cart"></i><span class="badge bg-danger icon-badge" id="cart-count">0</span></a>
+                        <a href="../profile"><i class="fas fa-user-circle"></i></a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Profile Hero Section -->
+    <section class="profile-hero-section py-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <div class="profile-hero-content">
+                        <h1 class="profile-hero-title">My Account</h1>
+                        <p class="profile-hero-subtitle">Manage your profile, orders, and preferences</p>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="profile-hero-stats">
+                        <div class="stat-item">
+                            <span class="stat-number" id="total-orders">0</span>
+                            <span class="stat-label">Total Orders</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" id="wishlist-items">0</span>
+                            <span class="stat-label">Wishlist Items</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <main class="container py-5">
+        <div id="profile-content">
+            <div class="profile-layout-container">
+                <div class="profile-sidebar">
+                    <div class="profile-card">
+                        <div class="profile-header">
+                            <div class="profile-avatar">
+                                <img src="" alt="User Profile" class="profile-img" id="user-profile-image">
+                                <div class="profile-avatar-overlay">
+                                    <i class="fas fa-camera"></i>
+                                </div>
+                            </div>
+                            <div class="profile-info">
+                                <h5 class="profile-name" id="user-name"><span class="loading-spinner"></span> Loading...</h5>
+                                <p class="profile-email" id="user-email"><span class="loading-spinner"></span> Loading...</p>
+                                <span class="profile-status">
+                                    <i class="fas fa-circle"></i> Active
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="profile-stats">
+                            <div class="stat-item">
+                                <span class="stat-number" id="profile-orders">0</span>
+                                <span class="stat-label">Orders</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number" id="profile-wishlist">0</span>
+                                <span class="stat-label">Wishlist</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number" id="profile-reviews">0</span>
+                                <span class="stat-label">Reviews</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="profile-navigation">
+                        <a href="#profile" class="nav-item active" data-section="profile">
+                            <i class="fas fa-user"></i>
+                            <span>Profile</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                        <a href="#addresses" class="nav-item" data-section="addresses">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Saved Addresses</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                        <a href="#orders" class="nav-item" data-section="orders">
+                            <i class="fas fa-shopping-bag"></i>
+                            <span>My Orders</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                        <a href="#wishlist" class="nav-item" data-section="wishlist">
+                            <i class="fas fa-heart"></i>
+                            <span>Wishlist</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                        <a href="#reviews" class="nav-item" data-section="reviews">
+                            <i class="fas fa-star"></i>
+                            <span>Reviews</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                        <a href="#settings" class="nav-item" data-section="settings">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                        <a href="#" id="logout-button" class="nav-item logout">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="profile-content">
+                        <!-- Profile Section -->
+                        <div id="profile" class="content-section active">
+                            <div class="section-header">
+                                <h2 class="section-title">Profile Information</h2>
+                                <p class="section-subtitle">Manage your personal information and preferences</p>
+                            </div>
+                            
+                            <div class="profile-info-card">
+                                <div class="card-header">
+                                    <h5><i class="fas fa-user me-2"></i>Personal Details</h5>
+                                    <button class="btn btn-outline-primary btn-sm" id="edit-profile-btn">
+                                        <i class="fas fa-edit me-1"></i>Edit
+                                    </button>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="info-item">
+                                                <label>Full Name</label>
+                                                <p id="display-name"><span class="loading-spinner"></span> Loading...</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="info-item">
+                                                <label>Email Address</label>
+                                                <p id="display-email"><span class="loading-spinner"></span> Loading...</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="info-item">
+                                                <label>Phone Number</label>
+                                                <p id="display-phone">Not provided</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="info-item">
+                                                <label>Member Since</label>
+                                                <p id="member-since">Loading...</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="info-item">
+                                                <label>Bio</label>
+                                                <p id="display-bio">No bio provided yet</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Edit Profile Form (Hidden by default) -->
+                            <div class="profile-edit-form" id="profile-edit-form" style="display: none;">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5><i class="fas fa-edit me-2"></i>Edit Profile</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <form id="profile-form">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="fullName" class="form-label">Full Name</label>
+                                                        <input type="text" class="form-control" id="fullName" name="fullName">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="phone" class="form-label">Phone Number</label>
+                                                        <input type="tel" class="form-control" id="phone" name="phone">
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="form-group">
+                                                        <label for="bio" class="form-label">Bio</label>
+                                                        <textarea class="form-control" id="bio" name="bio" rows="4" placeholder="Tell us about yourself..."></textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-actions">
+                                                <button type="button" class="btn btn-outline-secondary" id="cancel-edit">Cancel</button>
+                                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Saved Addresses Section -->
+                        <div id="addresses" class="content-section">
+                            <div class="section-header">
+                                <h2 class="section-title">Saved Addresses</h2>
+                                <p class="section-subtitle">Manage your delivery addresses</p>
+                            </div>
+                            
+                            <div class="addresses-container">
+                                <!-- Addresses will be populated by JavaScript -->
+                                <div id="addresses-list" class="addresses-list">
+                                    <!-- Saved addresses will be displayed here -->
+                                </div>
+                                
+                                <div class="add-address-container">
+                                    <button type="button" class="btn btn-primary btn-lg" id="add-new-address-profile-btn">
+                                        <i class="fas fa-plus me-2"></i>
+                                        Add New Address
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Orders Section -->
+                        <div id="orders" class="content-section">
+                            <div class="section-header">
+                                <h2 class="section-title">Order History</h2>
+                                <p class="section-subtitle">Track and manage your orders</p>
+                            </div>
+                            
+                            <div class="orders-container">
+                                <div class="order-card">
+                                    <div class="order-header">
+                                        <div class="order-info">
+                                            <h6>Order #12345</h6>
+                                            <span class="order-date">Dec 1, 2023</span>
+                                        </div>
+                                        <div class="order-status">
+                                            <span class="badge badge-success">Delivered</span>
+                                        </div>
+                                    </div>
+                                    <div class="order-details">
+                                        <div class="order-items">
+                                            <div class="order-item">
+                                                <img src="images/book1.jpg" alt="Book" class="item-image">
+                                                <div class="item-info">
+                                                    <h6>The Great Gatsby</h6>
+                                                    <p>Quantity: 1</p>
+                                                </div>
+                                                <div class="item-price">₹299</div>
+                                            </div>
+                                        </div>
+                                        <div class="order-summary">
+                                            <div class="summary-row">
+                                                <span>Subtotal:</span>
+                                                <span>₹299</span>
+                                            </div>
+                                            <div class="summary-row">
+                                                <span>Shipping:</span>
+                                                <span>₹50</span>
+                                            </div>
+                                            <div class="summary-row total">
+                                                <span>Total:</span>
+                                                <span>₹349</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="order-actions">
+                                        <button class="btn btn-outline-primary btn-sm view-details-btn" data-order-id="12345">View Details</button>
+                                        <button class="btn btn-outline-success btn-sm reorder-btn" data-order-id="12345">Reorder</button>
+                                    </div>
+                                </div>
+
+                                <div class="order-card">
+                                    <div class="order-header">
+                                        <div class="order-info">
+                                            <h6>Order #12346</h6>
+                                            <span class="order-date">Nov 25, 2023</span>
+                                        </div>
+                                        <div class="order-status">
+                                            <span class="badge badge-success">Delivered</span>
+                                        </div>
+                                    </div>
+                                    <div class="order-details">
+                                        <div class="order-items">
+                                            <div class="order-item">
+                                                <img src="images/book2.jpg" alt="Book" class="item-image">
+                                                <div class="item-info">
+                                                    <h6>To Kill a Mockingbird</h6>
+                                                    <p>Quantity: 1</p>
+                                                </div>
+                                                <div class="item-price">₹450</div>
+                                            </div>
+                                        </div>
+                                        <div class="order-summary">
+                                            <div class="summary-row">
+                                                <span>Subtotal:</span>
+                                                <span>₹450</span>
+                                            </div>
+                                            <div class="summary-row">
+                                                <span>Shipping:</span>
+                                                <span>Free</span>
+                                            </div>
+                                            <div class="summary-row total">
+                                                <span>Total:</span>
+                                                <span>₹450</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="order-actions">
+                                        <button class="btn btn-outline-primary btn-sm view-details-btn" data-order-id="12346">View Details</button>
+                                        <button class="btn btn-outline-success btn-sm reorder-btn" data-order-id="12346">Reorder</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Wishlist Section -->
+                        <div id="wishlist" class="content-section">
+                            <div class="section-header">
+                                <h2 class="section-title">My Wishlist</h2>
+                                <p class="section-subtitle">Books you've saved for later</p>
+                            </div>
+                            
+                            <div class="wishlist-container">
+                                <div class="wishlist-empty" id="wishlist-empty">
+                                    <i class="fas fa-heart"></i>
+                                    <h5>Your wishlist is empty</h5>
+                                    <p>Start adding books you love to your wishlist</p>
+                                    <a href="../shop" class="btn btn-primary">Browse Books</a>
+                                </div>
+                                
+                                <div class="wishlist-items" id="wishlist-items" style="display: none;">
+                                    <!-- Wishlist items will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Reviews Section -->
+                        <div id="reviews" class="content-section">
+                            <div class="section-header">
+                                <h2 class="section-title">My Reviews</h2>
+                                <p class="section-subtitle">Reviews you've written</p>
+                            </div>
+                            
+                            <div class="reviews-container">
+                                <div class="reviews-empty">
+                                    <i class="fas fa-star"></i>
+                                    <h5>No reviews yet</h5>
+                                    <p>Share your thoughts on books you've read</p>
+                                    <a href="../shop" class="btn btn-primary">Browse Books</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Settings Section -->
+                        <div id="settings" class="content-section">
+                            <div class="section-header">
+                                <h2 class="section-title">Account Settings</h2>
+                                <p class="section-subtitle">Manage your account preferences</p>
+                            </div>
+                            
+                            <div class="settings-tabs">
+                                <div class="tab-navigation">
+                                    <button class="tab-btn active" data-tab="profile-settings">
+                                        <i class="fas fa-user"></i>
+                                        <span>Profile</span>
+                                    </button>
+                                    <button class="tab-btn" data-tab="security">
+                                        <i class="fas fa-shield-alt"></i>
+                                        <span>Security</span>
+                                    </button>
+                                    <button class="tab-btn" data-tab="notifications">
+                                        <i class="fas fa-bell"></i>
+                                        <span>Notifications</span>
+                                    </button>
+                                    <button class="tab-btn" data-tab="privacy">
+                                        <i class="fas fa-lock"></i>
+                                        <span>Privacy</span>
+                                    </button>
+                                </div>
+                                
+                                <div class="tab-content">
+                                    <div class="tab-pane active" id="profile-settings">
+                                        <div class="settings-card">
+                                            <h5>Profile Settings</h5>
+                                            <form id="profile-settings-form">
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="settings-name" class="form-label">Full Name</label>
+                                                            <input type="text" class="form-control" id="settings-name" name="fullName">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="settings-email" class="form-label">Email</label>
+                                                            <input type="email" class="form-control" id="settings-email" name="email" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="settings-phone" class="form-label">Phone</label>
+                                                            <input type="tel" class="form-control" id="settings-phone" name="phone">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="settings-dob" class="form-label">Date of Birth</label>
+                                                            <input type="date" class="form-control" id="settings-dob" name="dob">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <div class="form-group">
+                                                            <label for="settings-bio" class="form-label">Bio</label>
+                                                            <textarea class="form-control" id="settings-bio" name="bio" rows="4"></textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="tab-pane" id="security">
+                                        <div class="settings-card">
+                                            <h5>Security Settings</h5>
+                                            <form id="password-form">
+                                                <div class="form-group">
+                                                    <label for="currentPassword" class="form-label">Current Password</label>
+                                                    <input type="password" class="form-control" id="currentPassword" name="currentPassword">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="newPassword" class="form-label">New Password</label>
+                                                    <input type="password" class="form-control" id="newPassword" name="newPassword">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="confirmNewPassword" class="form-label">Confirm New Password</label>
+                                                    <input type="password" class="form-control" id="confirmNewPassword" name="confirmPassword">
+                                                </div>
+                                                <button type="submit" class="btn btn-primary">Update Password</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="tab-pane" id="notifications">
+                                        <div class="settings-card">
+                                            <h5>Notification Preferences</h5>
+                                            <div class="notification-settings">
+                                                <div class="setting-item">
+                                                    <div class="setting-info">
+                                                        <h6>Email Notifications</h6>
+                                                        <p>Receive updates about your orders and account</p>
+                                                    </div>
+                                                    <div class="setting-control">
+                                                        <div class="form-check form-switch">
+                                                            <input class="form-check-input" type="checkbox" id="emailNotifications" checked>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="setting-item">
+                                                    <div class="setting-info">
+                                                        <h6>Order Updates</h6>
+                                                        <p>Get notified about order status changes</p>
+                                                    </div>
+                                                    <div class="setting-control">
+                                                        <div class="form-check form-switch">
+                                                            <input class="form-check-input" type="checkbox" id="orderUpdates" checked>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="setting-item">
+                                                    <div class="setting-info">
+                                                        <h6>New Releases</h6>
+                                                        <p>Be the first to know about new book releases</p>
+                                                    </div>
+                                                    <div class="setting-control">
+                                                        <div class="form-check form-switch">
+                                                            <input class="form-check-input" type="checkbox" id="newReleases" checked>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="setting-item">
+                                                    <div class="setting-info">
+                                                        <h6>Special Offers</h6>
+                                                        <p>Receive notifications about discounts and promotions</p>
+                                                    </div>
+                                                    <div class="setting-control">
+                                                        <div class="form-check form-switch">
+                                                            <input class="form-check-input" type="checkbox" id="specialOffers">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="tab-pane" id="privacy">
+                                        <div class="settings-card">
+                                            <h5>Privacy Settings</h5>
+                                            <div class="privacy-settings">
+                                                <div class="setting-item">
+                                                    <div class="setting-info">
+                                                        <h6>Profile Visibility</h6>
+                                                        <p>Make your profile visible to other users</p>
+                                                    </div>
+                                                    <div class="setting-control">
+                                                        <div class="form-check form-switch">
+                                                            <input class="form-check-input" type="checkbox" id="profileVisibility">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="setting-item">
+                                                    <div class="setting-info">
+                                                        <h6>Show Reading Activity</h6>
+                                                        <p>Display your reading activity on your profile</p>
+                                                    </div>
+                                                    <div class="setting-control">
+                                                        <div class="form-check form-switch">
+                                                            <input class="form-check-input" type="checkbox" id="readingActivity" checked>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="setting-item">
+                                                    <div class="setting-info">
+                                                        <h6>Data Collection</h6>
+                                                        <p>Allow us to collect data to improve your experience</p>
+                                                    </div>
+                                                    <div class="setting-control">
+                                                        <div class="form-check form-switch">
+                                                            <input class="form-check-input" type="checkbox" id="dataCollection" checked>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Address Form Modal -->
+    <div id="address-form-modal" class="address-form-modal">
+        <div class="address-form-content">
+            <div class="address-form-header">
+                <h4 id="modal-title">Add New Address</h4>
+                <button class="close-modal-btn" id="close-modal-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="address-form-body">
+                <form id="profile-address-form" class="checkout-address-form" autocomplete="on">
+                    <!-- Personal Information Section -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <h4 class="section-title">
+                                <i class="fas fa-user-circle me-2"></i>
+                                Personal Information
+                            </h4>
+                            <p class="section-subtitle">Tell us about yourself</p>
+                        </div>
+                        <div class="section-content">
+                            <div class="row g-4">
+                                <div class="col-lg-6">
+                                    <div class="form-field-group">
+                                        <label for="modal-name" class="form-label required">
+                                            <i class="fas fa-user me-2"></i>Full Name
+                                        </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                            <input type="text" class="form-control" id="modal-name" name="name" required 
+                                                   placeholder="Enter your full name" autocomplete="name">
+                                            <div class="input-group-text validation-icon">
+                                                <i class="fas fa-check text-success d-none" id="modal-name-valid"></i>
+                                                <i class="fas fa-times text-danger d-none" id="modal-name-invalid"></i>
+                                            </div>
+                                        </div>
+                                        <div class="form-text text-danger d-none" id="modal-name-error"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-lg-6">
+                                    <div class="form-field-group">
+                                        <label for="modal-phone" class="form-label required">
+                                            <i class="fas fa-phone me-2"></i>Phone Number
+                                        </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                            <input type="tel" class="form-control" id="modal-phone" name="phone" required 
+                                                   placeholder="Enter 10-digit mobile number" autocomplete="tel">
+                                            <div class="input-group-text validation-icon">
+                                                <i class="fas fa-check text-success d-none" id="modal-phone-valid"></i>
+                                                <i class="fas fa-times text-danger d-none" id="modal-phone-invalid"></i>
+                                            </div>
+                                        </div>
+                                        <div class="form-text text-danger d-none" id="modal-phone-error"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Address Information Section -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <h4 class="section-title">
+                                <i class="fas fa-map-marker-alt me-2"></i>
+                                Delivery Address
+                            </h4>
+                            <p class="section-subtitle">Where should we deliver your order?</p>
+                        </div>
+                        <div class="section-content">
+                            <div class="row g-4">
+                                <div class="col-12">
+                                    <div class="form-field-group">
+                                        <label for="modal-address" class="form-label required">
+                                            <i class="fas fa-home me-2"></i>Complete Address
+                                        </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                                            <input type="text" class="form-control" id="modal-address" name="address" required 
+                                                   placeholder="House/Flat No., Street, Area, Landmark" autocomplete="street-address">
+                                            <div class="input-group-text validation-icon">
+                                                <i class="fas fa-check text-success d-none" id="modal-address-valid"></i>
+                                                <i class="fas fa-times text-danger d-none" id="modal-address-invalid"></i>
+                                            </div>
+                                        </div>
+                                        <div class="form-text text-danger d-none" id="modal-address-error"></div>
+                                        <div class="address-suggestions d-none" id="modal-address-suggestions"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-lg-4">
+                                    <div class="form-field-group">
+                                        <label for="modal-city" class="form-label required">
+                                            <i class="fas fa-city me-2"></i>City
+                                        </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-city"></i></span>
+                                            <input type="text" class="form-control" id="modal-city" name="city" required 
+                                                   placeholder="Enter city" autocomplete="address-level2">
+                                            <div class="input-group-text validation-icon">
+                                                <i class="fas fa-check text-success d-none" id="modal-city-valid"></i>
+                                                <i class="fas fa-times text-danger d-none" id="modal-city-invalid"></i>
+                                            </div>
+                                        </div>
+                                        <div class="form-text text-danger d-none" id="modal-city-error"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-lg-4">
+                                    <div class="form-field-group">
+                                        <label for="modal-zipCode" class="form-label required">
+                                            <i class="fas fa-mail-bulk me-2"></i>PIN Code
+                                        </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-mail-bulk"></i></span>
+                                            <input type="text" class="form-control" id="modal-zipCode" name="zipCode" required 
+                                                   placeholder="Enter 6-digit PIN" autocomplete="postal-code" maxlength="6">
+                                            <div class="input-group-text validation-icon">
+                                                <i class="fas fa-check text-success d-none" id="modal-zipCode-valid"></i>
+                                                <i class="fas fa-times text-danger d-none" id="modal-zipCode-invalid"></i>
+                                            </div>
+                                        </div>
+                                        <div class="form-text text-danger d-none" id="modal-zipCode-error"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-lg-4">
+                                    <div class="form-field-group">
+                                        <label for="modal-state" class="form-label required">
+                                            <i class="fas fa-map me-2"></i>State
+                                        </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-map"></i></span>
+                                            <input type="text" class="form-control" id="modal-state" name="state" required 
+                                                   placeholder="Enter state" autocomplete="address-level1">
+                                            <div class="input-group-text validation-icon">
+                                                <i class="fas fa-check text-success d-none" id="modal-state-valid"></i>
+                                                <i class="fas fa-times text-danger d-none" id="modal-state-invalid"></i>
+                                            </div>
+                                        </div>
+                                        <div class="form-text text-danger d-none" id="modal-state-error"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Information Section -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <h4 class="section-title">
+                                <i class="fas fa-cog me-2"></i>
+                                Additional Information
+                            </h4>
+                            <p class="section-subtitle">Optional details for your order</p>
+                        </div>
+                        <div class="section-content">
+                            <div class="row g-4">
+                                <div class="col-lg-6">
+                                    <div class="form-field-group">
+                                        <label for="modal-country" class="form-label required">
+                                            <i class="fas fa-globe me-2"></i>Country
+                                        </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-globe"></i></span>
+                                            <select class="form-control" id="modal-country" name="country" required>
+                                                <option value="India" selected>India</option>
+                                                <option value="USA">United States</option>
+                                                <option value="UK">United Kingdom</option>
+                                                <option value="Canada">Canada</option>
+                                                <option value="Australia">Australia</option>
+                                            </select>
+                                            <div class="input-group-text validation-icon">
+                                                <i class="fas fa-check text-success" id="modal-country-valid"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-lg-6">
+                                    <div class="form-field-group">
+                                        <label for="modal-delivery-instructions" class="form-label">
+                                            <i class="fas fa-comment-alt me-2"></i>Delivery Instructions
+                                        </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-comment-alt"></i></span>
+                                            <input type="text" class="form-control" id="modal-delivery-instructions" name="delivery-instructions"
+                                                   placeholder="Any special delivery instructions (optional)">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Preferences Section -->
+                    <div class="form-section">
+                        <div class="section-content">
+                            <div class="row g-4">
+                                <div class="col-12">
+                                    <div class="form-field-group">
+                                        <div class="form-check enhanced-checkbox">
+                                            <input class="form-check-input" type="checkbox" id="modal-save-address" checked>
+                                            <label class="form-check-label" for="modal-save-address">
+                                                <i class="fas fa-save me-2"></i>
+                                                Save this address for future orders
+                                                <small class="d-block text-muted">We'll remember this address for your next purchase</small>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Form Action Buttons -->
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-outline-secondary me-3" id="modal-cancel-btn">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </button>
+                        <button type="button" class="btn btn-primary btn-lg" id="modal-save-address-btn">
+                            <i class="fas fa-save me-2"></i>Save Address
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced Footer -->
+    <footer class="footer-main">
+        <div class="container">
+            <div class="row">
+                    <!-- Company Info -->
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="footer-brand">
+                            <div class="footer-logo">
+                                <img src="../images/logo/BookWorld Log.png" alt="Bookworld India" class="footer-logo-img">
+                            </div>
+                            <p class="footer-description">
+                                Your trusted partner in discovering the world of books. 
+                                We bring you the finest collection of books across all genres.
+                            </p>
+                            <div class="footer-stats">
+                                <div class="stat-item">
+                                    <span class="stat-number">10K+</span>
+                                    <span class="stat-label">Happy Customers</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number">50K+</span>
+                                    <span class="stat-label">Books Available</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Links -->
+                    <div class="col-lg-2 col-md-6 mb-4">
+                        <div class="footer-section">
+                            <h5 class="footer-title">Quick Links</h5>
+                            <ul class="footer-links">
+                                <li><a href="../about"><i class="fas fa-chevron-right"></i>About Us</a></li>
+                                <li><a href="../contact"><i class="fas fa-chevron-right"></i>Contact</a></li>
+                                <li><a href="../shop"><i class="fas fa-chevron-right"></i>Shop</a></li>
+                                <li><a href="../blog"><i class="fas fa-chevron-right"></i>Blog</a></li>
+                                <li><a href="../faq"><i class="fas fa-chevron-right"></i>FAQ</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Categories -->
+                    <div class="col-lg-2 col-md-6 mb-4">
+                        <div class="footer-section">
+                            <h5 class="footer-title">Categories</h5>
+                            <ul class="footer-links">
+                                <li><a href="../shop?category=fiction"><i class="fas fa-chevron-right"></i>Fiction</a></li>
+                                <li><a href="../shop?category=business"><i class="fas fa-chevron-right"></i>Business</a></li>
+                                <li><a href="../shop?category=self-help"><i class="fas fa-chevron-right"></i>Self-Help</a></li>
+                                <li><a href="../shop?category=science"><i class="fas fa-chevron-right"></i>Science</a></li>
+                                <li><a href="../shop?category=children"><i class="fas fa-chevron-right"></i>Children</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Contact Info -->
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="footer-section">
+                            <h5 class="footer-title">Get In Touch</h5>
+                            <div class="contact-info">
+                                <div class="contact-item">
+                                    <i class="fas fa-envelope"></i>
+                                    <div>
+                                        <span>Email</span>
+                                        <p>support@bookworldindia.com</p>
+                                    </div>
+                                </div>
+                                <div class="contact-item">
+                                    <i class="fas fa-phone"></i>
+                                    <div>
+                                        <span>Phone</span>
+                                        <p>+91 12345 67890</p>
+                                    </div>
+                                </div>
+                                <div class="contact-item">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <div>
+                                        <span>Address</span>
+                                        <p>123 Book Street, Mumbai, India</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Newsletter -->
+                            <div class="newsletter">
+                                <h6>Stay Updated</h6>
+                                <p>Subscribe to our newsletter for latest book releases</p>
+                                <form class="newsletter-form">
+                                    <div class="input-group">
+                                        <input type="email" class="form-control" placeholder="Enter your email">
+                                        <button class="btn btn-primary" type="submit">
+                                            <i class="fas fa-paper-plane"></i>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Social Media & Bottom -->
+                <div class="footer-bottom">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="social-links">
+                                <a href="#" class="social-link facebook">
+                                    <i class="fab fa-facebook-f"></i>
+                                </a>
+                                <a href="#" class="social-link twitter">
+                                    <i class="fab fa-twitter"></i>
+                                </a>
+                                <a href="#" class="social-link instagram">
+                                    <i class="fab fa-instagram"></i>
+                                </a>
+                                <a href="#" class="social-link linkedin">
+                                    <i class="fab fa-linkedin-in"></i>
+                                </a>
+                                <a href="#" class="social-link youtube">
+                                    <i class="fab fa-youtube"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="footer-copyright">
+                                <p>&copy; 2024 Bookworld India. All Rights Reserved.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </footer>
+
+    <!-- Custom Confirmation Modal -->
+    <div id="profile-confirm-modal" class="custom-modal-overlay" style="display:none;">
+        <div class="custom-modal-box">
+            <div class="custom-modal-title">Save Changes</div>
+            <div class="custom-modal-message">Are you sure you want to save these changes?</div>
+            <div class="custom-modal-actions">
+                <button id="profile-confirm-cancel" class="custom-modal-btn cancel">No</button>
+                <button id="profile-confirm-save" class="custom-modal-btn delete">Yes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Success Modal -->
+    <div id="profile-success-modal" class="custom-modal-overlay" style="display:none;">
+        <div class="custom-modal-box">
+            <div class="custom-modal-title">Profile Updated</div>
+            <div class="custom-modal-message">Your profile has been updated successfully!</div>
+            <div class="custom-modal-actions">
+                <button id="profile-success-ok" class="custom-modal-btn delete">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Details Modal -->
+    <div id="order-details-modal" class="custom-modal-overlay" style="display:none;">
+        <div class="order-modal-box">
+            <div class="order-modal-header">
+                <div class="order-modal-title">
+                    <i class="fas fa-receipt"></i>
+                    <span id="modal-order-title">Order Details</span>
+                </div>
+                <button id="close-order-modal" class="modal-close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="order-modal-body">
+                <div class="order-info-section">
+                    <div class="order-info-row">
+                        <span class="info-label">Order Number:</span>
+                        <span id="modal-order-number" class="info-value">#12345</span>
+                    </div>
+                    <div class="order-info-row">
+                        <span class="info-label">Order Date:</span>
+                        <span id="modal-order-date" class="info-value">Dec 1, 2023</span>
+                    </div>
+                    <div class="order-info-row">
+                        <span class="info-label">Status:</span>
+                        <span id="modal-order-status" class="order-status-badge delivered">Delivered</span>
+                    </div>
+                    <div class="order-info-row">
+                        <span class="info-label">Total Amount:</span>
+                        <span id="modal-order-total" class="info-value total-amount">₹349</span>
+                    </div>
+                </div>
+                
+                <div class="order-items-section">
+                    <h4 class="section-title">Order Items</h4>
+                    <div id="modal-order-items" class="order-items-list">
+                        <!-- Items will be populated here -->
+                    </div>
+                </div>
+                
+                <div class="order-summary-section">
+                    <h4 class="section-title">Order Summary</h4>
+                    <div id="modal-order-summary" class="order-summary-list">
+                        <!-- Summary will be populated here -->
+                    </div>
+                </div>
+            </div>
+            <div class="order-modal-footer">
+                <button id="modal-reorder-btn" class="btn btn-primary">
+                    <i class="fas fa-shopping-cart"></i>
+                    Reorder Items
+                </button>
+                <button id="modal-close-btn" class="btn btn-outline-secondary">
+                    <i class="fas fa-times"></i>
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/account.js"></script>
+    <script type="module" src="../js/profile.js"></script>
+    
+    <!-- Ensure page visibility -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Profile page DOM loaded');
+            
+            // Remove any hidden classes
+            document.body.classList.remove('body-hidden');
+            document.body.classList.remove('hidden');
+            
+            // Keep profile content hidden until data is loaded
+            const profileContent = document.getElementById('profile-content');
+            if (profileContent) {
+                profileContent.style.display = 'none';
+                console.log('Profile content kept hidden until data loads');
+            } else {
+                console.error('Profile content element not found');
+            }
+            
+            // Ensure all content sections are properly set up
+            const contentSections = document.querySelectorAll('.content-section');
+            console.log('Found content sections:', contentSections.length);
+            
+            // Make sure the profile section is active
+            const profileSection = document.getElementById('profile');
+            if (profileSection) {
+                profileSection.classList.add('active');
+                console.log('Profile section activated');
+            }
+            
+            // Initialize AOS
+            if (typeof AOS !== 'undefined') {
+                AOS.init();
+                console.log('AOS initialized');
+            }
+            
+            // Fetch real user data from API
+            fetchUserProfile();
+            
+            // Fetch real order data from API
+            fetchRealOrders();
+            
+            // Initialize edit profile functionality
+            initializeEditProfile();
+            
+            // Initialize navigation functionality
+            initializeNavigation();
+            
+            // Initialize settings tabs
+            initializeSettingsTabs();
+            
+            // Initialize order buttons
+            initializeOrderButtons();
+            
+            console.log('Profile page loaded successfully with sample data');
+        });
+        
+        // Also run on window load as backup
+        window.addEventListener('load', function() {
+            console.log('Profile page window loaded');
+            document.body.style.opacity = '1';
+            document.body.style.pointerEvents = 'auto';
+        });
+        
+        // Initialize Edit Profile Functionality
+        function initializeEditProfile() {
+            const editBtn = document.getElementById('edit-profile-btn');
+            const editForm = document.getElementById('profile-edit-form');
+            const cancelBtn = document.getElementById('cancel-edit');
+            const profileForm = document.getElementById('profile-form');
+            const profileInfoCard = document.querySelector('.profile-info-card');
+            
+            if (editBtn && editForm) {
+                editBtn.addEventListener('click', function() {
+                    console.log('Edit button clicked');
+                    // Hide the Personal Details card
+                    if (profileInfoCard) {
+                        profileInfoCard.style.display = 'none';
+                    }
+                    // Show the edit form
+                    editForm.style.display = 'block';
+                    
+                    // Populate form with current data
+                    const fullNameInput = document.getElementById('fullName');
+                    const phoneInput = document.getElementById('phone');
+                    const bioInput = document.getElementById('bio');
+                    
+                    // Get current values from display
+                    const currentName = document.getElementById('display-name')?.textContent || '';
+                    const currentPhone = document.getElementById('display-phone')?.textContent || '';
+                    const currentBio = document.getElementById('display-bio')?.textContent || '';
+                    
+                    if (fullNameInput) fullNameInput.value = currentName === 'Not provided' ? '' : currentName;
+                    if (phoneInput) phoneInput.value = currentPhone === 'Not provided' ? '' : currentPhone;
+                    if (bioInput) bioInput.value = currentBio === 'No bio provided yet' ? '' : currentBio;
+                });
+            }
+            
+            if (cancelBtn && editForm) {
+                cancelBtn.addEventListener('click', function() {
+                    console.log('Cancel button clicked');
+                    // Hide the edit form
+                    editForm.style.display = 'none';
+                    // Show the Personal Details card again
+                    if (profileInfoCard) {
+                        profileInfoCard.style.display = 'block';
+                    }
+                });
+            }
+            
+            if (profileForm) {
+                profileForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    console.log('Profile form submitted');
+                    
+                    // Show confirmation modal first
+                    showProfileConfirmModal();
+                });
+            }
+        }
+        
+        // Custom Confirmation Modal Function
+        function showProfileConfirmModal() {
+            const modal = document.getElementById('profile-confirm-modal');
+            const cancelBtn = document.getElementById('profile-confirm-cancel');
+            const saveBtn = document.getElementById('profile-confirm-save');
+            
+            if (modal && cancelBtn && saveBtn) {
+                modal.style.display = 'flex';
+                
+                // Remove any existing event listeners
+                const newCancelBtn = cancelBtn.cloneNode(true);
+                const newSaveBtn = saveBtn.cloneNode(true);
+                cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+                saveBtn.parentNode.replaceChild(newSaveBtn, saveBtn);
+                
+                // Add event listeners
+                newCancelBtn.addEventListener('click', function() {
+                    modal.style.display = 'none';
+                });
+                
+                newSaveBtn.addEventListener('click', function() {
+                    modal.style.display = 'none';
+                    // Proceed with saving
+                    saveProfileChanges();
+                });
+            }
+        }
+        
+        // Save Profile Changes Function
+        async function saveProfileChanges() {
+            const profileForm = document.getElementById('profile-form');
+            const editForm = document.getElementById('profile-edit-form');
+            const profileInfoCard = document.querySelector('.profile-info-card');
+            
+            // Get form data
+            const formData = new FormData(profileForm);
+            const fullName = formData.get('fullName');
+            const phone = formData.get('phone');
+            const bio = formData.get('bio');
+            
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    console.error('No token found');
+                    return;
+                }
+                
+                // Prepare update data - only include fields with values
+                const updateData = {};
+                
+                if (fullName && fullName.trim()) {
+                    const nameParts = fullName.trim().split(' ');
+                    updateData.firstName = nameParts[0];
+                    if (nameParts.length > 1) {
+                        updateData.lastName = nameParts.slice(1).join(' ');
+                    }
+                }
+                
+                if (phone && phone.trim()) {
+                    updateData.phone = phone.trim();
+                }
+                
+                if (bio && bio.trim()) {
+                    updateData.bio = bio.trim();
+                }
+                
+                // Send update to API
+                const response = await fetch('/api/auth/profile', {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updateData)
+                });
+                
+                if (response.ok) {
+                    console.log('Profile updated successfully');
+                    
+                    // Update display with new data
+                    const displayName = document.getElementById('display-name');
+                    const displayPhone = document.getElementById('display-phone');
+                    const displayBio = document.getElementById('display-bio');
+                    
+                    if (displayName) displayName.textContent = fullName || 'Not provided';
+                    if (displayPhone) displayPhone.textContent = phone || 'Not provided';
+                    if (displayBio) displayBio.textContent = bio || 'No bio provided yet';
+                    
+                    // Also update sidebar
+                    const userName = document.getElementById('user-name');
+                    if (userName) userName.textContent = fullName || 'User';
+                    
+                    // Hide form and show Personal Details card again
+                    editForm.style.display = 'none';
+                    if (profileInfoCard) {
+                        profileInfoCard.style.display = 'block';
+                    }
+                    
+                    // Show success modal
+                    showProfileSuccessModal();
+                } else {
+                    console.error('Failed to update profile');
+                    const errorData = await response.json();
+                    console.error('Error details:', errorData);
+                    
+                    let errorMessage = errorData.message || 'Unknown error';
+                    if (errorData.errors && errorData.errors.length > 0) {
+                        errorMessage += '\n\nValidation errors:\n' + errorData.errors.map(err => `- ${err.msg}`).join('\n');
+                    }
+                    
+                    alert('Failed to update profile: ' + errorMessage);
+                }
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                alert('Error updating profile. Please try again.');
+            }
+        }
+        
+        // Custom Success Modal Function
+        function showProfileSuccessModal() {
+            const modal = document.getElementById('profile-success-modal');
+            const okBtn = document.getElementById('profile-success-ok');
+            
+            if (modal && okBtn) {
+                modal.style.display = 'flex';
+                
+                // Remove any existing event listeners
+                const newOkBtn = okBtn.cloneNode(true);
+                okBtn.parentNode.replaceChild(newOkBtn, okBtn);
+                
+                newOkBtn.addEventListener('click', function() {
+                    modal.style.display = 'none';
+                });
+            }
+        }
+        
+        // Fetch Real Orders from API
+        async function fetchRealOrders() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    console.log('No token found for orders');
+                    return;
+                }
+                
+                const response = await fetch('/api/orders', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const responseData = await response.json();
+                    const orders = responseData.data || [];
+                    console.log('Real orders fetched:', orders);
+                    
+                    // Update order counts
+                    updateOrderCounts(orders);
+                    
+                    // Render real orders in the orders section
+                    renderRealOrders(orders);
+                    
+                } else {
+                    console.error('Failed to fetch orders');
+                    // Keep showing mock data if API fails
+                }
+            } catch (error) {
+                console.error('Error fetching orders:', error);
+                // Keep showing mock data if API fails
+            }
+        }
+        
+        // Update Order Counts
+        function updateOrderCounts(orders) {
+            const totalOrders = orders.length;
+            const deliveredOrders = orders.filter(order => order.status === 'delivered').length;
+            
+            // Update sidebar counts
+            const profileOrders = document.getElementById('profile-orders');
+            const totalOrdersElement = document.getElementById('total-orders');
+            
+            if (profileOrders) profileOrders.textContent = totalOrders;
+            if (totalOrdersElement) totalOrdersElement.textContent = totalOrders;
+        }
+        
+        // Render Real Orders
+        function renderRealOrders(orders) {
+            const ordersContainer = document.querySelector('.orders-container');
+            if (!ordersContainer) return;
+            
+            if (orders.length === 0) {
+                ordersContainer.innerHTML = `
+                    <div class="text-center py-5">
+                        <i class="fas fa-shopping-bag fa-3x text-muted mb-3"></i>
+                        <h4>No orders yet</h4>
+                        <p class="text-muted">Start shopping to see your orders here!</p>
+                        <a href="../shop" class="btn btn-primary">Start Shopping</a>
+                    </div>
+                `;
+                return;
+            }
+            
+            ordersContainer.innerHTML = orders.map(order => `
+                <div class="order-card">
+                    <div class="order-header">
+                        <div class="order-info">
+                            <h6>Order #${order.orderNumber || order._id.slice(-8)}</h6>
+                            <span class="order-date">${new Date(order.createdAt).toLocaleDateString()}</span>
+                        </div>
+                        <div class="order-status">
+                            <span class="badge ${getStatusBadgeClass(order.status)}">${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</span>
+                        </div>
+                    </div>
+                    <div class="order-details">
+                        <div class="order-items">
+                            ${order.items.map(item => `
+                                <div class="order-item">
+                                    <img src="${item.book.coverImage || '../images/book1.jpg'}" alt="${item.book.title}" class="item-image">
+                                    <div class="item-info">
+                                        <h6>${item.book.title}</h6>
+                                        <p>Quantity: ${item.quantity}</p>
+                                    </div>
+                                    <div class="item-price">₹${item.price}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="order-summary">
+                            <div class="summary-row">
+                                <span>Subtotal:</span>
+                                <span>₹${order.subtotal}</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Shipping:</span>
+                                <span>₹${order.shipping || 50}</span>
+                            </div>
+                            <div class="summary-row total">
+                                <span>Total:</span>
+                                <span>₹${order.total}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="order-actions">
+                        <button class="btn btn-outline-primary btn-sm view-details-btn" data-order-id="${order._id}">View Details</button>
+                        <button class="btn btn-outline-success btn-sm reorder-btn" data-order-id="${order._id}">Reorder</button>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Re-initialize order buttons with real data
+            initializeOrderButtons();
+        }
+        
+        // Get Status Badge Class
+        function getStatusBadgeClass(status) {
+            switch (status.toLowerCase()) {
+                case 'delivered': return 'badge-success';
+                case 'pending': return 'badge-warning';
+                case 'processing': return 'badge-info';
+                case 'shipped': return 'badge-primary';
+                case 'cancelled': return 'badge-danger';
+                default: return 'badge-secondary';
+            }
+        }
+
+        // Fetch User Profile Data
+        async function fetchUserProfile() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    console.log('No token found, redirecting to login');
+                    window.location.href = '../login';
+                    return;
+                }
+                
+                const response = await fetch('/api/auth/profile', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const responseData = await response.json();
+                    const userData = responseData.data || responseData;
+                    console.log('User data fetched:', userData);
+                    
+                    // Combine firstName and lastName
+                    const fullName = `${userData.firstName || ''} ${userData.lastName || ''}`.trim() || 'User';
+                    
+                    // Update profile sidebar
+                    const userName = document.getElementById('user-name');
+                    const userEmail = document.getElementById('user-email');
+                    
+                    if (userName) userName.textContent = fullName;
+                    if (userEmail) userEmail.textContent = userData.email || 'user@example.com';
+                    
+                    // Update main profile display
+                    const displayName = document.getElementById('display-name');
+                    const displayEmail = document.getElementById('display-email');
+                    const displayPhone = document.getElementById('display-phone');
+                    const displayBio = document.getElementById('display-bio');
+                    const memberSince = document.getElementById('member-since');
+                    
+                    if (displayName) displayName.textContent = fullName;
+                    if (displayEmail) displayEmail.textContent = userData.email || 'Not provided';
+                    if (displayPhone) displayPhone.textContent = userData.phone || 'Not provided';
+                    if (displayBio) displayBio.textContent = userData.bio || 'No bio provided yet';
+                    if (memberSince) {
+                        const joinDate = userData.createdAt ? new Date(userData.createdAt).toLocaleDateString() : 'Unknown';
+                        memberSince.textContent = joinDate;
+                    }
+                    
+                    // Show profile content after data is loaded
+                    const profileContent = document.getElementById('profile-content');
+                    if (profileContent) {
+                        profileContent.style.display = 'block';
+                        console.log('Profile content shown after data loaded');
+                    }
+                    
+                } else {
+                    console.error('Failed to fetch profile data');
+                    // Show default data if API fails
+                    showDefaultData();
+                    
+                    // Still show profile content even if API fails
+                    const profileContent = document.getElementById('profile-content');
+                    if (profileContent) {
+                        profileContent.style.display = 'block';
+                        console.log('Profile content shown after API failure');
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching profile:', error);
+                showDefaultData();
+                
+                // Show profile content even if there's an error
+                const profileContent = document.getElementById('profile-content');
+                if (profileContent) {
+                    profileContent.style.display = 'block';
+                    console.log('Profile content shown after error');
+                }
+            }
+        }
+        
+        // Show default data when API fails
+        function showDefaultData() {
+            const userName = document.getElementById('user-name');
+            const userEmail = document.getElementById('user-email');
+            const displayName = document.getElementById('display-name');
+            const displayEmail = document.getElementById('display-email');
+            
+            if (userName) userName.textContent = 'User';
+            if (userEmail) userEmail.textContent = 'user@example.com';
+            if (displayName) displayName.textContent = 'User';
+            if (displayEmail) displayEmail.textContent = 'user@example.com';
+        }
+        
+        // Initialize Navigation Functionality
+        function initializeNavigation() {
+            const navItems = document.querySelectorAll('.nav-item[data-section]');
+            
+            navItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetSection = this.getAttribute('data-section');
+                    console.log('Navigation clicked:', targetSection);
+                    
+                    // Remove active class from all nav items
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    
+                    // Add active class to clicked item
+                    this.classList.add('active');
+                    
+                    // Hide all content sections
+                    const contentSections = document.querySelectorAll('.content-section');
+                    contentSections.forEach(section => {
+                        section.classList.remove('active');
+                    });
+                    
+                    // Show target section
+                    const targetElement = document.getElementById(targetSection);
+                    if (targetElement) {
+                        targetElement.classList.add('active');
+                        console.log('Switched to section:', targetSection);
+                    }
+                });
+            });
+        }
+        
+        // Initialize Settings Tabs
+        function initializeSettingsTabs() {
+            const tabBtns = document.querySelectorAll('.tab-btn[data-tab]');
+            const tabPanes = document.querySelectorAll('.tab-pane');
+            
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const targetTab = this.getAttribute('data-tab');
+                    console.log('Settings tab clicked:', targetTab);
+                    
+                    // Remove active class from all tabs
+                    tabBtns.forEach(tab => tab.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+                    
+                    // Hide all tab panes
+                    tabPanes.forEach(pane => {
+                        pane.classList.remove('active');
+                    });
+                    
+                    // Show target tab pane
+                    const targetPane = document.getElementById(targetTab);
+                    if (targetPane) {
+                        targetPane.classList.add('active');
+                        console.log('Switched to tab:', targetTab);
+                    }
+                });
+            });
+        }
+        
+        // Initialize Order Buttons
+        function initializeOrderButtons() {
+            // View Details buttons
+            const viewDetailsBtns = document.querySelectorAll('.view-details-btn');
+            viewDetailsBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const orderId = this.getAttribute('data-order-id');
+                    console.log('View Details clicked for order:', orderId);
+                    viewOrderDetails(orderId);
+                });
+            });
+            
+            // Reorder buttons
+            const reorderBtns = document.querySelectorAll('.reorder-btn');
+            reorderBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const orderId = this.getAttribute('data-order-id');
+                    console.log('Reorder clicked for order:', orderId);
+                    reorderItems(orderId);
+                });
+            });
+        }
+        
+        // View Order Details Function
+        async function viewOrderDetails(orderId) {
+            console.log('Viewing details for order:', orderId);
+            
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`/api/orders/${orderId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const responseData = await response.json();
+                    const order = responseData.data;
+                    showOrderDetailsModal(orderId, order);
+                } else {
+                    console.error('Failed to fetch order details');
+                    // Fallback to mock data
+                    const orderDetails = getOrderDetails(orderId);
+                    showOrderDetailsModal(orderId, orderDetails);
+                }
+            } catch (error) {
+                console.error('Error fetching order details:', error);
+                // Fallback to mock data
+                const orderDetails = getOrderDetails(orderId);
+                showOrderDetailsModal(orderId, orderDetails);
+            }
+        }
+        
+        // Show Professional Order Details Modal
+        function showOrderDetailsModal(orderId, orderDetails) {
+            const modal = document.getElementById('order-details-modal');
+            
+            // Handle both real order data and mock data
+            const isRealOrder = orderDetails.items && Array.isArray(orderDetails.items);
+            
+            if (isRealOrder) {
+                // Real order data
+                document.getElementById('modal-order-title').textContent = `Order #${orderDetails.orderNumber || orderDetails._id.slice(-8)}`;
+                document.getElementById('modal-order-number').textContent = `#${orderDetails.orderNumber || orderDetails._id.slice(-8)}`;
+                document.getElementById('modal-order-date').textContent = new Date(orderDetails.createdAt).toLocaleDateString();
+                document.getElementById('modal-order-status').textContent = orderDetails.status.charAt(0).toUpperCase() + orderDetails.status.slice(1);
+                document.getElementById('modal-order-status').className = `order-status-badge ${orderDetails.status.toLowerCase()}`;
+                document.getElementById('modal-order-total').textContent = `₹${orderDetails.total}`;
+                
+                // Populate order items
+                const itemsContainer = document.getElementById('modal-order-items');
+                itemsContainer.innerHTML = orderDetails.items.map(item => `
+                    <div class="modal-order-item">
+                        <img src="${item.book.coverImage || '../images/book1.jpg'}" alt="${item.book.title}" class="modal-item-image">
+                        <div class="modal-item-info">
+                            <div class="modal-item-title">${item.book.title}</div>
+                            <div class="modal-item-quantity">Quantity: ${item.quantity}</div>
+                        </div>
+                        <div class="modal-item-price">₹${item.price}</div>
+                    </div>
+                `).join('');
+                
+                // Populate order summary
+                const summaryContainer = document.getElementById('modal-order-summary');
+                summaryContainer.innerHTML = `
+                    <div class="summary-row">
+                        <span>Subtotal:</span>
+                        <span>₹${orderDetails.subtotal}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Shipping:</span>
+                        <span>₹${orderDetails.shipping || 50}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Total:</span>
+                        <span>₹${orderDetails.total}</span>
+                    </div>
+                `;
+            } else {
+                // Mock data fallback
+                document.getElementById('modal-order-title').textContent = `Order #${orderId}`;
+                document.getElementById('modal-order-number').textContent = `#${orderId}`;
+                document.getElementById('modal-order-date').textContent = orderDetails.date;
+                document.getElementById('modal-order-status').textContent = orderDetails.status;
+                document.getElementById('modal-order-status').className = `order-status-badge ${orderDetails.status.toLowerCase()}`;
+                document.getElementById('modal-order-total').textContent = orderDetails.total;
+                
+                // Populate order items
+                const itemsContainer = document.getElementById('modal-order-items');
+                itemsContainer.innerHTML = `
+                    <div class="modal-order-item">
+                        <img src="../images/book1.jpg" alt="${orderDetails.itemTitle}" class="modal-item-image">
+                        <div class="modal-item-info">
+                            <div class="modal-item-title">${orderDetails.itemTitle}</div>
+                            <div class="modal-item-quantity">Quantity: 1</div>
+                        </div>
+                        <div class="modal-item-price">${orderDetails.itemPrice}</div>
+                    </div>
+                `;
+                
+                // Populate order summary
+                const summaryContainer = document.getElementById('modal-order-summary');
+                summaryContainer.innerHTML = `
+                    <div class="summary-row">
+                        <span>Subtotal:</span>
+                        <span>${orderDetails.itemPrice}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Shipping:</span>
+                        <span>${orderDetails.shipping}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Total:</span>
+                        <span>${orderDetails.total}</span>
+                    </div>
+                `;
+            }
+            
+            // Show modal
+            modal.style.display = 'flex';
+            
+            // Add event listeners for modal buttons
+            setupOrderModalListeners(orderId);
+        }
+        
+        // Setup Order Modal Event Listeners
+        function setupOrderModalListeners(orderId) {
+            const modal = document.getElementById('order-details-modal');
+            const closeBtn = document.getElementById('close-order-modal');
+            const modalCloseBtn = document.getElementById('modal-close-btn');
+            const reorderBtn = document.getElementById('modal-reorder-btn');
+            
+            // Close modal functions
+            const closeModal = () => {
+                modal.style.display = 'none';
+            };
+            
+            // Close button events
+            closeBtn.addEventListener('click', closeModal);
+            modalCloseBtn.addEventListener('click', closeModal);
+            
+            // Close on overlay click
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+            
+            // Reorder button event
+            reorderBtn.addEventListener('click', () => {
+                closeModal();
+                reorderItems(orderId);
+            });
+            
+            // Escape key to close
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal.style.display === 'flex') {
+                    closeModal();
+                }
+            });
+        }
+        
+        // Reorder Function
+        async function reorderItems(orderId) {
+            console.log('Reordering items for order:', orderId);
+            
+            try {
+                // First fetch the order details to get the items
+                const token = localStorage.getItem('token');
+                const response = await fetch(`/api/orders/${orderId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const responseData = await response.json();
+                    const order = responseData.data;
+                    showReorderConfirmationModal(orderId, order);
+                } else {
+                    console.error('Failed to fetch order for reorder');
+                    // Fallback to mock data
+                    const orderDetails = getOrderDetails(orderId);
+                    showReorderConfirmationModal(orderId, orderDetails);
+                }
+            } catch (error) {
+                console.error('Error fetching order for reorder:', error);
+                // Fallback to mock data
+                const orderDetails = getOrderDetails(orderId);
+                showReorderConfirmationModal(orderId, orderDetails);
+            }
+        }
+        
+        // Show Reorder Confirmation Modal
+        function showReorderConfirmationModal(orderId, orderDetails) {
+            const modal = document.getElementById('profile-confirm-modal');
+            const title = document.querySelector('#profile-confirm-modal .custom-modal-title');
+            const message = document.querySelector('#profile-confirm-modal .custom-modal-message');
+            const cancelBtn = document.getElementById('profile-confirm-cancel');
+            const confirmBtn = document.getElementById('profile-confirm-save');
+            
+            // Update modal content for reorder confirmation
+            title.textContent = 'Reorder Items';
+            
+            // Handle both real order data and mock data
+            const isRealOrder = orderDetails.items && Array.isArray(orderDetails.items);
+            
+            if (isRealOrder) {
+                // Real order data
+                const orderNumber = orderDetails.orderNumber || orderDetails._id.slice(-8);
+                const itemsList = orderDetails.items.map(item => 
+                    `${item.book.title} (${item.quantity}x)`
+                ).join(', ');
+                
+                message.innerHTML = `
+                    <div style="text-align: left;">
+                        <p><strong>Add all items from Order #${orderNumber} to your cart?</strong></p>
+                        <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                            <p><strong>Items:</strong> ${itemsList}</p>
+                            <p><strong>Total:</strong> ₹${orderDetails.total}</p>
+                        </div>
+                        <p style="color: #666; font-size: 0.9rem;">This will add all items from this order to your cart.</p>
+                    </div>
+                `;
+            } else {
+                // Mock data fallback
+                message.innerHTML = `
+                    <div style="text-align: left;">
+                        <p><strong>Add all items from Order #${orderId} to your cart?</strong></p>
+                        <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                            <p><strong>Items:</strong> ${orderDetails.items}</p>
+                            <p><strong>Total:</strong> ${orderDetails.total}</p>
+                        </div>
+                        <p style="color: #666; font-size: 0.9rem;">This will add all items from this order to your cart.</p>
+                    </div>
+                `;
+            }
+            
+            // Update button text
+            cancelBtn.textContent = 'Cancel';
+            confirmBtn.textContent = 'Add to Cart';
+            
+            // Show modal
+            modal.style.display = 'flex';
+            
+            // Remove existing event listeners
+            const newCancelBtn = cancelBtn.cloneNode(true);
+            const newConfirmBtn = confirmBtn.cloneNode(true);
+            cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+            confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+            
+            // Add new event listeners
+            newCancelBtn.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+            
+            newConfirmBtn.addEventListener('click', () => {
+                modal.style.display = 'none';
+                processReorder(orderId, orderDetails);
+            });
+        }
+        
+        // Process Reorder
+        async function processReorder(orderId, orderDetails) {
+            try {
+                // Handle both real order data and mock data
+                const isRealOrder = orderDetails.items && Array.isArray(orderDetails.items);
+                
+                if (isRealOrder) {
+                    // Add real items to cart
+                    const token = localStorage.getItem('token');
+                    let allItemsAdded = true;
+                    let addedItems = [];
+                    
+                    // Add each item to cart
+                    for (const item of orderDetails.items) {
+                        try {
+                            const response = await fetch('/api/cart/add', {
+                                method: 'POST',
+                                headers: {
+                                    'Authorization': `Bearer ${token}`,
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    bookId: item.book._id,
+                                    quantity: item.quantity
+                                })
+                            });
+                            
+                            if (response.ok) {
+                                addedItems.push(`${item.book.title} (${item.quantity}x)`);
+                            } else {
+                                console.error(`Failed to add ${item.book.title} to cart`);
+                                allItemsAdded = false;
+                            }
+                        } catch (error) {
+                            console.error(`Error adding ${item.book.title} to cart:`, error);
+                            allItemsAdded = false;
+                        }
+                    }
+                    
+                    // Show success or error message
+                    const successModal = document.getElementById('profile-success-modal');
+                    const title = document.querySelector('#profile-success-modal .custom-modal-title');
+                    const message = document.querySelector('#profile-success-modal .custom-modal-message');
+                    const okBtn = document.getElementById('profile-success-ok');
+                    
+                    if (allItemsAdded) {
+                        title.textContent = 'Items Added to Cart';
+                        message.innerHTML = `
+                            <p>All items from Order #${orderDetails.orderNumber || orderDetails._id.slice(-8)} have been successfully added to your cart!</p>
+                            <p style="color: #666; font-size: 0.9rem;">Redirecting to cart page...</p>
+                        `;
+                    } else {
+                        title.textContent = 'Partial Success';
+                        message.innerHTML = `
+                            <p>Some items were added to your cart:</p>
+                            <ul style="text-align: left; margin: 1rem 0;">
+                                ${addedItems.map(item => `<li>${item}</li>`).join('')}
+                            </ul>
+                            <p style="color: #666; font-size: 0.9rem;">Redirecting to cart page...</p>
+                        `;
+                    }
+                    
+                    successModal.style.display = 'flex';
+                } else {
+                    // Mock data - show success message
+                    const successModal = document.getElementById('profile-success-modal');
+                    const title = document.querySelector('#profile-success-modal .custom-modal-title');
+                    const message = document.querySelector('#profile-success-modal .custom-modal-message');
+                    const okBtn = document.getElementById('profile-success-ok');
+                    
+                    title.textContent = 'Items Added to Cart';
+                    message.innerHTML = `
+                        <p>All items from Order #${orderId} have been successfully added to your cart!</p>
+                        <p style="color: #666; font-size: 0.9rem;">Redirecting to cart page...</p>
+                    `;
+                    
+                    successModal.style.display = 'flex';
+                }
+            } catch (error) {
+                console.error('Error processing reorder:', error);
+                
+                // Show error message
+                const successModal = document.getElementById('profile-success-modal');
+                const title = document.querySelector('#profile-success-modal .custom-modal-title');
+                const message = document.querySelector('#profile-success-modal .custom-modal-message');
+                
+                title.textContent = 'Error';
+                message.innerHTML = `
+                    <p>There was an error adding items to your cart. Please try again.</p>
+                `;
+                
+                successModal.style.display = 'flex';
+            }
+            
+            // Remove existing event listeners
+            const newOkBtn = okBtn.cloneNode(true);
+            okBtn.parentNode.replaceChild(newOkBtn, okBtn);
+            
+            // Add new event listener
+            newOkBtn.addEventListener('click', () => {
+                successModal.style.display = 'none';
+                // Redirect to cart page
+                window.location.href = '../cart';
+            });
+            
+            // Auto redirect after 2 seconds
+            setTimeout(() => {
+                successModal.style.display = 'none';
+                window.location.href = '../cart';
+            }, 2000);
+        }
+        
+        // Get Order Details (mock data)
+        function getOrderDetails(orderId) {
+            const orders = {
+                '12345': {
+                    date: 'Dec 1, 2023',
+                    total: '₹349',
+                    itemPrice: '₹299',
+                    shipping: '₹50',
+                    items: 'The Great Gatsby (1x)',
+                    itemTitle: 'The Great Gatsby',
+                    status: 'Delivered'
+                },
+                '12346': {
+                    date: 'Nov 25, 2023',
+                    total: '₹450',
+                    itemPrice: '₹450',
+                    shipping: 'Free',
+                    items: 'To Kill a Mockingbird (1x)',
+                    itemTitle: 'To Kill a Mockingbird',
+                    status: 'Delivered'
+                }
+            };
+            
+            return orders[orderId] || {
+                date: 'Unknown',
+                total: '₹0',
+                itemPrice: '₹0',
+                shipping: '₹0',
+                items: 'No items',
+                itemTitle: 'Unknown Item',
+                status: 'Unknown'
+            };
+        }
+    </script>
+</body>
+</html> 
