@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - Bookstore</title>
+  <link rel="stylesheet" href="../css/admin.css">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div id="admin-login-container" class="login-bg">
+    <div class="login-card">
+      <img src="../images/logo/BookWorld%20Log.png" alt="Bookstore Logo" class="login-logo" />
+      <h2 class="login-title">Admin Login</h2>
+      <form id="admin-login-form">
+        <input type="email" id="admin-email" placeholder="Email" required class="login-input" />
+        <div class="password-wrapper">
+          <input type="password" id="admin-password" placeholder="Password" required class="login-input" />
+          <span class="toggle-password" id="toggle-password" tabindex="0" aria-label="Show password" title="Show/Hide Password">&#128065;</span>
+        </div>
+        <button type="submit" aria-label="Login" class="login-btn">Login</button>
+        <div id="admin-login-error" class="login-error"></div>
+      </form>
+    </div>
+  </div>
+  <div id="admin-panel" style="display:none;">
+    <div class="admin-sidebar" id="admin-sidebar">
+      <!-- Close icon for sidebar (visible only on small screens) -->
+  <button id="sidebar-close" class="sidebar-close" aria-label="Close sidebar">
+  <span class="close-icon" aria-hidden="true">&times;</span>
+      </button>
+      <h1 class="sidebar-title">Bookstore Admin Panel</h1>
+      <div class="admin-profile">
+        <!-- Profile info here -->
+      </div>
+      <ul class="admin-menu">
+          <li><a href="#dashboard" aria-label="Dashboard" role="menuitem"><span class="menu-icon" aria-hidden="true">🏠</span> Dashboard</a></li>
+          <li><a href="#books" aria-label="Manage Books" role="menuitem"><span class="menu-icon" aria-hidden="true">📚</span> Manage Books</a></li>
+          <li><a href="#users" aria-label="Manage Users" role="menuitem"><span class="menu-icon" aria-hidden="true">👤</span> Manage Users</a></li>
+          <li><a href="#orders" aria-label="Manage Orders" role="menuitem"><span class="menu-icon" aria-hidden="true">🛒</span> Manage Orders</a></li>
+          <li><a href="#analytics" aria-label="Analytics" role="menuitem"><span class="menu-icon" aria-hidden="true">📊</span> Analytics</a></li>
+          <li class="settings-menu">
+            <a href="#settings" id="settings-link">Settings</a>
+            <ul class="settings-submenu" style="display:none;">
+              <li><a href="#theme-settings" class="settings-sub-link" aria-label="Theme Settings">Theme</a></li>
+              <li><a href="#font-settings" class="settings-sub-link" aria-label="Font Settings">Font</a></li>
+              <li><a href="#page-management" class="settings-sub-link" aria-label="Page Management">Pages</a></li>
+              <li><a href="#banner-management" class="settings-sub-link" aria-label="Banner Management">Banners</a></li>
+              <li><a href="#homepage-content" class="settings-sub-link" aria-label="Homepage Content">Homepage</a></li>
+              <li><a href="#statistics-management" class="settings-sub-link" aria-label="Statistics Management">Statistics</a></li>
+              <li><a href="#testimonials-management" class="settings-sub-link" aria-label="Testimonials Management">Testimonials</a></li>
+              <li><a href="#team-management" class="settings-sub-link" aria-label="Team Management">Team</a></li>
+              <li><a href="#categories-management" class="settings-sub-link" aria-label="Categories Management">Categories</a></li>
+            </ul>
+          </li>
+      </ul>
+    </div>
+    <!-- Hamburger menu for mobile (only visible when sidebar is closed) -->
+    <button id="sidebar-toggle" class="sidebar-toggle" aria-label="Open sidebar">
+  <span class="hamburger-icon" aria-hidden="true">
+    <span class="bar bar1"></span>
+    <span class="bar bar2"></span>
+    <span class="bar bar3"></span>
+  </span>
+    </button>
+    <main id="admin-main">
+  <section id="dashboard" class="admin-section-hidden" style="display:none;">
+        <h2>Dashboard</h2>
+        <div class="dashboard-cards">
+          <div class="dashboard-card" id="stat-users">
+            <div class="dashboard-card-icon">👤</div>
+            <div class="dashboard-card-label">Users</div>
+            <div class="dashboard-card-value">0</div>
+          </div>
+          <div class="dashboard-card" id="stat-books">
+            <div class="dashboard-card-icon">📚</div>
+            <div class="dashboard-card-label">Books</div>
+            <div class="dashboard-card-value">0</div>
+          </div>
+          <div class="dashboard-card" id="stat-orders">
+            <div class="dashboard-card-icon">🛒</div>
+            <div class="dashboard-card-label">Orders</div>
+            <div class="dashboard-card-value">0</div>
+          </div>
+          <div class="dashboard-card" id="stat-revenue">
+            <div class="dashboard-card-icon">💰</div>
+            <div class="dashboard-card-label">Revenue</div>
+            <div class="dashboard-card-value">0</div>
+          </div>
+        </div>
+        <div id="audit-log-section" style="margin-top:32px;">
+          <h3>Recent Admin Actions</h3>
+          <ul id="audit-log-list" style="list-style:none;padding:0;margin:0;background:#fff;border-radius:8px;border:1px solid #eee;font-size:8px"></ul>
+        </div>
+      </section>
+      <section id="banner-management" class="admin-section-hidden" style="display:none;">
+        <h2>Banner Management</h2>
+        
+        <!-- Two-column layout: Form (left) + Live Preview (right) -->
+        <div style="display: flex !important; gap: 20px !important; margin-top: 16px !important; align-items: flex-start !important; width: 100% !important;">
+          <!-- Left Column: Add New Banner Form -->
+          <div>
+            <div style="background: #fff; border: 1px solid #e0e0e0; border-radius: 12px; padding: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+              <div><h3>Add New Banner</h3>
+              <form id="banner-form" enctype="multipart/form-data" style="max-width:520px;margin-top:16px;display:grid;gap:10px;">
+                <input type="text" id="banner-title" placeholder="Title (optional)" />
+                <input type="text" id="banner-subtitle" placeholder="Subtitle (optional)" />
+                <div style="display:flex;gap:8px;">
+                  <input type="text" id="banner-cta-text" placeholder="CTA Text (optional)" />
+                  <input type="text" id="banner-cta-link" placeholder="CTA Link (optional)" />
+                </div>
+                <div style="display:flex;gap:12px;align-items:center;">
+                  <label style="display:flex;align-items:center;gap:6px;">
+                    <input type="checkbox" id="banner-overlay" /> Gradient Overlay
+                  </label>
+                  <label style="display:flex;align-items:center;gap:6px;">
+                    Text Color <input type="color" id="banner-text-color" value="#ffffff" />
+                  </label>
+                  <label style="display:flex;align-items:center;gap:6px;">
+                    CTA Text <input type="color" id="banner-cta-color" value="#ffffff" />
+                  </label>
+                  <label style="display:flex;align-items:center;gap:6px;">
+                    CTA BG <input type="color" id="banner-cta-bg" value="#e94e77" />
+                  </label>
+                </div>
+                <div>
+                  <label for="banner-image">Image (upload or paste URL below)</label>
+                  <input type="file" id="banner-image" accept="image/*" />
+                </div>
+                <input type="url" id="banner-image-url" placeholder="Or Image URL" />
+                <progress id="banner-progress" value="0" max="100" style="width:100%;display:none;"></progress>
+                <div style="display:flex;gap:8px;align-items:center;">
+                <input type="number" id="banner-order" placeholder="Order (0..)" value="0" style="width:120px;" />
+                <label style="display:flex;align-items:center;gap:6px;">
+                  <input type="checkbox" id="banner-active" checked /> Active
+                </label>
+              </div>
+              <button type="submit" class="btn" style="max-width:140px;">Add Banner</button>
+              <span id="banner-status" style="color:var(--primary-color);"></span>
+              </form>
+              </div>
+
+              <!-- Right Column: Live Preview -->
+               <div>
+             <div>
+              <div style="position: sticky; top: 20px;">
+              <h3 style="margin-bottom: 16px; color: #333;">Live Preview</h3>
+              <div id="banner-preview" aria-label="Banner Preview" style="
+                border: 2px solid #e0e0e0; 
+                border-radius: 12px; 
+                overflow: hidden; 
+                background: #f8f9fa;
+                min-height: 300px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+              "></div>
+              <div style="margin-top: 12px; padding: 12px; background: #f0f8ff; border-radius: 8px; border-left: 4px solid #007bff;">
+                <p style="margin: 0; font-size: 14px; color: #0066cc;">
+                  <strong>💡 Tip:</strong> This preview updates in real-time as you type in the form above. Perfect for testing your banner design before saving!
+                </p>
+              </div>
+             </div>
+             </div>
+            </div>
+
+           </div>
+           </div>
+          </div>  
+
+
+        <!-- Existing Banners List (Below both columns) -->
+        
+        <div id="banners-list" style="
+          margin-top: 18px; 
+          border: 1px solid #eee; 
+          border-radius: 8px; 
+          background: #f8f9fa; 
+          padding: 20px;
+          min-height: 200px;
+        ">
+          <div style="text-align: center; color: #666; padding: 40px;" id="banners-loading">
+            <div style="font-size: 18px; margin-bottom: 10px;">📋</div>
+            <div>Loading banners...</div>
+            <button onclick="renderBannersAdminList()" style="
+              margin-top: 10px; 
+              padding: 8px 16px; 
+              background: #007bff; 
+              color: white; 
+              border: none; 
+              border-radius: 4px; 
+              cursor: pointer;
+            ">Refresh Banners</button>
+          </div>
+        </div>
+      </section>
+  <section id="books" class="admin-section-hidden" style="display:none;">
+        <h2>Manage Books</h2>
+        
+        <!-- Enhanced Book Management Interface -->
+        <div class="book-management-container" style="background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+          
+          <!-- Book Management Header -->
+          <div class="book-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid #e5e7eb;">
+            <div class="book-title-section">
+              <h3 style="margin: 0; color: #1f2937; font-size: 20px; font-weight: 600;">Book Catalog</h3>
+              <p style="margin: 4px 0 0 0; color: #6b7280; font-size: 14px;">Manage your book inventory and details</p>
+            </div>
+            <div class="book-actions" style="display: flex; gap: 12px;">
+              <button id="add-book-btn" style="background: #059669; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 14px;">
+                <i class="fas fa-plus me-2"></i>Add Book
+              </button>
+              <button id="inventory-management-btn" style="background: #2563eb; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 14px;">
+                <i class="fas fa-warehouse me-2"></i>Inventory
+              </button>
+              <button id="analytics-btn" style="background: #7c3aed; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 14px;">
+                <i class="fas fa-chart-bar me-2"></i>Analytics
+              </button>
+              <button id="data-management-btn" style="background: #6b7280; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 14px;">
+                <i class="fas fa-database me-2"></i>Data
+              </button>
+              <button id="export-books-btn" style="background: #7c3aed; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 14px;">
+                <i class="fas fa-download me-2"></i>Export
+              </button>
+            </div>
+          </div>
+
+          <!-- Search and Filters Section -->
+          <div class="book-filters-section" style="background: #f8f9fa; padding: 16px; border-radius: 8px; margin-bottom: 20px;">
+            <div class="filters-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+              <h4 style="margin: 0; color: #374151; font-size: 16px; font-weight: 600;">Search & Filters</h4>
+              <button id="clear-book-filters-btn" style="background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">Clear All</button>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search-section" style="margin-bottom: 16px;">
+              <input type="text" id="book-search-input" placeholder="Search by title, author, ISBN, or category..." style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;">
+            </div>
+
+            <!-- Filter Grid -->
+            <div class="filters-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px;">
+              <div class="filter-group">
+                <label style="display: block; font-size: 12px; color: #6b7280; font-weight: 500; margin-bottom: 4px;">Category</label>
+                <select id="category-filter" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px;">
+                  <option value="">All Categories</option>
+                  <option value="fiction">Fiction</option>
+                  <option value="non-fiction">Non-Fiction</option>
+                  <option value="science">Science</option>
+                  <option value="history">History</option>
+                  <option value="biography">Biography</option>
+                  <option value="self-help">Self-Help</option>
+                  <option value="business">Business</option>
+                  <option value="technology">Technology</option>
+                </select>
+              </div>
+              <div class="filter-group">
+                <label style="display: block; font-size: 12px; color: #6b7280; font-weight: 500; margin-bottom: 4px;">Status</label>
+                <select id="status-filter" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px;">
+                  <option value="">All Status</option>
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                  <option value="out-of-stock">Out of Stock</option>
+                  <option value="discontinued">Discontinued</option>
+                </select>
+              </div>
+              <div class="filter-group">
+                <label style="display: block; font-size: 12px; color: #6b7280; font-weight: 500; margin-bottom: 4px;">Price Range</label>
+                <select id="price-filter" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px;">
+                  <option value="">All Prices</option>
+                  <option value="0-200">₹0 - ₹200</option>
+                  <option value="200-500">₹200 - ₹500</option>
+                  <option value="500-1000">₹500 - ₹1,000</option>
+                  <option value="1000+">₹1,000+</option>
+                </select>
+              </div>
+              <div class="filter-group">
+                <label style="display: block; font-size: 12px; color: #6b7280; font-weight: 500; margin-bottom: 4px;">Stock Status</label>
+                <select id="stock-filter" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px;">
+                  <option value="">All Stock</option>
+                  <option value="in-stock">In Stock</option>
+                  <option value="low-stock">Low Stock</option>
+                  <option value="out-of-stock">Out of Stock</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Sort Options -->
+            <div class="sort-section" style="display: flex; gap: 12px; align-items: center;">
+              <label style="font-size: 12px; color: #6b7280; font-weight: 500;">Sort by:</label>
+              <select id="sort-books" style="padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px;">
+                <option value="title-asc">Title (A-Z)</option>
+                <option value="title-desc">Title (Z-A)</option>
+                <option value="author-asc">Author (A-Z)</option>
+                <option value="author-desc">Author (Z-A)</option>
+                <option value="price-asc">Price (Low to High)</option>
+                <option value="price-desc">Price (High to Low)</option>
+                <option value="stock-asc">Stock (Low to High)</option>
+                <option value="stock-desc">Stock (High to Low)</option>
+                <option value="date-added">Date Added</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Bulk Operations Bar -->
+          <div id="bulk-operations-bar" style="display: none; background: #dbeafe; padding: 12px; border-radius: 6px; margin-bottom: 16px; border: 1px solid #93c5fd;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span id="selected-books-count" style="color: #1e40af; font-weight: 500; font-size: 14px;">0 books selected</span>
+              <div style="display: flex; gap: 8px;">
+                <select id="bulk-action-select" style="padding: 6px 8px; border: 1px solid #93c5fd; border-radius: 4px; font-size: 12px;">
+                  <option value="">Bulk Actions</option>
+                  <option value="edit-price">Edit Price</option>
+                  <option value="change-status">Change Status</option>
+                  <option value="assign-category">Assign Category</option>
+                  <option value="update-stock">Update Stock</option>
+                  <option value="delete">Delete Selected</option>
+                </select>
+                <button id="apply-bulk-action-btn" disabled style="background: #1e40af; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">Apply</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Books List Header -->
+          <div class="books-list-header" style="background: #f8f9fa; padding: 12px 16px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-radius: 8px 8px 0 0;">
+            <div class="books-count" style="font-size: 14px; font-weight: 600; color: #1f2937;">
+              <span id="books-count">0</span> books found
+            </div>
+            <div class="view-options" style="display: flex; gap: 8px; align-items: center;">
+              <button id="grid-view-btn" class="view-btn active" style="padding: 6px 8px; border: 1px solid #d1d5db; background: #f3f4f6; border-radius: 4px; cursor: pointer; font-size: 12px;">Grid</button>
+              <button id="list-view-btn" class="view-btn" style="padding: 6px 8px; border: 1px solid #d1d5db; background: white; border-radius: 4px; cursor: pointer; font-size: 12px;">List</button>
+            </div>
+          </div>
+
+          <!-- Books List -->
+          <div id="books-list" style="background: white; border-radius: 0 0 8px 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); min-height: 400px;">
+            <!-- Books will be loaded here -->
+          </div>
+
+          <!-- Pagination -->
+          <div id="books-pagination" style="margin-top: 20px;">
+            <!-- Pagination will be loaded here -->
+          </div>
+        </div>
+
+        <!-- Excel Import Section (Collapsible) -->
+        <div class="excel-import-section" style="background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+          <div class="import-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <h3 style="margin: 0; color: #1f2937; font-size: 18px; font-weight: 600;">Bulk Import/Export</h3>
+            <button id="toggle-import-section" style="background: #6b7280; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">Toggle</button>
+          </div>
+          <div id="import-content" style="display: none;">
+        <form id="excel-upload-form" enctype="multipart/form-data" class="bulk-import-section">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div>
+                  <label for="excel-file" style="display: block; font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 8px;">Import Books (Excel):</label>
+                  <input type="file" id="excel-file" class="custom-file-input" accept=".xlsx,.xls" required style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px;" />
+                  <span class="file-chosen" id="file-chosen" style="font-size: 12px; color: #6b7280;">No file chosen</span>
+                  <button type="submit" style="background: #059669; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-weight: 500; margin-top: 8px;">Upload</button>
+                  <span id="excel-upload-status" style="margin-left: 10px; font-size: 12px;"></span>
+                </div>
+                <div>
+                  <label style="display: block; font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 8px;">Export Options:</label>
+                  <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <button type="button" id="export-all-books" style="background: #7c3aed; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-weight: 500;">Export All Books</button>
+                    <button type="button" id="export-filtered-books" style="background: #059669; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-weight: 500;">Export Filtered Books</button>
+                    <button type="button" id="download-template" style="background: #6b7280; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-weight: 500;">Download Template</button>
+                  </div>
+                </div>
+              </div>
+        </form>
+          </div>
+        </div>
+      </section>
+  <section id="users" class="admin-section-hidden" style="display:none;">
+        <h2>Manage Users</h2>
+        <div style="margin-bottom:12px;">
+          <input type="text" id="user-search" placeholder="Search users by name or email" style="width:60%;padding:6px;">
+        </div>
+        <div id="users-list"></div>
+        <div id="users-pagination" style="margin-top:10px;"></div>
+      </section>
+  <section id="orders" class="admin-section-hidden" style="display:none;">
+        <h2>Manage Orders</h2>
+        
+        <!-- Enhanced Filters and Search Section -->
+        <div class="filters-section" style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+          <div class="filters-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <h3 style="margin: 0; color: #333;">Filters & Search</h3>
+            <button id="clear-all-filters-btn" style="background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">Clear All</button>
+          </div>
+
+          <!-- Quick Filters -->
+          <div class="quick-filters" style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">
+            <button class="quick-filter-btn active" data-filter="all" style="background: #2563eb; color: white; border: none; padding: 6px 12px; border-radius: 16px; cursor: pointer; font-size: 12px;">All Orders</button>
+            <button class="quick-filter-btn" data-filter="pending" style="background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; padding: 6px 12px; border-radius: 16px; cursor: pointer; font-size: 12px;">Pending</button>
+            <button class="quick-filter-btn" data-filter="processing" style="background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; padding: 6px 12px; border-radius: 16px; cursor: pointer; font-size: 12px;">Processing</button>
+            <button class="quick-filter-btn" data-filter="shipped" style="background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; padding: 6px 12px; border-radius: 16px; cursor: pointer; font-size: 12px;">Shipped</button>
+            <button class="quick-filter-btn" data-filter="delivered" style="background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; padding: 6px 12px; border-radius: 16px; cursor: pointer; font-size: 12px;">Delivered</button>
+            <button class="quick-filter-btn" data-filter="cancelled" style="background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; padding: 6px 12px; border-radius: 16px; cursor: pointer; font-size: 12px;">Cancelled</button>
+            <button class="quick-filter-btn" data-filter="today" style="background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; padding: 6px 12px; border-radius: 16px; cursor: pointer; font-size: 12px;">Today</button>
+            <button class="quick-filter-btn" data-filter="week" style="background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; padding: 6px 12px; border-radius: 16px; cursor: pointer; font-size: 12px;">This Week</button>
+          </div>
+
+          <!-- Advanced Filters -->
+          <div class="filters-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px;">
+            <div class="filter-group">
+              <label style="display: block; font-size: 12px; font-weight: 500; color: #374151; margin-bottom: 4px;">Search Orders</label>
+              <input type="text" id="order-search" placeholder="Search by order ID, customer name, email, or phone..." style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px;">
+            </div>
+            <div class="filter-group">
+              <label style="display: block; font-size: 12px; font-weight: 500; color: #374151; margin-bottom: 4px;">Order Status</label>
+              <select id="status-filter" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px;">
+                <option value="">All Statuses</option>
+                <option value="pending">Pending</option>
+                <option value="processing">Processing</option>
+                <option value="shipped">Shipped</option>
+                <option value="delivered">Delivered</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label style="display: block; font-size: 12px; font-weight: 500; color: #374151; margin-bottom: 4px;">Payment Method</label>
+              <select id="payment-filter" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px;">
+                <option value="">All Payment Methods</option>
+                <option value="card">Credit/Debit Card</option>
+                <option value="upi">UPI</option>
+                <option value="netbanking">Net Banking</option>
+                <option value="cod">Cash on Delivery</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label style="display: block; font-size: 12px; font-weight: 500; color: #374151; margin-bottom: 4px;">Date Range</label>
+              <select id="date-filter" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px;">
+                <option value="">All Time</option>
+                <option value="today">Today</option>
+                <option value="yesterday">Yesterday</option>
+                <option value="week">This Week</option>
+                <option value="month">This Month</option>
+                <option value="quarter">This Quarter</option>
+                <option value="year">This Year</option>
+                <option value="custom">Custom Range</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label style="display: block; font-size: 12px; font-weight: 500; color: #374151; margin-bottom: 4px;">Amount Range</label>
+              <select id="amount-filter" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px;">
+                <option value="">All Amounts</option>
+                <option value="0-500">₹0 - ₹500</option>
+                <option value="500-1000">₹500 - ₹1,000</option>
+                <option value="1000-5000">₹1,000 - ₹5,000</option>
+                <option value="5000+">₹5,000+</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Custom Date Range (Hidden by default) -->
+          <div id="custom-date-range" style="display: none;" class="filters-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+            <div class="filter-group">
+              <label style="display: block; font-size: 12px; font-weight: 500; color: #374151; margin-bottom: 4px;">From Date</label>
+              <input type="date" id="from-date" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px;">
+            </div>
+            <div class="filter-group">
+              <label style="display: block; font-size: 12px; font-weight: 500; color: #374151; margin-bottom: 4px;">To Date</label>
+              <input type="date" id="to-date" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px;">
+            </div>
+          </div>
+        </div>
+
+        <!-- Orders List Header -->
+        <div class="orders-header" style="background: #f8f9fa; padding: 12px 16px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-radius: 8px 8px 0 0;">
+          <div class="orders-count" style="font-size: 14px; font-weight: 600; color: #1f2937;">
+            <span id="orders-count">0</span> orders found
+          </div>
+          <div class="bulk-actions" style="display: flex; gap: 8px; align-items: center;">
+            <select id="bulk-action-select" style="padding: 6px 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 12px;">
+              <option value="">Bulk Actions</option>
+              <option value="update-status">Update Status</option>
+              <option value="export-selected">Export Selected</option>
+              <option value="send-notifications">Send Notifications</option>
+              <option value="add-notes">Add Notes</option>
+            </select>
+            <button id="bulk-action-btn" disabled style="background: #059669; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">Apply</button>
+            <button id="export-all-btn" style="background: #7c3aed; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">Export All</button>
+          </div>
+        </div>
+
+        <!-- Orders List -->
+        <div id="orders-list" style="background: white; border-radius: 0 0 8px 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); min-height: 400px;">
+          <!-- Orders will be loaded here -->
+        </div>
+      </section>
+  <section id="analytics" class="admin-section-hidden" style="display:none;">
+        <h2 style="color:var(--primary-color);margin-bottom:24px;">Analytics</h2>
+        <div class="analytics-summary-cards">
+          <div class="analytics-card" id="analytics-revenue">
+            <div class="analytics-card-label">Total Revenue</div>
+            <div class="analytics-card-value" id="analytics-revenue-value">₹0</div>
+          </div>
+          <div class="analytics-card" id="analytics-orders-today">
+            <div class="analytics-card-label">Orders Today</div>
+            <div class="analytics-card-value" id="analytics-orders-today-value">0</div>
+          </div>
+          <div class="analytics-card" id="analytics-orders-week">
+            <div class="analytics-card-label">Orders This Week</div>
+            <div class="analytics-card-value" id="analytics-orders-week-value">0</div>
+          </div>
+          <div class="analytics-card" id="analytics-orders-month">
+            <div class="analytics-card-label">Orders This Month</div>
+            <div class="analytics-card-value" id="analytics-orders-month-value">0</div>
+          </div>
+        </div>
+        <div class="analytics-charts" style="margin-top:32px;">
+          <div class="analytics-chart-block">
+            <h3>User Growth (Daily)</h3>
+            <canvas id="userGrowthChart" height="120"></canvas>
+          </div>
+          <div class="analytics-chart-block">
+            <h3>Order Status Breakdown</h3>
+            <canvas id="orderStatusChart" height="120"></canvas>
+          </div>
+          <div class="analytics-chart-block">
+            <h3>Revenue Trend (Last 30 Days)</h3>
+            <canvas id="revenueTrendChart" height="120"></canvas>
+          </div>
+          <div class="analytics-chart-block">
+            <h3>Geographic Distribution (by City)</h3>
+            <canvas id="geoDistributionChart" height="120"></canvas>
+          </div>
+        </div>
+        <div class="analytics-top-books" style="margin-top:32px;">
+          <h3>Top-Selling Books</h3>
+          <ul id="analytics-top-books-list"></ul>
+        </div>
+      </section>
+  <section id="settings" class="admin-section-hidden" style="display:none;">
+        <h2>Settings</h2>
+        <p>Please select a settings category from the sidebar menu:</p>
+        <ul>
+          <li><strong>Theme:</strong> Customize colors and appearance</li>
+          <li><strong>Font:</strong> Change font settings</li>
+          <li><strong>Pages:</strong> Manage website pages</li>
+        </ul>
+      </section>
+  <section id="theme-settings" class="admin-section-hidden" style="display:none;">
+        <h2>Theme Customization</h2>
+        <div id="settings-form">
+            <form id="theme-settings-form" style="max-width:400px;margin:auto;">
+              <label for="primaryColor">Primary Color:</label>
+                <input type="color" id="primaryColor" name="primaryColor" value="#e94e77" style="margin-bottom:10px;width:100%;border:2px solid #e94e77;border-radius:8px;height:40px;">
+              <br>
+              <label for="accentColor">Accent Color:</label>
+                <input type="color" id="accentColor" name="accentColor" value="#ff6b9d" style="margin-bottom:10px;width:100%;border:2px solid #ff6b9d;border-radius:8px;height:40px;">
+              <br>
+              <label for="backgroundColor">Background Color:</label>
+                <input type="color" id="backgroundColor" name="backgroundColor" value="#f7f7f7" style="margin-bottom:10px;width:100%;border:2px solid #f7f7f7;border-radius:8px;height:40px;">
+              <br>
+              <label for="cardColor">Card Color:</label>
+                <input type="color" id="cardColor" name="cardColor" value="#fff" style="margin-bottom:10px;width:100%;border:2px solid #fff;border-radius:8px;height:40px;">
+              <br>
+              <div style="display:flex;gap:12px;margin-top:18px;justify-content:center;">
+                <button type="submit" class="btn" style="flex:1;max-width:120px;">Save Theme</button>
+                <button type="button" class="btn" id="theme-default-btn" style="flex:1;max-width:120px;">Default</button>
+                <button type="button" class="btn" id="theme-undo-btn" style="flex:1;max-width:120px;">Undo</button>
+              </div>
+            </form>
+            <div id="theme-save-status" style="margin-top:10px;color:#e94e77;"></div>
+        </div>
+      </section>
+  <section id="font-settings" class="admin-section-hidden" style="display:none;">
+        <h2>Font Customization</h2>
+        <form id="font-customization-form" style="max-width:400px;margin-top:20px;">
+          <label for="headerFont">Header Font:</label>
+          <select id="headerFont" name="headerFont" style="margin-bottom:10px;width:100%;">
+            <option value="Poppins">Poppins</option>
+            <option value="Roboto">Roboto</option>
+            <option value="Montserrat">Montserrat</option>
+            <option value="Lato">Lato</option>
+            <option value="Open Sans">Open Sans</option>
+            <option value="Merriweather">Merriweather</option>
+            <option value="Oswald">Oswald</option>
+            <option value="Nunito">Nunito</option>
+          </select>
+          <br>
+          <label for="contentFont">Content Font:</label>
+          <select id="contentFont" name="contentFont" style="margin-bottom:10px;width:100%;">
+            <option value="Poppins">Poppins</option>
+            <option value="Roboto">Roboto</option>
+            <option value="Montserrat">Montserrat</option>
+            <option value="Lato">Lato</option>
+            <option value="Open Sans">Open Sans</option>
+            <option value="Merriweather">Merriweather</option>
+            <option value="Oswald">Oswald</option>
+            <option value="Nunito">Nunito</option>
+          </select>
+          <br>
+          <label for="sidebarFont">Sidebar Font:</label>
+          <select id="sidebarFont" name="sidebarFont" style="margin-bottom:10px;width:100%;">
+            <option value="Poppins">Poppins</option>
+            <option value="Roboto">Roboto</option>
+            <option value="Montserrat">Montserrat</option>
+            <option value="Lato">Lato</option>
+            <option value="Open Sans">Open Sans</option>
+            <option value="Merriweather">Merriweather</option>
+            <option value="Oswald">Oswald</option>
+            <option value="Nunito">Nunito</option>
+          </select>
+          <br>
+          <button type="submit" style="margin-top:10px;background:#e94e77;color:#fff;padding:8px 18px;border:none;border-radius:8px;font-family:'Poppins',sans-serif;cursor:pointer;">Save Fonts</button>
+          <button type="button" id="default-font-btn" style="margin-top:10px;margin-left:10px;background:#aaa;color:#fff;padding:8px 18px;border:none;border-radius:8px;font-family:'Poppins',sans-serif;cursor:pointer;">Default</button>
+          <button type="button" id="undo-font-btn" style="margin-top:10px;margin-left:10px;background:#888;color:#fff;padding:8px 18px;border:none;border-radius:8px;font-family:'Poppins',sans-serif;cursor:pointer;">Undo</button>
+        </form>
+        <div id="font-save-status" style="margin-top:10px;color:#e94e77;"></div>
+        <div id="font-preview" style="margin-top:20px;padding:16px;background:#f9f9f9;border-radius:8px;">
+          <h3 style="margin-bottom:8px;">Font Preview</h3>
+          <div>
+            <span id="preview-header" style="font-size:1.5em;display:block;margin-bottom:8px;">Header Font Example</span>
+            <span id="preview-content" style="font-size:1em;display:block;margin-bottom:8px;">Content Font Example</span>
+            <span id="preview-sidebar" style="font-size:1em;display:block;">Sidebar Font Example</span>
+          </div>
+        </div>
+      </section>
+  <section id="page-management" class="admin-section-hidden" style="display:none;">
+        <h2>Page Management</h2>
+        <div id="page-management-ui" style="max-width:500px;margin-top:20px;">
+          <div style="margin-bottom:16px;">
+            <input type="text" id="new-page-name" placeholder="New page name" style="width:60%;padding:6px;">
+            <button id="add-page-btn" style="background:#e94e77;color:#fff;padding:6px 16px;border:none;border-radius:8px;font-family:'Poppins',sans-serif;cursor:pointer;" aria-label="Add Page">Add Page</button>
+          </div>
+          <ul id="pages-list" style="list-style:none;padding:0;margin:0;border:1px solid #eee;border-radius:8px;background:#fff;">
+            <!-- Pages will be listed here -->
+          </ul>
+        </div>
+        <div id="page-management-status" style="margin-top:10px;color:#e94e77;"></div>
+      </section>
+
+      <!-- Homepage Content Management -->
+      <section id="homepage-content" class="admin-section-hidden" style="display:none;">
+        <h2>Homepage Content Management</h2>
+        <div class="content-management-grid">
+          <!-- Hero Section -->
+          <div class="content-section">
+            <h3>Hero Section</h3>
+            <form id="hero-content-form">
+              <div class="form-group">
+                <label>Main Title:</label>
+                <input type="text" id="hero-title" placeholder="Enter main title" />
+              </div>
+              <div class="form-group">
+                <label>Subtitle:</label>
+                <textarea id="hero-subtitle" placeholder="Enter subtitle"></textarea>
+              </div>
+              <div class="form-group">
+                <label>Call to Action Text:</label>
+                <input type="text" id="hero-cta" placeholder="Enter CTA text" />
+              </div>
+              <button type="submit" class="btn-save">Save Hero Content</button>
+            </form>
+          </div>
+
+          <!-- Why Choose Us Section -->
+          <div class="content-section">
+            <h3>Why Choose Us Section</h3>
+            <form id="why-choose-form">
+              <div class="form-group">
+                <label>Section Title:</label>
+                <input type="text" id="why-choose-title" placeholder="Enter section title" />
+              </div>
+              <div class="form-group">
+                <label>Section Description:</label>
+                <textarea id="why-choose-desc" placeholder="Enter section description"></textarea>
+              </div>
+              <div id="why-choose-features">
+                <!-- Features will be dynamically added here -->
+              </div>
+              <button type="button" id="add-feature-btn" class="btn-add">Add Feature</button>
+              <button type="submit" class="btn-save">Save Why Choose Us</button>
+            </form>
+          </div>
+
+          <!-- Newsletter Section -->
+          <div class="content-section">
+            <h3>Newsletter Section</h3>
+            <form id="newsletter-form">
+              <div class="form-group">
+                <label>Section Title:</label>
+                <input type="text" id="newsletter-title" placeholder="Enter title" />
+              </div>
+              <div class="form-group">
+                <label>Description:</label>
+                <textarea id="newsletter-desc" placeholder="Enter description"></textarea>
+              </div>
+              <div class="form-group">
+                <label>Button Text:</label>
+                <input type="text" id="newsletter-btn" placeholder="Enter button text" />
+              </div>
+              <button type="submit" class="btn-save">Save Newsletter</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- Statistics Management -->
+      <section id="statistics-management" class="admin-section-hidden" style="display:none;">
+        <h2>Statistics Management</h2>
+        <div class="stats-grid">
+          <div class="stat-item-admin">
+            <h3>Homepage Statistics</h3>
+            <form id="homepage-stats-form">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Books Available:</label>
+                  <input type="number" id="stats-books" placeholder="10000" />
+                </div>
+                <div class="form-group">
+                  <label>Happy Customers:</label>
+                  <input type="number" id="stats-customers" placeholder="50000" />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Satisfaction %:</label>
+                  <input type="number" id="stats-satisfaction" placeholder="99" max="100" />
+                </div>
+                <div class="form-group">
+                  <label>Years Experience:</label>
+                  <input type="number" id="stats-experience" placeholder="5" />
+                </div>
+              </div>
+              <button type="submit" class="btn-save">Save Statistics</button>
+            </form>
+          </div>
+
+          <div class="stat-item-admin">
+            <h3>Shop Page Statistics</h3>
+            <form id="shop-stats-form">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Total Books:</label>
+                  <input type="number" id="shop-total-books" placeholder="10000" />
+                </div>
+                <div class="form-group">
+                  <label>Categories:</label>
+                  <input type="number" id="shop-categories" placeholder="50" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Satisfaction Rate:</label>
+                <input type="number" id="shop-satisfaction" placeholder="99" max="100" />
+              </div>
+              <button type="submit" class="btn-save">Save Shop Statistics</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- Testimonials Management -->
+      <section id="testimonials-management" class="admin-section-hidden" style="display:none;">
+        <h2>Testimonials Management</h2>
+        <div class="testimonials-container">
+          <div class="add-testimonial">
+            <h3>Add New Testimonial</h3>
+            <form id="add-testimonial-form">
+              <div class="form-group">
+                <label>Customer Name:</label>
+                <input type="text" id="testimonial-name" placeholder="Enter customer name" required />
+              </div>
+              <div class="form-group">
+                <label>Location:</label>
+                <input type="text" id="testimonial-location" placeholder="Enter location" required />
+              </div>
+              <div class="form-group">
+                <label>Rating (1-5):</label>
+                <select id="testimonial-rating" required>
+                  <option value="5">5 Stars</option>
+                  <option value="4">4 Stars</option>
+                  <option value="3">3 Stars</option>
+                  <option value="2">2 Stars</option>
+                  <option value="1">1 Star</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Testimonial Text:</label>
+                <textarea id="testimonial-text" placeholder="Enter testimonial text" required></textarea>
+              </div>
+              <button type="submit" class="btn-save">Add Testimonial</button>
+            </form>
+          </div>
+
+          <div class="existing-testimonials">
+            <h3>Existing Testimonials</h3>
+            <div id="testimonials-list">
+              <!-- Testimonials will be loaded here -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Team Management -->
+      <section id="team-management" class="admin-section-hidden" style="display:none;">
+        <h2>Team Management</h2>
+        <div class="team-container">
+          <div class="add-team-member">
+            <h3>Add Team Member</h3>
+            <form id="add-team-form">
+              <div class="form-group">
+                <label>Name:</label>
+                <input type="text" id="team-name" placeholder="Enter name" required />
+              </div>
+              <div class="form-group">
+                <label>Position:</label>
+                <input type="text" id="team-position" placeholder="Enter position" required />
+              </div>
+              <div class="form-group">
+                <label>Description:</label>
+                <textarea id="team-description" placeholder="Enter description" required></textarea>
+              </div>
+              <div class="form-group">
+                <label>Icon Color:</label>
+                <select id="team-icon-color">
+                  <option value="primary">Primary (Blue)</option>
+                  <option value="success">Success (Green)</option>
+                  <option value="warning">Warning (Yellow)</option>
+                  <option value="info">Info (Light Blue)</option>
+                </select>
+              </div>
+              <button type="submit" class="btn-save">Add Team Member</button>
+            </form>
+          </div>
+
+          <div class="existing-team">
+            <h3>Team Members</h3>
+            <div id="team-list">
+              <!-- Team members will be loaded here -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Categories Management -->
+      <section id="categories-management" class="admin-section-hidden" style="display:none;">
+        <h2>Categories Management</h2>
+        <div class="categories-container">
+          <div class="add-category">
+            <h3>Add New Category</h3>
+            <form id="add-category-form">
+              <div class="form-group">
+                <label>Category Name:</label>
+                <input type="text" id="category-name" placeholder="Enter category name" required />
+              </div>
+              <div class="form-group">
+                <label>Description:</label>
+                <textarea id="category-description" placeholder="Enter description" required></textarea>
+              </div>
+              <div class="form-group">
+                <label>Book Count:</label>
+                <input type="number" id="category-count" placeholder="Enter book count" required />
+              </div>
+              <div class="form-group">
+                <label>Icon Class:</label>
+                <select id="category-icon">
+                  <option value="fas fa-book">Book</option>
+                  <option value="fas fa-chart-line">Chart</option>
+                  <option value="fas fa-brain">Brain</option>
+                  <option value="fas fa-microscope">Microscope</option>
+                  <option value="fas fa-laptop-code">Code</option>
+                  <option value="fas fa-palette">Art</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Color Theme:</label>
+                <select id="category-color">
+                  <option value="primary">Primary (Blue)</option>
+                  <option value="success">Success (Green)</option>
+                  <option value="warning">Warning (Yellow)</option>
+                  <option value="info">Info (Light Blue)</option>
+                </select>
+              </div>
+              <button type="submit" class="btn-save">Add Category</button>
+            </form>
+          </div>
+
+          <div class="existing-categories">
+            <h3>Existing Categories</h3>
+            <div id="categories-list">
+              <!-- Categories will be loaded here -->
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="../js/admin.js"></script>
+</body>
+</html>

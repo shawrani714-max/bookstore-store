@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog - Bookworld India</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="../js/theme-preload.js"></script>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+    
+    <style>
+        .blog-grid .card.h-100:hover {
+            transform: scale(1.04);
+            box-shadow: 0 8px 32px rgba(233, 78, 119, 0.15), 0 1.5px 6px rgba(0,0,0,0.08);
+            z-index: 2;
+        }
+    </style>
+
+</head>
+<body>
+
+
+    <!-- Header & Navbar -->
+    <header class="header-main">
+        <nav class="navbar navbar-expand-lg">
+            <div class="container">
+                <a class="navbar-brand" href="../">
+                    <img src="../images/logo/BookWorld Log.png" alt="Bookworld India" class="logo-img">
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav mx-auto">
+                        <li class="nav-item"><a class="nav-link" href="../">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="../shop">Shop</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="../blog">Blog</a></li>
+                        <li class="nav-item"><a class="nav-link" href="../about">About</a></li>
+                        <li class="nav-item"><a class="nav-link" href="../contact">Contact</a></li>
+                    </ul>
+                    <div class="navbar-icons">
+                        <a href="#" class="search-icon"><i class="fas fa-search"></i></a>
+                        <a href="../wishlist" class="position-relative">
+                            <i class="fas fa-heart"></i>
+                            <span class="badge bg-danger icon-badge" id="wishlist-count">0</span>
+                        </a>
+                        <a href="../cart" class="position-relative">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="badge bg-danger icon-badge" id="cart-count">0</span>
+                        </a>
+                        <a href="../profile"><i class="fas fa-user-circle"></i></a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <!-- Search Bar (hidden by default) -->
+        <div class="search-bar-container container" style="display: none;">
+            <div class="input-group my-2">
+                <input type="text" id="search-input" class="form-control" placeholder="Search for books...">
+                <button class="btn btn-primary" id="search-button">Search</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Blog Hero Section -->
+    <section class="blog-hero-section py-5 bg-light">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h1 class="display-4 fw-bold mb-3">Our Blog</h1>
+                    <p class="lead text-muted mb-4">Discover book reviews, reading tips, author interviews, and literary insights. Stay updated with the latest in the world of books.</p>
+                    <div class="d-flex align-items-center gap-4">
+                        <div class="stat-item">
+                            <span class="h4 fw-bold text-primary">50+</span>
+                            <small class="text-muted d-block">Articles</small>
+                        </div>
+                        <div class="stat-item">
+                            <span class="h4 fw-bold text-success">5K+</span>
+                            <small class="text-muted d-block">Readers</small>
+                        </div>
+                        <div class="stat-item">
+                            <span class="h4 fw-bold text-warning">Weekly</span>
+                            <small class="text-muted d-block">Updates</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 text-center">
+                    <div class="hero-icon">
+                        <i class="fas fa-blog fa-5x text-primary opacity-25"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Blog Categories Section -->
+    <section class="blog-categories-section py-4 bg-white border-bottom">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="d-flex flex-wrap gap-2 justify-content-center">
+                        <button class="btn btn-outline-primary active" data-category="all">All Posts</button>
+                        <button class="btn btn-outline-primary" data-category="reviews">Book Reviews</button>
+                        <button class="btn btn-outline-primary" data-category="tips">Reading Tips</button>
+                        <button class="btn btn-outline-primary" data-category="authors">Author Interviews</button>
+                        <button class="btn btn-outline-primary" data-category="news">Book News</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <main class="container py-5">
+        <div class="blog-grid">
+            <!-- Blog Post 1 -->
+            <div>
+                <div class="card h-100 shadow-custom">
+                    <img src="../images/book1.jpg" class="card-img-top" alt="Fiction Books Collection">
+                    <div class="card-body">
+                        <h5 class="card-title">The Top 10 Must-Read Fiction Books of the Year</h5>
+                        <p class="card-text"><span class="blog-preview-text">We dive into the most compelling fiction novels th...</span> <a href="blog-detail.html?id=0" class="btn btn-link p-0 m-0 align-baseline">Read More</a></p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">Published: Dec 15, 2023</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Blog Post 2 -->
+            <div>
+                <div class="card h-100 shadow-custom">
+                    <img src="../images/book2.jpg" class="card-img-top" alt="Mental Health and Reading">
+                    <div class="card-body">
+                        <h5 class="card-title">How Reading Improves Your Mental Health</h5>
+                        <p class="card-text"><span class="blog-preview-text">Explore the science-backed benefits of reading f...</span> <a href="blog-detail.html?id=1" class="btn btn-link p-0 m-0 align-baseline">Read More</a></p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">Published: Dec 10, 2023</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Blog Post 3 -->
+            <div>
+                <div class="card h-100 shadow-custom">
+                    <img src="../images/book3.jpg" class="card-img-top" alt="Home Library Setup">
+                    <div class="card-body">
+                        <h5 class="card-title">A Guide to Building Your Perfect Home Library</h5>
+                        <p class="card-text"><span class="blog-preview-text">Dreaming of a personal library? Here are our top...</span> <a href="blog-detail.html?id=2" class="btn btn-link p-0 m-0 align-baseline">Read More</a></p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">Published: Dec 5, 2023</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Blog Post 4 -->
+            <div>
+                <div class="card h-100 shadow-custom">
+                    <img src="../images/book4.jpg" class="card-img-top" alt="Classic Literature">
+                    <div class="card-body">
+                        <h5 class="card-title">Classic Literature: Why These Books Still Matter</h5>
+                        <p class="card-text"><span class="blog-preview-text">Discover why classic literature continues to res...</span> <a href="blog-detail.html?id=3" class="btn btn-link p-0 m-0 align-baseline">Read More</a></p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">Published: Nov 28, 2023</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Blog Post 5 -->
+            <div>
+                <div class="card h-100 shadow-custom">
+                    <img src="../images/book5.jpg" class="card-img-top" alt="Self-Help Books">
+                    <div class="card-body">
+                        <h5 class="card-title">The Power of Self-Help Books: Transform Your Life</h5>
+                        <p class="card-text"><span class="blog-preview-text">Explore how self-help books can provide practic...</span> <a href="blog-detail.html?id=4" class="btn btn-link p-0 m-0 align-baseline">Read More</a></p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">Published: Nov 20, 2023</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Blog Post 6 -->
+            <div>
+                <div class="card h-100 shadow-custom">
+                    <img src="../images/book6.jpg" class="card-img-top" alt="Biography Books">
+                    <div class="card-body">
+                        <h5 class="card-title">Inspiring Biographies That Will Change Your Perspective</h5>
+                        <p class="card-text"><span class="blog-preview-text">From world leaders to artists, these compelling...</span> <a href="blog-detail.html?id=5" class="btn btn-link p-0 m-0 align-baseline">Read More</a></p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">Published: Nov 15, 2023</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Enhanced Professional Footer -->
+    <footer class="footer-main">
+        <div class="footer-top">
+            <div class="container">
+                <div class="row">
+                    <!-- Company Info -->
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="footer-brand">
+                            <div class="footer-logo">
+                                <img src="../images/logo/BookWorld Log.png" alt="Bookworld India" class="footer-logo-img">
+                            </div>
+                            <p class="footer-description">
+                                Your trusted partner in discovering the world of books. 
+                                We bring you the finest collection of books across all genres.
+                            </p>
+                            <div class="footer-stats">
+                                <div class="stat-item">
+                                    <span class="stat-number">10,000+</span>
+                                    <span class="stat-label">Books</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number">50+</span>
+                                    <span class="stat-label">Categories</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number">99%</span>
+                                    <span class="stat-label">Satisfaction</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Links -->
+                    <div class="col-lg-2 col-md-6 mb-4">
+                        <div class="footer-section">
+                            <h5 class="footer-title">Quick Links</h5>
+                            <ul class="footer-links">
+                                <li><a href="../about"><i class="fas fa-chevron-right"></i>About Us</a></li>
+                                <li><a href="../contact"><i class="fas fa-chevron-right"></i>Contact</a></li>
+                                <li><a href="../shop"><i class="fas fa-chevron-right"></i>Shop</a></li>
+                                <li><a href="../blog"><i class="fas fa-chevron-right"></i>Blog</a></li>
+                                <li><a href="../faq"><i class="fas fa-chevron-right"></i>FAQ</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Categories -->
+                    <div class="col-lg-2 col-md-6 mb-4">
+                        <div class="footer-section">
+                            <h5 class="footer-title">Categories</h5>
+                            <ul class="footer-links">
+                                <li><a href="../shop?category=fiction"><i class="fas fa-chevron-right"></i>Fiction</a></li>
+                                <li><a href="../shop?category=business"><i class="fas fa-chevron-right"></i>Business</a></li>
+                                <li><a href="../shop?category=self-help"><i class="fas fa-chevron-right"></i>Self-Help</a></li>
+                                <li><a href="../shop?category=science"><i class="fas fa-chevron-right"></i>Science</a></li>
+                                <li><a href="../shop?category=fantasy"><i class="fas fa-chevron-right"></i>Fantasy</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Contact Info -->
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="footer-section">
+                            <h5 class="footer-title">Get in Touch</h5>
+                            <div class="contact-info">
+                                <div class="contact-item">
+                                    <i class="fas fa-envelope"></i>
+                                    <div>
+                                        <span class="contact-label">Email</span>
+                                        <span class="contact-value">support@bookworldindia.com</span>
+                                    </div>
+                                </div>
+                                <div class="contact-item">
+                                    <i class="fas fa-phone"></i>
+                                    <div>
+                                        <span class="contact-label">Phone</span>
+                                        <span class="contact-value">+91 12345 67890</span>
+                                    </div>
+                                </div>
+                                <div class="contact-item">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <div>
+                                        <span class="contact-label">Address</span>
+                                        <span class="contact-value">Mumbai, Maharashtra, India</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Newsletter Signup -->
+                            <div class="newsletter-signup">
+                                <h6>Stay Updated</h6>
+                                <p>Subscribe to our newsletter for latest book releases and offers.</p>
+                                <div class="newsletter-form">
+                                    <input type="email" placeholder="Enter your email" class="newsletter-input">
+                                    <button class="newsletter-btn">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Bottom -->
+        <div class="footer-bottom">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <div class="footer-copyright">
+                            <p>&copy; 2024 Bookworld India. All Rights Reserved.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="footer-bottom-links">
+                            <a href="../privacy">Privacy Policy</a>
+                            <a href="../terms">Terms of Service</a>
+                            <a href="../shipping">Shipping Info</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Social Media -->
+        <div class="footer-social">
+            <div class="container">
+                <div class="social-links">
+                    <a href="#" class="social-link facebook">
+                        <i class="fab fa-facebook-f"></i>
+                        <span>Facebook</span>
+                    </a>
+                    <a href="#" class="social-link twitter">
+                        <i class="fab fa-twitter"></i>
+                        <span>Twitter</span>
+                    </a>
+                    <a href="#" class="social-link instagram">
+                        <i class="fab fa-instagram"></i>
+                        <span>Instagram</span>
+                    </a>
+                    <a href="#" class="social-link linkedin">
+                        <i class="fab fa-linkedin-in"></i>
+                        <span>LinkedIn</span>
+                    </a>
+                    <a href="#" class="social-link youtube">
+                        <i class="fab fa-youtube"></i>
+                        <span>YouTube</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button id="back-to-top-btn" title="Go to top"><i class="fas fa-arrow-up"></i></button>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+    // Truncate preview text to 30 characters on mobile
+    if (window.innerWidth <= 600) {
+      document.querySelectorAll('.blog-preview-text').forEach(function(el) {
+        var full = el.textContent;
+        if (full.length > 30) {
+          el.textContent = full.substring(0, 30) + '...';
+        }
+      });
+    }
+    </script>
+</body>
+</html> 

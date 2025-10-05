@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Wishlist - Bookworld India</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="../js/theme-preload.js"></script>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+    <style>
+        /* Wishlist Hero Section */
+        .wishlist-hero {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            color: white;
+            padding: 4rem 0 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .wishlist-hero .hero-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .wishlist-hero .hero-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        /* Wishlist Header */
+        .wishlist-header {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e9ecef;
+        }
+
+        .wishlist-stats h3 {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        /* Enhanced Wishlist Items */
+        .wishlist-item {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .wishlist-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        }
+        
+        .wishlist-item:hover {
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            transform: translateY(-3px);
+            border-color: var(--primary-color);
+        }
+        
+        .wishlist-item-img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 12px;
+            transition: transform 0.3s ease;
+        }
+
+        .wishlist-item:hover .wishlist-item-img {
+            transform: scale(1.05);
+        }
+        
+        .wishlist-item-title {
+            color: var(--dark-color);
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+            line-height: 1.3;
+        }
+        
+        .wishlist-item-author {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+        
+        .wishlist-item-price {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 0;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .book-rating {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .rating-stars {
+            color: #ffc107;
+            font-size: 1rem;
+        }
+        
+        .rating-text {
+            color: var(--text-light);
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .wishlist-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .wishlist-actions .btn {
+            border-radius: 8px;
+            font-weight: 500;
+            padding: 8px 16px;
+        }
+
+        /* Responsive Layout */
+        @media (max-width: 768px) {
+            .wishlist-hero .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .wishlist-header {
+                text-align: center;
+            }
+            
+            .wishlist-actions-header {
+                margin-top: 1rem;
+            }
+            
+            .wishlist-actions {
+                justify-content: center;
+            }
+        }
+        
+        .empty-wishlist {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .empty-wishlist i {
+            font-size: 4rem;
+            color: var(--text-light);
+            margin-bottom: 20px;
+        }
+        
+        .empty-wishlist h3 {
+            color: var(--dark-color);
+            margin-bottom: 15px;
+        }
+        
+        .empty-wishlist p {
+            color: var(--text-light);
+            margin-bottom: 25px;
+        }
+        
+        .toast-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            color: var(--dark-color);
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 9999;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .toast-notification.show {
+            transform: translateX(0);
+        }
+        
+        .toast-notification.success {
+            border-left: 4px solid #28a745;
+        }
+        
+        .toast-notification.info {
+            border-left: 4px solid #17a2b8;
+        }
+    </style>
+</head>
+<body class="body-hidden">
+
+    <!-- Header & Navbar -->
+    <header class="header-main">
+        <nav class="navbar navbar-expand-lg">
+            <div class="container">
+                <a class="navbar-brand" href="../">
+                    <img src="../images/logo/BookWorld Log.png" alt="Bookworld India" class="logo-img">
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav mx-auto">
+                        <li class="nav-item"><a class="nav-link" href="../">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="../shop">Shop</a></li>
+                        <li class="nav-item"><a class="nav-link" href="../blog">Blog</a></li>
+                        <li class="nav-item"><a class="nav-link" href="../about">About</a></li>
+                        <li class="nav-item"><a class="nav-link" href="../contact">Contact</a></li>
+                    </ul>
+                    <div class="navbar-icons">
+                        <a href="../wishlist" class="position-relative"><i class="fas fa-heart"></i><span class="badge bg-danger icon-badge" id="wishlist-count">0</span></a>
+                        <a href="../cart" class="position-relative"><i class="fas fa-shopping-cart"></i><span class="badge bg-danger icon-badge" id="cart-count">0</span></a>
+                        <a href="../profile"><i class="fas fa-user-circle"></i></a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="wishlist-hero">
+        <div class="container">
+            <div class="hero-content text-center">
+                <h1 class="hero-title">
+                    <i class="fas fa-heart me-3"></i>My Wishlist
+                </h1>
+                <p class="hero-subtitle">Your saved books are waiting for you</p>
+            </div>
+        </div>
+    </section>
+
+    <main class="container py-5 hidden" id="main-content">
+        <!-- Wishlist Header -->
+        <div class="wishlist-header mb-4">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="wishlist-stats">
+                        <h3 class="mb-1">
+                            <span id="wishlist-count-display">0</span> Items
+                        </h3>
+                        <p class="text-muted mb-0">Books you want to read</p>
+                    </div>
+                </div>
+                <div class="col-md-6 text-end">
+                    <div class="wishlist-actions-header">
+                        <button id="clear-all-btn" class="btn btn-outline-danger me-2" style="display: none;">
+                            <i class="fas fa-trash me-2"></i>Clear All
+                        </button>
+                        <button id="continue-shopping-header-btn" class="btn btn-primary">
+                            <i class="fas fa-shopping-bag me-2"></i>Continue Shopping
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Empty wishlist message -->
+        <div id="empty-wishlist-message" class="empty-wishlist" style="display: none;">
+            <i class="fas fa-heart-broken"></i>
+            <h3>Your wishlist is empty</h3>
+            <p>Start adding your favorite books to your wishlist and we'll keep them safe for you!</p>
+            <button id="continue-shopping-btn" class="btn btn-primary">
+                <i class="fas fa-shopping-bag me-2"></i>Continue Shopping
+            </button>
+        </div>
+        
+        <!-- Wishlist items container -->
+        <div id="wishlist-container" class="row">
+            <!-- Wishlist items will be injected here by JS -->
+        </div>
+    </main>
+
+    <!-- Enhanced Professional Footer -->
+    <footer class="footer-main">
+        <div class="footer-top">
+        <div class="container">
+            <div class="row">
+                    <!-- Company Info -->
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="footer-brand">
+                            <div class="footer-logo">
+                                <img src="../images/logo/BookWorld Log.png" alt="Bookworld India" class="footer-logo-img">
+                            </div>
+                            <p class="footer-description">
+                                Your trusted partner in discovering the world of books. 
+                                We bring you the finest collection of books across all genres.
+                            </p>
+                            <div class="footer-stats">
+                                <div class="stat-item">
+                                    <span class="stat-number">10,000+</span>
+                                    <span class="stat-label">Books</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number">50+</span>
+                                    <span class="stat-label">Categories</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number">99%</span>
+                                    <span class="stat-label">Satisfaction</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Links -->
+                    <div class="col-lg-2 col-md-6 mb-4">
+                        <div class="footer-section">
+                            <h5 class="footer-title">Quick Links</h5>
+                            <ul class="footer-links">
+                                <li><a href="../about"><i class="fas fa-chevron-right"></i>About Us</a></li>
+                                <li><a href="../contact"><i class="fas fa-chevron-right"></i>Contact</a></li>
+                                <li><a href="../shop"><i class="fas fa-chevron-right"></i>Shop</a></li>
+                                <li><a href="../blog"><i class="fas fa-chevron-right"></i>Blog</a></li>
+                                <li><a href="../faq"><i class="fas fa-chevron-right"></i>FAQ</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Categories -->
+                    <div class="col-lg-2 col-md-6 mb-4">
+                        <div class="footer-section">
+                            <h5 class="footer-title">Categories</h5>
+                            <ul class="footer-links">
+                                <li><a href="../shop?category=fiction"><i class="fas fa-chevron-right"></i>Fiction</a></li>
+                                <li><a href="../shop?category=business"><i class="fas fa-chevron-right"></i>Business</a></li>
+                                <li><a href="../shop?category=self-help"><i class="fas fa-chevron-right"></i>Self-Help</a></li>
+                                <li><a href="../shop?category=science"><i class="fas fa-chevron-right"></i>Science</a></li>
+                                <li><a href="../shop?category=fantasy"><i class="fas fa-chevron-right"></i>Fantasy</a></li>
+                    </ul>
+                </div>
+                    </div>
+
+                    <!-- Contact Info -->
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="footer-section">
+                            <h5 class="footer-title">Get in Touch</h5>
+                            <div class="contact-info">
+                                <div class="contact-item">
+                                    <i class="fas fa-envelope"></i>
+                                    <div>
+                                        <span class="contact-label">Email</span>
+                                        <span class="contact-value">support@bookworldindia.com</span>
+                                    </div>
+                                </div>
+                                <div class="contact-item">
+                                    <i class="fas fa-phone"></i>
+                                    <div>
+                                        <span class="contact-label">Phone</span>
+                                        <span class="contact-value">+91 12345 67890</span>
+                                    </div>
+                                </div>
+                                <div class="contact-item">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <div>
+                                        <span class="contact-label">Address</span>
+                                        <span class="contact-value">Mumbai, Maharashtra, India</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Newsletter Signup -->
+                            <div class="newsletter-signup">
+                                <h6>Stay Updated</h6>
+                                <p>Subscribe to our newsletter for latest book releases and offers.</p>
+                                <div class="newsletter-form">
+                                    <input type="email" placeholder="Enter your email" class="newsletter-input">
+                                    <button class="newsletter-btn">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Bottom -->
+        <div class="footer-bottom">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <div class="footer-copyright">
+                            <p>&copy; 2024 Bookworld India. All Rights Reserved.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="footer-bottom-links">
+                            <a href="../privacy">Privacy Policy</a>
+                            <a href="../terms">Terms of Service</a>
+                            <a href="../shipping">Shipping Info</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Social Media -->
+        <div class="footer-social">
+            <div class="container">
+                <div class="social-links">
+                    <a href="#" class="social-link facebook">
+                        <i class="fab fa-facebook-f"></i>
+                        <span>Facebook</span>
+                    </a>
+                    <a href="#" class="social-link twitter">
+                        <i class="fab fa-twitter"></i>
+                        <span>Twitter</span>
+                    </a>
+                    <a href="#" class="social-link instagram">
+                        <i class="fab fa-instagram"></i>
+                        <span>Instagram</span>
+                    </a>
+                    <a href="#" class="social-link linkedin">
+                        <i class="fab fa-linkedin-in"></i>
+                        <span>LinkedIn</span>
+                    </a>
+                    <a href="#" class="social-link youtube">
+                        <i class="fab fa-youtube"></i>
+                        <span>YouTube</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button id="back-to-top-btn" title="Go to top"><i class="fas fa-arrow-up"></i></button>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/wishlist.js"></script>
+</body>
+</html> 

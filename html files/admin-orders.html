@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Order Management</title>
+  <link rel="stylesheet" href="../css/admin.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    /* Enhanced Admin Orders Styles */
+    .admin-orders-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f8f9fa;
+      min-height: 100vh;
+    }
+
+    .page-header {
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-bottom: 24px;
+    }
+
+    .page-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #1f2937;
+      margin: 0 0 8px 0;
+    }
+
+    .page-subtitle {
+      color: #6b7280;
+      font-size: 16px;
+      margin: 0;
+    }
+
+    /* Filter and Search Section */
+    .filters-section {
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-bottom: 24px;
+    }
+
+    .filters-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .filters-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1f2937;
+    }
+
+    .clear-filters-btn {
+      background: #ef4444;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s;
+    }
+
+    .clear-filters-btn:hover {
+      background: #dc2626;
+    }
+
+    .filters-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .filter-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: 6px;
+    }
+
+    .filter-input, .filter-select {
+      padding: 10px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+
+    .filter-input:focus, .filter-select:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .search-section {
+      display: flex;
+      gap: 12px;
+      align-items: end;
+    }
+
+    .search-input {
+      flex: 1;
+      padding: 12px 16px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 16px;
+      position: relative;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .search-btn {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      transition: background 0.3s;
+    }
+
+    .search-btn:hover {
+      background: #1d4ed8;
+    }
+
+    /* Quick Filters */
+    .quick-filters {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .quick-filter-btn {
+      background: #f3f4f6;
+      color: #374151;
+      border: 1px solid #d1d5db;
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+
+    .quick-filter-btn:hover {
+      background: #e5e7eb;
+    }
+
+    .quick-filter-btn.active {
+      background: #2563eb;
+      color: white;
+      border-color: #2563eb;
+    }
+
+    /* Orders List */
+    .orders-list {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    .orders-header {
+      background: #f8f9fa;
+      padding: 16px 24px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .orders-count {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1f2937;
+    }
+
+    .bulk-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .bulk-select {
+      padding: 8px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .bulk-action-btn {
+      background: #059669;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s;
+    }
+
+    .bulk-action-btn:hover {
+      background: #047857;
+    }
+
+    .bulk-action-btn:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+    }
+
+    .export-btn {
+      background: #7c3aed;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s;
+    }
+
+    .export-btn:hover {
+      background: #6d28d9;
+    }
+
+    /* Order Cards */
+    .order-card {
+      border-bottom: 1px solid #e5e7eb;
+      padding: 24px;
+      transition: background 0.3s;
+    }
+
+    .order-card:hover {
+      background: #f9fafb;
+    }
+
+    .order-card:last-child {
+      border-bottom: none;
+    }
+
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 16px;
+    }
+
+    .order-info {
+      flex: 1;
+    }
+
+    .order-number {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1f2937;
+      margin: 0 0 4px 0;
+    }
+
+    .order-date {
+      color: #6b7280;
+      font-size: 14px;
+      margin: 0 0 8px 0;
+    }
+
+    .customer-info {
+      color: #374151;
+      font-size: 14px;
+    }
+
+    .order-status {
+      display: flex;
+      flex-direction: column;
+      align-items: end;
+      gap: 8px;
+    }
+
+    .status-badge {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+
+    .status-pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .status-processing {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .status-shipped {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .status-delivered {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .status-cancelled {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .order-amount {
+      font-size: 16px;
+      font-weight: 600;
+      color: #059669;
+    }
+
+    .order-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .action-btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+
+    .btn-view {
+      background: #2563eb;
+      color: white;
+    }
+
+    .btn-view:hover {
+      background: #1d4ed8;
+    }
+
+    .btn-edit {
+      background: #059669;
+      color: white;
+    }
+
+    .btn-edit:hover {
+      background: #047857;
+    }
+
+    .btn-cancel {
+      background: #ef4444;
+      color: white;
+    }
+
+    .btn-cancel:hover {
+      background: #dc2626;
+    }
+
+    /* Order Items */
+    .order-items {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .order-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    .order-item:last-child {
+      border-bottom: none;
+    }
+
+    .item-info {
+      flex: 1;
+    }
+
+    .item-title {
+      font-weight: 500;
+      color: #1f2937;
+      margin: 0 0 4px 0;
+    }
+
+    .item-details {
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    .item-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .item-action-btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+
+    .btn-fulfill {
+      background: #059669;
+      color: white;
+    }
+
+    .btn-refund {
+      background: #ef4444;
+      color: white;
+    }
+
+    /* Loading States */
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+      color: #6b7280;
+    }
+
+    .loading-spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid #e5e7eb;
+      border-top: 2px solid #2563eb;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 12px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #6b7280;
+    }
+
+    .empty-state i {
+      font-size: 48px;
+      margin-bottom: 16px;
+      color: #d1d5db;
+    }
+
+    .empty-state h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0 0 8px 0;
+    }
+
+    .empty-state p {
+      font-size: 14px;
+      margin: 0;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .admin-orders-container {
+        padding: 16px;
+      }
+
+      .filters-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .search-section {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .order-header {
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .order-status {
+        align-items: start;
+      }
+
+      .bulk-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-orders-container">
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1 class="page-title">
+        <i class="fas fa-shopping-cart me-2"></i>Order Management
+      </h1>
+      <p class="page-subtitle">Manage and track all customer orders</p>
+    </div>
+
+    <!-- Filters and Search Section -->
+    <div class="filters-section">
+      <div class="filters-header">
+        <h2 class="filters-title">
+          <i class="fas fa-filter me-2"></i>Filters & Search
+        </h2>
+        <button class="clear-filters-btn" onclick="clearAllFilters()">
+          <i class="fas fa-times me-1"></i>Clear All
+        </button>
+      </div>
+
+      <!-- Quick Filters -->
+      <div class="quick-filters">
+        <button class="quick-filter-btn active" data-filter="all" onclick="applyQuickFilter('all')">
+          All Orders
+        </button>
+        <button class="quick-filter-btn" data-filter="pending" onclick="applyQuickFilter('pending')">
+          Pending
+        </button>
+        <button class="quick-filter-btn" data-filter="processing" onclick="applyQuickFilter('processing')">
+          Processing
+        </button>
+        <button class="quick-filter-btn" data-filter="shipped" onclick="applyQuickFilter('shipped')">
+          Shipped
+        </button>
+        <button class="quick-filter-btn" data-filter="delivered" onclick="applyQuickFilter('delivered')">
+          Delivered
+        </button>
+        <button class="quick-filter-btn" data-filter="cancelled" onclick="applyQuickFilter('cancelled')">
+          Cancelled
+        </button>
+        <button class="quick-filter-btn" data-filter="today" onclick="applyQuickFilter('today')">
+          Today
+        </button>
+        <button class="quick-filter-btn" data-filter="week" onclick="applyQuickFilter('week')">
+          This Week
+        </button>
+      </div>
+
+      <!-- Advanced Filters -->
+      <div class="filters-grid">
+        <div class="filter-group">
+          <label class="filter-label">Search Orders</label>
+          <div class="search-section">
+            <input type="text" class="search-input" id="search-input" placeholder="Search by order ID, customer name, email, or phone...">
+            <button class="search-btn" onclick="performSearch()">
+              <i class="fas fa-search me-1"></i>Search
+            </button>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label">Order Status</label>
+          <select class="filter-select" id="status-filter">
+            <option value="">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="processing">Processing</option>
+            <option value="shipped">Shipped</option>
+            <option value="delivered">Delivered</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label">Payment Method</label>
+          <select class="filter-select" id="payment-filter">
+            <option value="">All Payment Methods</option>
+            <option value="card">Credit/Debit Card</option>
+            <option value="upi">UPI</option>
+            <option value="netbanking">Net Banking</option>
+            <option value="cod">Cash on Delivery</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label">Date Range</label>
+          <select class="filter-select" id="date-filter">
+            <option value="">All Time</option>
+            <option value="today">Today</option>
+            <option value="yesterday">Yesterday</option>
+            <option value="week">This Week</option>
+            <option value="month">This Month</option>
+            <option value="quarter">This Quarter</option>
+            <option value="year">This Year</option>
+            <option value="custom">Custom Range</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label">Amount Range</label>
+          <select class="filter-select" id="amount-filter">
+            <option value="">All Amounts</option>
+            <option value="0-500">₹0 - ₹500</option>
+            <option value="500-1000">₹500 - ₹1,000</option>
+            <option value="1000-5000">₹1,000 - ₹5,000</option>
+            <option value="5000+">₹5,000+</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label">Customer Type</label>
+          <select class="filter-select" id="customer-filter">
+            <option value="">All Customers</option>
+            <option value="new">New Customers</option>
+            <option value="returning">Returning Customers</option>
+            <option value="vip">VIP Customers</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Custom Date Range (Hidden by default) -->
+      <div id="custom-date-range" style="display: none;" class="filters-grid">
+        <div class="filter-group">
+          <label class="filter-label">From Date</label>
+          <input type="date" class="filter-input" id="from-date">
+        </div>
+        <div class="filter-group">
+          <label class="filter-label">To Date</label>
+          <input type="date" class="filter-input" id="to-date">
+        </div>
+      </div>
+    </div>
+
+    <!-- Orders List -->
+    <div class="orders-list">
+      <div class="orders-header">
+        <div class="orders-count">
+          <span id="orders-count">0</span> orders found
+        </div>
+        <div class="bulk-actions">
+          <select class="bulk-select" id="bulk-action-select">
+            <option value="">Bulk Actions</option>
+            <option value="update-status">Update Status</option>
+            <option value="export-selected">Export Selected</option>
+            <option value="send-notifications">Send Notifications</option>
+            <option value="add-notes">Add Notes</option>
+          </select>
+          <button class="bulk-action-btn" onclick="executeBulkAction()" disabled>
+            Apply
+          </button>
+          <button class="export-btn" onclick="exportOrders()">
+            <i class="fas fa-download me-1"></i>Export All
+          </button>
+        </div>
+      </div>
+      <div id="orders-list" class="orders-list-content">
+        <!-- Orders will be loaded here -->
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/admin-orders.js"></script>
+</body>
+</html>
